@@ -12,7 +12,9 @@ Installing the Scholar Skeleton can be done by downloading the newest [release](
 
 ### Installing with Git
 
-This repository references some other repositories as submodules, thus you have to clone recursively to get their contents: `git clone --recurse-submodules https://github.com/OleVik/grav-skeleton-scholar.git`.
+This repository references some other repositories as submodules, thus you have to clone recursively to get their contents: `git clone --recurse-submodules https://github.com/OleVik/grav-skeleton-scholar.git`. To reduce the overhead of Git's history, clone shallowly:
+
+`git clone --recurse-submodules --shallow-submodules --depth 1 https://github.com/OleVik/grav-skeleton-scholar.git`
 
 ## Usage and Configuration
 
@@ -21,5 +23,7 @@ See the [theme's repository](https://github.com/OleVik/grav-theme-scholar/) for 
 ## Development
 
 1. Check `git status` for changes to submodules
-2. Update them with `git submodule update --init --recursive` if necessary
+2. Update them with `git submodule update --init --recursive`
 3. Add local changes with `git add --all`
+4. Commit changes with `git commit -m "Commit message"`
+5. Synchronize changes with `git push`

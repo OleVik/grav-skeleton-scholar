@@ -1,0 +1,9 @@
+[submodule "scholar"]
+ path = user/themes/scholar
+ url = https://github.com/OleVik/grav-themes-scholar
+[submodule "static-generator"]
+ path = user/plugins/static-generator
+ url = https://github.com/OleVik/grav-plugin-static-generator
+[submodule "swiper"]
+ path = user/plugins/swiper
+ url = https://github.com/OleVik/grav-plugin-swiper

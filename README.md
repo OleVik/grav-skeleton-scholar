@@ -10,6 +10,10 @@ The **Scholar** Skeleton is an assembled package, including the [Grav CMS](http:
 
 Installing the Scholar Skeleton can be done by downloading the newest [release](https://github.com/OleVik/grav-skeleton-scholar/releases) and extracting it to your webserver. From there it should work without issue, given that Grav's [requirements](https://learn.getgrav.org/basics/requirements) are met and you've followed the [installation](https://learn.getgrav.org/basics/installation) instructions. The Admin-plugin is recommended for easy management and editing of content.
 
+### Installing with Git
+
+This repository references some other repositories as submodules, thus you have to clone recursively to get their contents: `git clone --recurse-submodules https://github.com/OleVik/grav-skeleton-scholar.git`.
+
 ## Usage and Configuration
 
 See the [theme's repository](https://github.com/OleVik/grav-theme-scholar/) for instruction and details.

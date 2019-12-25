@@ -1,0 +1,137 @@
+/* Admin Styles */
+#types {
+  padding: 3rem; }
+  #types .card-item {
+    max-width: 100%; }
+    #types .card-item p {
+      margin: 1rem 0 0; }
+
+#directory .no-entries {
+  padding: 3rem; }
+
+#directory .search-wrapper {
+  margin: .5rem 1rem; }
+  #directory .search-wrapper input.search {
+    border: 1px solid #d6d6d6; }
+
+#directory #pager .selectize-control {
+  vertical-align: middle;
+  display: inline-block; }
+
+#directory .tablesorter-filter.disabled {
+  display: none; }
+
+#directory .edit-action {
+  float: left;
+  color: #41bea8 !important; }
+
+#directory .delete-action {
+  float: right;
+  color: #da4b46 !important; }
+
+#directory table {
+  display: table; }
+
+#directory thead {
+  display: table-header-group; }
+  #directory thead tr {
+    background: #e4e4e4; }
+
+#directory tbody {
+  display: table-row-group; }
+  #directory tbody tr:nth-child(even) {
+    background: #f4f4f4; }
+
+#directory tr {
+  display: table-row;
+  flex: none; }
+
+#directory td, #directory th {
+  display: table-cell;
+  flex: none; }
+  #directory td:focus, #directory th:focus {
+    outline: 0 !important; }
+
+#directory td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; }
+
+#directory td:last-child {
+  text-align: right;
+  white-space: nowrap; }
+  #directory td:last-child a {
+    float: none;
+    display: inline-block;
+    padding-left: 5px; }
+
+#directory i.published {
+  color: #00A171; }
+
+#directory i.unpublished {
+  color: #999; }
+
+#directory .tablesorter .filtered {
+  display: none; }
+
+#directory #pager {
+  margin: 50px 0;
+  text-align: center; }
+  #directory #pager .pagedisplay {
+    padding: 0 10px; }
+  #directory #pager .button {
+    border: 0; }
+  #directory #pager input, #directory #pager select {
+    display: inline-block;
+    width: auto; }
+  #directory #pager select {
+    vertical-align: middle; }
+
+#directory .flex-list-pagination {
+  margin: 1rem 0 -1rem;
+  padding: .5rem 1rem;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #ddd; }
+  #directory .flex-list-pagination .vuetable-pagination-info, #directory .flex-list-pagination .flex-objects-pagination {
+    flex: 1; }
+  #directory .flex-list-pagination .flex-objects-pagination {
+    text-align: right;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none; }
+    #directory .flex-list-pagination .flex-objects-pagination .button {
+      color: #333;
+      border-radius: 4px;
+      background: transparent; }
+      #directory .flex-list-pagination .flex-objects-pagination .button.active {
+        color: white;
+        background: #0090D9; }
+      #directory .flex-list-pagination .flex-objects-pagination .button.disabled {
+        color: #aaa; }
+        #directory .flex-list-pagination .flex-objects-pagination .button.disabled:active {
+          margin: 0; }
+
+/* FILTERS */
+#pages-filters .checkboxes {
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none; }
+  #pages-filters .checkboxes.status-indeterminate input[type="checkbox"] + label:before {
+    content: "\f00d";
+    font-family: "FontAwesome", sans-serif;
+    font-size: 1.2rem;
+    line-height: 1;
+    text-align: center; }
+
+/*# sourceMappingURL=../css/admin.css.map */

@@ -1,0 +1,22 @@
+name: Scholar Skeleton
+version: 1.0.0
+description: A demonstration of the Scholar Theme.
+icon: arrows-alt
+author:
+  name: Ole Vik
+  email: git@olevik.net
+homepage: https://github.com/OleVik/grav-skeleton-scholar
+demo: https://olevik.me/staging/grav-skeleton-scholar
+keywords: grav, theme, academic, paper, papers, article, articles, book, books, docs, documentation, resume, cv
+bugs: https://github.com/OleVik/grav-skeleton-scholar/issues
+readme: https://github.com/OleVik/grav-skeleton-scholar/blob/develop/README.md
+license: MIT
+
+dependencies:
+  - { name: grav, version: ">=1.7" }
+  - { name: error, version: ">=1.6.2" }
+  - { name: swiper, version: ">=1.0.0" }
+  - { name: problems, version: ">=2.0.3" }
+  - { name: breadcrumbs, version: ">=1.5.1" }
+  - { name: shortcode-core, version: ">=4.1.7" }
+  - { name: static-generator, version: ">=1.0.0" }

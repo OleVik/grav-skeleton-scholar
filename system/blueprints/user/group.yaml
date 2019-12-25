@@ -1,0 +1,46 @@
+title: Group
+form:
+    validation: loose
+
+    fields:
+        groupname:
+            type: text
+            size: large
+            label: PLUGIN_ADMIN.GROUP_NAME
+            flex-disabled@: exists
+            flex-readonly@: exists
+            validate:
+              required: true
+
+        readableName:
+            type: text
+            size: large
+            label: PLUGIN_ADMIN.DISPLAY_NAME
+
+        description:
+            type: text
+            size: large
+            label: PLUGIN_ADMIN.DESCRIPTION
+
+        icon:
+            type: text
+            size: small
+            label: PLUGIN_ADMIN.ICON
+
+        enabled:
+            type: toggle
+            label: PLUGIN_ADMIN.ENABLED
+            highlight: 1
+            default: 1
+            options:
+              1: PLUGIN_ADMIN.YES
+              0: PLUGIN_ADMIN.NO
+            validate:
+              type: bool
+
+        access:
+            type: permissions
+            label: PLUGIN_ADMIN.PERMISSIONS
+            ignore_empty: true
+            validate:
+                type: array

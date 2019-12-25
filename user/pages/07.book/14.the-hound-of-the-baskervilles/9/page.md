@@ -1,0 +1,1 @@
+![The hound of the Baskervilles: Another adventure of Sherlock Holmes by Doyle, Arthur Conan, Sir, 1859-1930. Page 322](p.322.jpg "Holmes emptied five barrels of his revolver into the creature's side.")

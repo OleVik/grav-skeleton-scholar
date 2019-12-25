@@ -12,14 +12,14 @@ pages:
     twig: false
 
 cache:
-  enabled: false
+  enabled: true
   check:
     method: file
   driver: auto
   prefix: 'g'
 
 twig:
-  cache: false
+  cache: true
   debug: true
   auto_reload: true
   autoescape: false

@@ -12,20 +12,20 @@ The default theme is named _Metal_, and looks like this:
 
 ### Index
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/metal/index/body.png)
+![Body](image://styles.spec.js/metal/index/body.png)
 
 ### Article
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/metal/article/body.png)
+![Body](image://styles.spec.js/metal/article/body.png)
 
 ### Blog
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/metal/blog/body.png)
+![Body](image://styles.spec.js/metal/blog/body.png)
 
 ### CV
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/metal/cv/body.png)
+![Body](image://styles.spec.js/metal/cv/body.png)
 
 ### Docs
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/metal/docs/body.png)
+![Body](image://styles.spec.js/metal/docs/body.png)

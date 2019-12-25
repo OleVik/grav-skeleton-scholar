@@ -12,56 +12,56 @@ Because of how templates are structured, they all implement pretty much the same
 
 #### Body
 
-![Body](theme://cypress/screenshots/captures/components.spec.js/index/body.png)
+![Body](image://components.spec.js/index/body.png)
 
 #### Header
 
-![Header](theme://cypress/screenshots/captures/components.spec.js/index/header.png)
+![Header](image://components.spec.js/index/header.png)
 
 #### Main > Article
 
-![Main > Article](theme://cypress/screenshots/captures/components.spec.js/index/main-article.png)
+![Main > Article](image://components.spec.js/index/main-article.png)
 
 #### Sidebar > Article
 
-![Sidebar > Article](theme://cypress/screenshots/captures/components.spec.js/index/sidebar-article.png)
+![Sidebar > Article](image://components.spec.js/index/sidebar-article.png)
 
 #### Sidebar > Header
 
-![Sidebar > Header](theme://cypress/screenshots/captures/components.spec.js/index/sidebar-header.png)
+![Sidebar > Header](image://components.spec.js/index/sidebar-header.png)
 
 ### Article
 
 #### Body
 
-![Body](theme://cypress/screenshots/captures/components.spec.js/article/body.png)
+![Body](image://components.spec.js/article/body.png)
 
 ### Blog
 
 #### Body
 
-![Body](theme://cypress/screenshots/captures/components.spec.js/blog/body.png)
+![Body](image://components.spec.js/blog/body.png)
 
 ### CV
 
 #### Body
 
-![Body](theme://cypress/screenshots/captures/components.spec.js/cv/body.png)
+![Body](image://components.spec.js/cv/body.png)
 
 ### Docs
 
 #### Body
 
-![Body](theme://cypress/screenshots/captures/components.spec.js/docs/body.png)
+![Body](image://components.spec.js/docs/body.png)
 
 #### Header
 
-![Header](theme://cypress/screenshots/captures/components.spec.js/docs/header.png)
+![Header](image://components.spec.js/docs/header.png)
 
 #### Main > Article
 
-![Article](theme://cypress/screenshots/captures/components.spec.js/docs/main-article.png)
+![Article](image://components.spec.js/docs/main-article.png)
 
 #### Sidebar
 
-![Sidebar](theme://cypress/screenshots/captures/components.spec.js/docs/sidebar.png)
+![Sidebar](image://components.spec.js/docs/sidebar.png)

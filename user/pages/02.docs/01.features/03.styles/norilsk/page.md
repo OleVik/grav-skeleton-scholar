@@ -8,20 +8,20 @@ Named for the arctic city of [Norilsk](http://www.bbc.com/culture/gallery/201903
 
 ### Index
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/norilsk/index/body.png)
+![Body](image://styles.spec.js/norilsk/index/body.png)
 
 ### Article
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/norilsk/article/body.png)
+![Body](image://styles.spec.js/norilsk/article/body.png)
 
 ### Blog
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/norilsk/blog/body.png)
+![Body](image://styles.spec.js/norilsk/blog/body.png)
 
 ### CV
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/norilsk/cv/body.png)
+![Body](image://styles.spec.js/norilsk/cv/body.png)
 
 ### Docs
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/norilsk/docs/body.png)
+![Body](image://styles.spec.js/norilsk/docs/body.png)

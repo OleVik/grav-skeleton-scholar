@@ -14,4 +14,4 @@ theme:
 
 Scholar is a theme made for academics, for publishing papers, articles, books, documentation, their resumé or other content with [Grav](https://getgrav.org/).
 
-![Scholar Theme](theme://cypress/screenshots/captures/components.spec.js/index/body.png)
+![Scholar Theme](image://components.spec.js/index/body.png)

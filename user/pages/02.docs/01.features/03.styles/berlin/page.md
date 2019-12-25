@@ -8,20 +8,20 @@ Named for the "Grey City" of [Berlin](https://www.study-in-germany.de/blog/thats
 
 ### Index
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/berlin/index/body.png)
+![Body](image://styles.spec.js/berlin/index/body.png)
 
 ### Article
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/berlin/article/body.png)
+![Body](image://styles.spec.js/berlin/article/body.png)
 
 ### Blog
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/berlin/blog/body.png)
+![Body](image://styles.spec.js/berlin/blog/body.png)
 
 ### CV
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/berlin/cv/body.png)
+![Body](image://styles.spec.js/berlin/cv/body.png)
 
 ### Docs
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/berlin/docs/body.png)
+![Body](image://styles.spec.js/berlin/docs/body.png)

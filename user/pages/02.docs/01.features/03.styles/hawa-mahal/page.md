@@ -10,20 +10,20 @@ Named for the [Hawa Mahal](https://en.wikipedia.org/wiki/Hawa_Mahal) palace, in 
 
 ### Index
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/hawa-mahal/index/body.png)
+![Body](image://styles.spec.js/hawa-mahal/index/body.png)
 
 ### Article
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/hawa-mahal/article/body.png)
+![Body](image://styles.spec.js/hawa-mahal/article/body.png)
 
 ### Blog
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/hawa-mahal/blog/body.png)
+![Body](image://styles.spec.js/hawa-mahal/blog/body.png)
 
 ### CV
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/hawa-mahal/cv/body.png)
+![Body](image://styles.spec.js/hawa-mahal/cv/body.png)
 
 ### Docs
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/hawa-mahal/docs/body.png)
+![Body](image://styles.spec.js/hawa-mahal/docs/body.png)

@@ -8,20 +8,20 @@ Named for the coalmining regian of [Kuzbass](https://www.theguardian.com/environ
 
 ### Index
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/kuzbass/index/body.png)
+![Body](image://styles.spec.js/kuzbass/index/body.png)
 
 ### Article
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/kuzbass/article/body.png)
+![Body](image://styles.spec.js/kuzbass/article/body.png)
 
 ### Blog
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/kuzbass/blog/body.png)
+![Body](image://styles.spec.js/kuzbass/blog/body.png)
 
 ### CV
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/kuzbass/cv/body.png)
+![Body](image://styles.spec.js/kuzbass/cv/body.png)
 
 ### Docs
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/kuzbass/docs/body.png)
+![Body](image://styles.spec.js/kuzbass/docs/body.png)

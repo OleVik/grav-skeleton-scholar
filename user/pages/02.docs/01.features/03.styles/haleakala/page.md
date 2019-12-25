@@ -8,20 +8,20 @@ Named for the sunrises seen from [Mount Haleakala](hhttps://www.onlyinyourstate.
 
 ### Index
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/haleakala/index/body.png)
+![Body](image://styles.spec.js/haleakala/index/body.png)
 
 ### Article
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/haleakala/article/body.png)
+![Body](image://styles.spec.js/haleakala/article/body.png)
 
 ### Blog
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/haleakala/blog/body.png)
+![Body](image://styles.spec.js/haleakala/blog/body.png)
 
 ### CV
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/haleakala/cv/body.png)
+![Body](image://styles.spec.js/haleakala/cv/body.png)
 
 ### Docs
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/haleakala/docs/body.png)
+![Body](image://styles.spec.js/haleakala/docs/body.png)

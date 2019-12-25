@@ -8,20 +8,20 @@ Named for the [Dark Sunrises](https://www.flickr.com/photos/jessieleong/75706652
 
 ### Index
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/illawong/index/body.png)
+![Body](image://styles.spec.js/illawong/index/body.png)
 
 ### Article
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/illawong/article/body.png)
+![Body](image://styles.spec.js/illawong/article/body.png)
 
 ### Blog
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/illawong/blog/body.png)
+![Body](image://styles.spec.js/illawong/blog/body.png)
 
 ### CV
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/illawong/cv/body.png)
+![Body](image://styles.spec.js/illawong/cv/body.png)
 
 ### Docs
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/illawong/docs/body.png)
+![Body](image://styles.spec.js/illawong/docs/body.png)

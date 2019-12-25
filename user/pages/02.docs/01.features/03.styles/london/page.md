@@ -8,20 +8,20 @@ Named for the stark contrasts in London, one of the two cities portrayed in [A T
 
 ### Index
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/london/index/body.png)
+![Body](image://styles.spec.js/london/index/body.png)
 
 ### Article
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/london/article/body.png)
+![Body](image://styles.spec.js/london/article/body.png)
 
 ### Blog
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/london/blog/body.png)
+![Body](image://styles.spec.js/london/blog/body.png)
 
 ### CV
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/london/cv/body.png)
+![Body](image://styles.spec.js/london/cv/body.png)
 
 ### Docs
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/london/docs/body.png)
+![Body](image://styles.spec.js/london/docs/body.png)

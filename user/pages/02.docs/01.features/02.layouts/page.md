@@ -19,15 +19,15 @@ The theme follows the "mobile first" methodology to scale the layouts up for hig
 
 [slider]
 
-![Index](theme://cypress/screenshots/captures/breakpoints.spec.js/320/index.png)
+![Index](image://breakpoints.spec.js/320/index.png)
 
-![Article](theme://cypress/screenshots/captures/breakpoints.spec.js/320/article.png)
+![Article](image://breakpoints.spec.js/320/article.png)
 
-![Blog](theme://cypress/screenshots/captures/breakpoints.spec.js/320/blog.png)
+![Blog](image://breakpoints.spec.js/320/blog.png)
 
-![CV](theme://cypress/screenshots/captures/breakpoints.spec.js/320/cv.png)
+![CV](image://breakpoints.spec.js/320/cv.png)
 
-![Docs](theme://cypress/screenshots/captures/breakpoints.spec.js/320/docs.png)
+![Docs](image://breakpoints.spec.js/320/docs.png)
 
 [/slider]
 
@@ -35,15 +35,15 @@ The theme follows the "mobile first" methodology to scale the layouts up for hig
 
 [slider]
 
-![Index](theme://cypress/screenshots/captures/breakpoints.spec.js/576/index.png)
+![Index](image://breakpoints.spec.js/576/index.png)
 
-![Article](theme://cypress/screenshots/captures/breakpoints.spec.js/576/article.png)
+![Article](image://breakpoints.spec.js/576/article.png)
 
-![Blog](theme://cypress/screenshots/captures/breakpoints.spec.js/576/blog.png)
+![Blog](image://breakpoints.spec.js/576/blog.png)
 
-![CV](theme://cypress/screenshots/captures/breakpoints.spec.js/576/cv.png)
+![CV](image://breakpoints.spec.js/576/cv.png)
 
-![Docs](theme://cypress/screenshots/captures/breakpoints.spec.js/576/docs.png)
+![Docs](image://breakpoints.spec.js/576/docs.png)
 
 [/slider]
 
@@ -51,15 +51,15 @@ The theme follows the "mobile first" methodology to scale the layouts up for hig
 
 [slider]
 
-![Index](theme://cypress/screenshots/captures/breakpoints.spec.js/768/index.png)
+![Index](image://breakpoints.spec.js/768/index.png)
 
-![Article](theme://cypress/screenshots/captures/breakpoints.spec.js/768/article.png)
+![Article](image://breakpoints.spec.js/768/article.png)
 
-![Blog](theme://cypress/screenshots/captures/breakpoints.spec.js/768/blog.png)
+![Blog](image://breakpoints.spec.js/768/blog.png)
 
-![CV](theme://cypress/screenshots/captures/breakpoints.spec.js/768/cv.png)
+![CV](image://breakpoints.spec.js/768/cv.png)
 
-![Docs](theme://cypress/screenshots/captures/breakpoints.spec.js/768/docs.png)
+![Docs](image://breakpoints.spec.js/768/docs.png)
 
 [/slider]
 
@@ -67,15 +67,15 @@ The theme follows the "mobile first" methodology to scale the layouts up for hig
 
 [slider]
 
-![Index](theme://cypress/screenshots/captures/breakpoints.spec.js/992/index.png)
+![Index](image://breakpoints.spec.js/992/index.png)
 
-![Article](theme://cypress/screenshots/captures/breakpoints.spec.js/992/article.png)
+![Article](image://breakpoints.spec.js/992/article.png)
 
-![Blog](theme://cypress/screenshots/captures/breakpoints.spec.js/992/blog.png)
+![Blog](image://breakpoints.spec.js/992/blog.png)
 
-![CV](theme://cypress/screenshots/captures/breakpoints.spec.js/992/cv.png)
+![CV](image://breakpoints.spec.js/992/cv.png)
 
-![Docs](theme://cypress/screenshots/captures/breakpoints.spec.js/992/docs.png)
+![Docs](image://breakpoints.spec.js/992/docs.png)
 
 [/slider]
 
@@ -83,15 +83,15 @@ The theme follows the "mobile first" methodology to scale the layouts up for hig
 
 [slider]
 
-![Index](theme://cypress/screenshots/captures/breakpoints.spec.js/1200/index.png)
+![Index](image://breakpoints.spec.js/1200/index.png)
 
-![Article](theme://cypress/screenshots/captures/breakpoints.spec.js/1200/article.png)
+![Article](image://breakpoints.spec.js/1200/article.png)
 
-![Blog](theme://cypress/screenshots/captures/breakpoints.spec.js/1200/blog.png)
+![Blog](image://breakpoints.spec.js/1200/blog.png)
 
-![CV](theme://cypress/screenshots/captures/breakpoints.spec.js/1200/cv.png)
+![CV](image://breakpoints.spec.js/1200/cv.png)
 
-![Docs](theme://cypress/screenshots/captures/breakpoints.spec.js/1200/docs.png)
+![Docs](image://breakpoints.spec.js/1200/docs.png)
 
 [/slider]
 
@@ -99,14 +99,14 @@ The theme follows the "mobile first" methodology to scale the layouts up for hig
 
 [slider]
 
-![Index](theme://cypress/screenshots/captures/breakpoints.spec.js/1600/index.png)
+![Index](image://breakpoints.spec.js/1600/index.png)
 
-![Article](theme://cypress/screenshots/captures/breakpoints.spec.js/1600/article.png)
+![Article](image://breakpoints.spec.js/1600/article.png)
 
-![Blog](theme://cypress/screenshots/captures/breakpoints.spec.js/1600/blog.png)
+![Blog](image://breakpoints.spec.js/1600/blog.png)
 
-![CV](theme://cypress/screenshots/captures/breakpoints.spec.js/1600/cv.png)
+![CV](image://breakpoints.spec.js/1600/cv.png)
 
-![Docs](theme://cypress/screenshots/captures/breakpoints.spec.js/1600/docs.png)
+![Docs](image://breakpoints.spec.js/1600/docs.png)
 
 [/slider]

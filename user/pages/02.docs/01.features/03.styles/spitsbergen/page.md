@@ -8,20 +8,20 @@ Named for the coal mine in [Spitsbergen](Spitsbergen), in Svalbard.
 
 ### Index
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/spitsbergen/index/body.png)
+![Body](image://styles.spec.js/spitsbergen/index/body.png)
 
 ### Article
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/spitsbergen/article/body.png)
+![Body](image://styles.spec.js/spitsbergen/article/body.png)
 
 ### Blog
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/spitsbergen/blog/body.png)
+![Body](image://styles.spec.js/spitsbergen/blog/body.png)
 
 ### CV
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/spitsbergen/cv/body.png)
+![Body](image://styles.spec.js/spitsbergen/cv/body.png)
 
 ### Docs
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/spitsbergen/docs/body.png)
+![Body](image://styles.spec.js/spitsbergen/docs/body.png)

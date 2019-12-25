@@ -8,20 +8,20 @@ Named for the settlement of [Longyearbyen](https://en.wikipedia.org/wiki/Longyea
 
 ### Index
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/longyearbyen/index/body.png)
+![Body](image://styles.spec.js/longyearbyen/index/body.png)
 
 ### Article
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/longyearbyen/article/body.png)
+![Body](image://styles.spec.js/longyearbyen/article/body.png)
 
 ### Blog
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/longyearbyen/blog/body.png)
+![Body](image://styles.spec.js/longyearbyen/blog/body.png)
 
 ### CV
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/longyearbyen/cv/body.png)
+![Body](image://styles.spec.js/longyearbyen/cv/body.png)
 
 ### Docs
 
-![Body](theme://cypress/screenshots/captures/styles.spec.js/longyearbyen/docs/body.png)
+![Body](image://styles.spec.js/longyearbyen/docs/body.png)

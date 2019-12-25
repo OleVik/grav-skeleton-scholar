@@ -1,6 +1,6 @@
 # Scholar Skeleton
 
-![Scholar](screenshot.png)
+![Scholar](screenshot.jpg)
 
 ## Description
 

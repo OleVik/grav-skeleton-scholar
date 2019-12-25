@@ -17,3 +17,9 @@ This repository references some other repositories as submodules, thus you have 
 ## Usage and Configuration
 
 See the [theme's repository](https://github.com/OleVik/grav-theme-scholar/) for instruction and details.
+
+## Development
+
+1. Check `git status` for changes to submodules
+2. Update them with `git submodule update --init --recursive` if necessary
+3. Add local changes with `git add --all`

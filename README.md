@@ -4,7 +4,7 @@
 
 ## Description
 
-The **Scholar** Skeleton is an assembled package, including the [Grav CMS](http://github.com/getgrav/grav), the [Scholar Theme](https://github.com/OleVik/grav-theme-scholar), necessary plugins, and sample content. Once installed, you're ready to start using Scholar, an academic-focused theme, for publishing papers, articles, books, documentation, your resumé or other content with Grav.
+Grav **Scholar** supports a Markdown-based publishing workflow for academic-focused content, such as papers, articles, books, and documentation. Features include high accessibility, fast performance, print-friendly styles and more.
 
 ## Installation
 

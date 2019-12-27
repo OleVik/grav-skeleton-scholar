@@ -12,14 +12,14 @@ pages:
     twig: false
 
 cache:
-  enabled: true
+  enabled: false
   check:
     method: file
   driver: auto
   prefix: 'g'
 
 twig:
-  cache: true
+  cache: false
   debug: true
   auto_reload: true
   autoescape: false
@@ -35,7 +35,7 @@ errors:
   display: true
   log: true
 debugger:
-  enabled: false
+  enabled: true
   provider: debugbar
   twig: true
   shutdown:

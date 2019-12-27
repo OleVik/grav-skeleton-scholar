@@ -1,3 +1,14 @@
+# v1.0.3
+##  27-12-2019
+
+1. [](#new)
+    * Align extensions
+    * Accessibility Page
+    * Dynamic Routes Pages
+2. [](#improved)
+    * Order Book Pages
+    * Performance Page
+
 # v1.0.2
 ##  25-12-2019
 

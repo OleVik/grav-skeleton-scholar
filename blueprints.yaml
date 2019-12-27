@@ -1,6 +1,7 @@
 name: Scholar Skeleton
-version: 1.0.2
+version: 1.0.3
 description: A demonstration of the Scholar Theme.
+description: Grav Scholar supports a Markdown-based publishing workflow for academic-focused content, such as papers, articles, books, and documentation. Features include high accessibility, fast performance, print-friendly styles and more.
 icon: arrows-alt
 author:
   name: Ole Vik

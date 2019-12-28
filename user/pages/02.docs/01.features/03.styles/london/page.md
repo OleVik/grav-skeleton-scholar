@@ -1,5 +1,7 @@
 ---
 title: London
+theme:
+  style: london
 ---
 
 Named for the stark contrasts in London, one of the two cities portrayed in [A Tale of Two Cities](https://en.wikipedia.org/wiki/A_Tale_of_Two_Cities).

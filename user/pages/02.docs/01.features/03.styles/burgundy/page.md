@@ -1,5 +1,7 @@
 ---
 title: Burgundy
+theme:
+  style: burgundy
 ---
 
 Named for the [Burgundy wine district](https://en.wikipedia.org/wiki/Burgundy_wine), in France.

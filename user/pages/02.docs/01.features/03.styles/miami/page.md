@@ -1,5 +1,7 @@
 ---
 title: Miami
+theme:
+  style: miami
 ---
 
 Named for the [Beaches of Miami](https://www.cntraveler.com/gallery/best-beaches-in-miami), in Florida, the United States.

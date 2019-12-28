@@ -1,5 +1,7 @@
 ---
 title: Spitsbergen
+theme:
+  style: spitsbergen
 ---
 
 Named for the coal mine in [Spitsbergen](Spitsbergen), in Svalbard.

@@ -1,5 +1,7 @@
 ---
 title: Berlin
+theme:
+  style: berlin
 ---
 
 Named for the "Grey City" of [Berlin](https://www.study-in-germany.de/blog/thats-germany/a-trip-to-the-grey-city/), in Germany.

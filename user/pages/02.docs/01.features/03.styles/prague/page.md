@@ -1,5 +1,7 @@
 ---
 title: Prague
+theme:
+  style: prague
 ---
 
 Named for the "Golden City" of [Prague](https://en.wikipedia.org/wiki/Prague), the capital city of the Czech Republic.

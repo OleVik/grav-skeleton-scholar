@@ -1,5 +1,7 @@
 ---
 title: Hawa Mahal
+theme:
+  style: hawa-mahal
 ---
 
 Named for the [Hawa Mahal](https://en.wikipedia.org/wiki/Hawa_Mahal) palace, in Jaipur, India.

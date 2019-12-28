@@ -27,6 +27,10 @@ images/*
 !images/.*
 user/accounts/*
 !user/accounts/.*
+user/data/feed/*
+!user/data/feed/.*
+user/data/notifications/*
+!user/data/notifications/.*
 user/localhost/config/security.yaml
 user/config/security.yaml
 

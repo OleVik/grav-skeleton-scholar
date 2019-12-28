@@ -1,5 +1,7 @@
 ---
 title: Shizuoka
+theme:
+  style: shizuoka
 ---
 
 Named for the dark beaches of [Miho no Matsubara](https://en.wikipedia.org/wiki/Miho_no_Matsubara), in Shizuoka, Japan.

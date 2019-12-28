@@ -1,3 +1,15 @@
+# v1.0.5
+##  27-12-2019
+
+1. [](#new)
+    * Components-documentation
+    * Various improvements in sample Pages
+2. [](#improved)
+    * Apply Style for each Style Page
+    * Update Images
+    * Align Theme
+    * Align Search-data
+
 # v1.0.4
 ##  27-12-2019
 

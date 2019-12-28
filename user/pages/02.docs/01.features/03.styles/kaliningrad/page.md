@@ -1,5 +1,7 @@
 ---
 title: Kaliningrad
+theme:
+  style: kaliningrad
 ---
 
 Named for the "Amber City" of [Kaliningrad](https://www.euronews.com/2012/05/28/russian-life-kaliningrad-the-amber-city), in Russia.

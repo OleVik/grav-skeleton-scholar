@@ -5,16 +5,15 @@ subtitle: "Helmut W. M. Sargeant & L. Agnes Prinn"
 taxonomy:
   categories: academic
   tags: [article, bogus]
-  # author:
-  #   - "Helmut W. M. Sargeant <hwms@bogus.tld>, Department of Literature, Stanford University https://www.stanford.edu/"
-  #   - name: "Helmut W. M. Sargeant"
-  #     email: "hwms@bogus.tld"
-  #     url: "https://www.stanford.edu/"
-  #     affiliation: "Department of Literature, Stanford University"
-  #   - name: "L. Agnes Prinn"
-  #     email: "lap@bogus.tld"
-  #     url: "https://www.yale.edu/"
-  #     affiliation: "Department of Sociology, Yale University"
+  author:
+    - name: "Helmut W. M. Sargeant"
+      email: "hwms@bogus.tld"
+      url: "https://www.stanford.edu/"
+      affiliation: "Department of Literature, Stanford University"
+    - name: "L. Agnes Prinn"
+      email: "lap@bogus.tld"
+      url: "https://www.yale.edu/"
+      affiliation: "Department of Sociology, Yale University"
 ---
 
 # Neosemioticist libertarianism and predialectic capitalist theory

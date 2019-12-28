@@ -1,5 +1,7 @@
 ---
 title: Tuscany
+theme:
+  style: tuscany
 ---
 
 Named for the [tannery district in Tuscany](https://artsandculture.google.com/exhibit/tuscan-tanning-unioncamere/gQGMxUlP?hl=en), Italy.

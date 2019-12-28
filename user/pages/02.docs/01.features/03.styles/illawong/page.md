@@ -1,5 +1,7 @@
 ---
 title: Illawong
+theme:
+  style: illawong
 ---
 
 Named for the [Dark Sunrises](https://www.flickr.com/photos/jessieleong/7570665296), in Illawong, Sydney, Australia.

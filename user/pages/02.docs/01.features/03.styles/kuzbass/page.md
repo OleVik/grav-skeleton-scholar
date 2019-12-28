@@ -1,5 +1,7 @@
 ---
 title: Kuzbass
+theme:
+  style: kuzbass
 ---
 
 Named for the coalmining regian of [Kuzbass](https://www.theguardian.com/environment/2019/feb/15/toxic-black-snow-covers-siberian-coalmining-region), in Siberia, Russia.

@@ -1,5 +1,7 @@
 ---
 title: Izamal
+theme:
+  style: izamal
 ---
 
 Named for [Mexico's Yellow City](https://www.earthtrippers.com/yellow_city/), Izamal.

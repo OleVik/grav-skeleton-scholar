@@ -1,5 +1,7 @@
 ---
 title: Longyearbyen
+theme:
+  style: longyearbyen
 ---
 
 Named for the settlement of [Longyearbyen](https://en.wikipedia.org/wiki/Longyearbyen), the world's northernmost settlement of any kind with more than 1,000 permanent residents, in Svalbard.

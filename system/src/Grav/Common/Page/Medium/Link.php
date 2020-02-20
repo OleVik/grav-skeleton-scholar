@@ -13,9 +13,10 @@ class Link implements RenderableInterface
 {
     use ParsedownHtmlTrait;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $attributes = [];
-    /** @var Medium|null */
     protected $source;
 
     /**
@@ -33,10 +34,10 @@ class Link implements RenderableInterface
     /**
      * Get an element (is array) that can be rendered by the Parsedown engine
      *
-     * @param  string|null  $title
-     * @param  string|null  $alt
-     * @param  string|null  $class
-     * @param  string|null  $id
+     * @param  string  $title
+     * @param  string  $alt
+     * @param  string  $class
+     * @param  string  $id
      * @param  bool $reset
      * @return array
      */

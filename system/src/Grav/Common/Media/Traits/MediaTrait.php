@@ -18,10 +18,7 @@ use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 
 trait MediaTrait
 {
-    /** @var MediaCollectionInterface|null */
     protected $media;
-    /** @var bool */
-    protected $_loadMedia = true;
 
     /**
      * Get filesystem path to the associated media.
@@ -43,58 +40,52 @@ trait MediaTrait
     /**
      * Get URI ot the associated media. Method will return null if path isn't URI.
      *
-     * @return string|null
+     * @return null|string
      */
     public function getMediaUri()
     {
-        $folder = $this->getMediaFolder();
-        if (!$folder) {
-            return null;
-        }
+       $folder = $this->getMediaFolder();
 
-        if (strpos($folder, '://')) {
-            return $folder;
-        }
+       if (strpos($folder, '://')) {
+           return $folder;
+       }
 
        /** @var UniformResourceLocator $locator */
-        $locator = Grav::instance()['locator'];
-        $user = $locator->findResource('user://');
-        if (strpos($folder, $user) === 0) {
-            return 'user://' . substr($folder, \strlen($user)+1);
-        }
+       $locator = Grav::instance()['locator'];
+       $user = $locator->findResource('user://');
+       if (strpos($folder, $user) === 0) {
+           return 'user://' . substr($folder, \strlen($user)+1);
+       }
 
-        return null;
+       return null;
     }
 
     /**
      * Gets the associated media collection.
      *
-     * @return MediaCollectionInterface|Media  Representation of associated media.
+     * @return MediaCollectionInterface  Representation of associated media.
      */
     public function getMedia()
     {
-        $media = $this->media;
-        if (null === $media) {
+        if ($this->media === null) {
             $cache = $this->getMediaCache();
-            $cacheKey = md5('media' . $this->getCacheKey());
 
             // Use cached media if possible.
-            $media = $cache->get($cacheKey);
-            if (!$media instanceof MediaCollectionInterface) {
-                $media = new Media($this->getMediaFolder(), $this->getMediaOrder(), $this->_loadMedia);
+            $cacheKey = md5('media' . $this->getCacheKey());
+            if (!$media = $cache->get($cacheKey)) {
+                $media = new Media($this->getMediaFolder(), $this->getMediaOrder());
                 $cache->set($cacheKey, $media);
             }
-
             $this->media = $media;
         }
 
-        return $media;
+        return $this->media;
     }
 
     /**
      * Sets the associated media collection.
      *
-     * @param  MediaCollectionInterface|Media  $media Representation of associated media.
+     * @param  MediaCollectionInterface  $media Representation of associated media.
      * @return $this
      */
     protected function setMedia(MediaCollectionInterface $media)

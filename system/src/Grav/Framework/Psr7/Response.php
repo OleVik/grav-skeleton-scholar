@@ -24,7 +24,9 @@ class Response implements ResponseInterface
 {
     use ResponseDecoratorTrait;
 
-    /** @var string EOL characters used for HTTP response. */
+    /**
+     * @var string EOL characters used for HTTP response.
+     */
     private const EOL = "\r\n";
 
     /**
@@ -48,7 +50,7 @@ class Response implements ResponseInterface
      * response to the client.
      *
      * @param  mixed  $data   The data
-     * @param  int|null $status The HTTP status code.
+     * @param  int    $status The HTTP status code.
      * @param  int    $options Json encoding options
      * @param  int    $depth Json encoding max depth
      * @return static

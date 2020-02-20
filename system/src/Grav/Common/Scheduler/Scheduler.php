@@ -18,28 +18,18 @@ use RocketTheme\Toolbox\File\YamlFile;
 
 class Scheduler
 {
-    /** @var Job[] The queued jobs. */
+    /**
+     * The queued jobs.
+     *
+     * @var array
+     */
     private $jobs = [];
-
-    /** @var Job[] */
     private $saved_jobs = [];
-
-    /** @var Job[] */
     private $executed_jobs = [];
-
-    /** @var Job[] */
     private $failed_jobs = [];
-
-    /** @var Job[] */
     private $jobs_run = [];
-
-    /** @var array */
     private $output_schedule = [];
-
-    /** @var array */
     private $config;
-
-    /** @var string */
     private $status_path;
 
     /**
@@ -54,12 +44,11 @@ class Scheduler
         if (!file_exists($this->status_path)) {
             Folder::create($this->status_path);
         }
+
     }
 
     /**
      * Load saved jobs from config/scheduler.yaml file
-     *
-     * @return $this
      */
     public function loadSavedJobs()
     {
@@ -76,7 +65,7 @@ class Scheduler
             }
 
             if (isset($j['output'])) {
-                $mode = isset($j['output_mode']) && $j['output_mode'] === 'append';
+                $mode = isset($j['output_mode']) && $j['output_mode'] === 'append' ? true : false;
                 $job->output($j['output'], $mode);
             }
 
@@ -109,6 +98,7 @@ class Scheduler
                     $foreground[] = $job;
                 }
             }
+
         }
         return [$background, $foreground];
     }
@@ -116,30 +106,13 @@ class Scheduler
     /**
      * Get all jobs if they are disabled or not as one array
      *
-     * @return Job[]
+     * @return array
      */
     public function getAllJobs()
     {
         list($background, $foreground) = $this->loadSavedJobs()->getQueuedJobs(true);
 
         return array_merge($background, $foreground);
-    }
-
-    /**
-     * Get a specific Job based on id
-     *
-     * @param string $jobid
-     * @return Job|null
-     */
-    public function getJob($jobid)
-    {
-        $all = $this->getAllJobs();
-        foreach ($all as $job) {
-            if ($jobid == $job->getId()) {
-                return $job;
-            }
-        }
-        return null;
     }
 
     /**
@@ -199,7 +172,7 @@ class Scheduler
         }
 
         // Finish handling any background jobs
-        foreach ($background as $job) {
+        foreach($background as $job) {
             $job->finalize();
         }
 
@@ -211,8 +184,6 @@ class Scheduler
      * Reset all collected data of last run.
      *
      * Call before run() if you call run() multiple times.
-     *
-     * @return $this
      */
     public function resetRun()
     {
@@ -228,7 +199,7 @@ class Scheduler
      * Get the scheduler verbose output.
      *
      * @param  string  $type  Allowed: text, html, array
-     * @return string|array  The return depends on the requested $type
+     * @return mixed  The return depends on the requested $type
      */
     public function getVerboseOutput($type = 'text')
     {
@@ -246,8 +217,6 @@ class Scheduler
 
     /**
      * Remove all queued Jobs.
-     *
-     * @return $this
      */
     public function clearJobs()
     {
@@ -263,25 +232,15 @@ class Scheduler
      */
     public function getCronCommand()
     {
-        $command = $this->getSchedulerCommand();
+        $phpBinaryFinder = new PhpExecutableFinder();
+        $php = $phpBinaryFinder->find();
+        $command = 'cd ' . str_replace(' ', '\ ', GRAV_ROOT) . ';' . $php . ' bin/grav scheduler';
 
         return "(crontab -l; echo \"* * * * * {$command} 1>> /dev/null 2>&1\") | crontab -";
     }
 
-    public function getSchedulerCommand($php = null)
-    {
-        $phpBinaryFinder = new PhpExecutableFinder();
-        $php = $php ?? $phpBinaryFinder->find();
-        $command = 'cd ' . str_replace(' ', '\ ', GRAV_ROOT) . ';' . $php . ' bin/grav scheduler';
-
-        return $command;
-    }
-
     /**
      * Helper to determine if cron job is setup
-     * 0 - Crontab Not found
-     * 1 - Crontab Found
-     * 2 - Error
      *
      * @return int
      */
@@ -292,10 +251,8 @@ class Scheduler
 
         if ($process->isSuccessful()) {
             $output = $process->getOutput();
-            $command = str_replace('/', '\/', $this->getSchedulerCommand('.*'));
-            $full_command = '/^(?!#).* .* .* .* .* ' . $command . '/m';
 
-            return  preg_match($full_command, $output) ? 1 : 0;
+            return preg_match('$bin\/grav schedule$', $output) ? 1 : 0;
         }
 
         $error = $process->getErrorOutput();
@@ -306,7 +263,7 @@ class Scheduler
     /**
      * Get the Job states file
      *
-     * @return YamlFile
+     * @return \RocketTheme\Toolbox\File\FileInterface|YamlFile
      */
     public function getJobStates()
     {
@@ -336,29 +293,10 @@ class Scheduler
     }
 
     /**
-     * Try to determine who's running the process
-     *
-     * @return false|string
-     */
-    public function whoami()
-    {
-        $process = new Process('whoami');
-        $process->run();
-
-        if ($process->isSuccessful()) {
-            $output = trim($process->getOutput());
-            return $output;
-        }
-
-        $error = $process->getErrorOutput();
-        return $error;
-    }
-
-
-    /**
      * Queue a job for execution in the correct queue.
      *
      * @param  Job  $job
+     * @return void
      */
     private function queueJob(Job $job)
     {
@@ -371,6 +309,7 @@ class Scheduler
      * Add an entry to the scheduler verbose output array.
      *
      * @param  string  $string
+     * @return void
      */
     private function addSchedulerVerboseOutput($string)
     {

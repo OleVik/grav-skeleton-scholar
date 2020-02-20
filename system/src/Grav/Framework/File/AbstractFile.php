@@ -101,7 +101,7 @@ class AbstractFile implements FileInterface
             $this->setPathInfo();
         }
 
-        return $this->path ?? '';
+        return $this->path;
     }
 
     /**
@@ -114,7 +114,7 @@ class AbstractFile implements FileInterface
             $this->setPathInfo();
         }
 
-        return $this->filename ?? '';
+        return $this->filename;
     }
 
     /**
@@ -127,7 +127,7 @@ class AbstractFile implements FileInterface
             $this->setPathInfo();
         }
 
-        return $this->basename ?? '';
+        return $this->basename;
     }
 
     /**
@@ -158,7 +158,7 @@ class AbstractFile implements FileInterface
      */
     public function getCreationTime(): int
     {
-        return is_file($this->filepath) ? (int)filectime($this->filepath) : time();
+        return is_file($this->filepath) ? filectime($this->filepath) : time();
     }
 
     /**
@@ -167,7 +167,7 @@ class AbstractFile implements FileInterface
      */
     public function getModificationTime(): int
     {
-        return is_file($this->filepath) ? (int)filemtime($this->filepath) : time();
+        return is_file($this->filepath) ? filemtime($this->filepath) : time();
     }
 
     /**
@@ -180,7 +180,7 @@ class AbstractFile implements FileInterface
             if (!$this->mkdir($this->getPath())) {
                 throw new \RuntimeException('Creating directory failed for ' . $this->filepath);
             }
-            $this->handle = @fopen($this->filepath, 'cb+') ?: null;
+            $this->handle = @fopen($this->filepath, 'cb+');
             if (!$this->handle) {
                 $error = error_get_last();
 
@@ -382,7 +382,6 @@ class AbstractFile implements FileInterface
 
     protected function setPathInfo(): void
     {
-        /** @var array $pathInfo */
         $pathInfo = $this->filesystem->pathinfo($this->filepath);
 
         $this->filename = $pathInfo['filename'] ?? null;

@@ -21,14 +21,14 @@ interface CollectionInterface extends Collection, \JsonSerializable
     /**
      * Reverse the order of the items.
      *
-     * @return static|CollectionInterface
+     * @return static
      */
     public function reverse();
 
     /**
      * Shuffle items.
      *
-     * @return static|CollectionInterface
+     * @return static
      */
     public function shuffle();
 
@@ -46,7 +46,7 @@ interface CollectionInterface extends Collection, \JsonSerializable
      * Collection is returned in the order of $keys given to the function.
      *
      * @param array $keys
-     * @return static|CollectionInterface
+     * @return static
      */
     public function select(array $keys);
 
@@ -54,7 +54,7 @@ interface CollectionInterface extends Collection, \JsonSerializable
      * Un-select items from collection.
      *
      * @param array $keys
-     * @return static|CollectionInterface
+     * @return static
      */
     public function unselect(array $keys);
 }

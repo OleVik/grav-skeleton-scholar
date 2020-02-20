@@ -91,10 +91,8 @@ class UninstallCommand extends ConsoleCommand
         }
 
         if (count($this->data['not_found'])) {
-            $this->output->writeln('These packages were not found installed: <red>' . implode(
-                '</red>, <red>',
-                $this->data['not_found']
-            ) . '</red>');
+            $this->output->writeln('These packages were not found installed: <red>' . implode('</red>, <red>',
+                    $this->data['not_found']) . '</red>');
         }
 
         unset($this->data['not_found'], $this->data['total']);
@@ -117,6 +115,7 @@ class UninstallCommand extends ConsoleCommand
                     $this->output->writeln("  '- <green>Success!</green>  ");
                 }
             }
+
         }
 
         // clear cache after successful upgrade
@@ -154,6 +153,7 @@ class UninstallCommand extends ConsoleCommand
         }
 
         if (isset($package->dependencies)) {
+
             $dependencies = $package->dependencies;
 
             if ($is_dependency) {
@@ -172,6 +172,7 @@ class UninstallCommand extends ConsoleCommand
             $questionHelper = $this->getHelper('question');
 
             foreach ($dependencies as $dependency) {
+
                 $this->dependencies[] = $dependency['name'];
 
                 if (\is_array($dependency)) {
@@ -198,6 +199,7 @@ class UninstallCommand extends ConsoleCommand
                             $this->output->writeln("  '- <red>Uninstallation failed or aborted.</red>");
                         } else {
                             $this->output->writeln("  '- <green>Success!</green>  ");
+
                         }
                         $this->output->writeln('');
                     } else {
@@ -205,6 +207,7 @@ class UninstallCommand extends ConsoleCommand
                         $this->output->writeln('');
                     }
                 }
+
             }
         }
 
@@ -259,10 +262,8 @@ class UninstallCommand extends ConsoleCommand
                 return false;
             }
 
-            $question = new ConfirmationQuestion(
-                "  |  '- Destination has been detected as symlink, delete symbolic link first? [y|N] ",
-                false
-            );
+            $question = new ConfirmationQuestion("  |  '- Destination has been detected as symlink, delete symbolic link first? [y|N] ",
+                false);
             $answer = $this->all_yes ? true : $questionHelper->ask($this->input, $this->output, $question);
 
             if (!$answer) {

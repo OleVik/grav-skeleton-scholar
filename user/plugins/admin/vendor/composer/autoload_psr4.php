@@ -7,6 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'ZendXml\\' => array($vendorDir . '/zendframework/zendxml/src'),
-    'Grav\\Plugin\\Admin\\' => array($baseDir . '/classes/plugin'),
     'Composer\\Semver\\' => array($vendorDir . '/composer/semver/src'),
 );

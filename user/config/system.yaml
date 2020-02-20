@@ -6,20 +6,20 @@ home:
 pages:
   theme: scholar
   markdown:
-    extra: true
+    extra: false
   process:
     markdown: true
     twig: false
 
 cache:
-  enabled: true
+  enabled: false
   check:
     method: file
   driver: auto
   prefix: 'g'
 
 twig:
-  cache: true
+  cache: false
   debug: true
   auto_reload: true
   autoescape: false
@@ -34,11 +34,13 @@ assets:
 errors:
   display: true
   log: true
+
 debugger:
-  enabled: false
+  enabled: true
   provider: debugbar
   twig: true
   shutdown:
     close_connection: true
 gpm:
+  releases: stable
   verify_peer: true

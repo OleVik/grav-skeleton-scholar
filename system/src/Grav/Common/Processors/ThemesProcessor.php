@@ -15,12 +15,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class ThemesProcessor extends ProcessorBase
 {
-    /** @var string */
     public $id = 'themes';
-    /** @var string */
     public $title = 'Themes';
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {
         $this->startTimer();
         $this->container['themes']->init();

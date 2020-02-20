@@ -13,17 +13,20 @@ use Whoops\Handler\Handler;
 
 class BareHandler extends Handler
 {
+
     /**
-     * @return int
+     * @return int|null
      */
     public function handle()
     {
         $inspector = $this->getInspector();
         $code = $inspector->getException()->getCode();
-        if (($code >= 400) && ($code < 600)) {
-            $this->getRun()->sendHttpCode($code);
+        if ( ($code >= 400) && ($code < 600) )
+        {
+            $this->getRun()->sendHttpCode($code);    
         }
 
         return Handler::QUIT;
     }
+
 }

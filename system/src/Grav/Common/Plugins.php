@@ -13,12 +13,11 @@ use Grav\Common\Config\Config;
 use Grav\Common\Data\Blueprints;
 use Grav\Common\Data\Data;
 use Grav\Common\File\CompiledYamlFile;
+use RocketTheme\Toolbox\Event\EventDispatcher;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Plugins extends Iterator
 {
-    /** @var array */
     public $formFieldTypes;
 
     public function __construct()
@@ -31,7 +30,7 @@ class Plugins extends Iterator
         $iterator = $locator->getIterator('plugins://');
 
         $plugins = [];
-        foreach ($iterator as $directory) {
+        foreach($iterator as $directory) {
             if (!$directory->isDir()) {
                 continue;
             }
@@ -225,4 +224,5 @@ class Plugins extends Iterator
 
         return $class;
     }
+
 }

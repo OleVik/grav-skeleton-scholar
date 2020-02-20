@@ -9,35 +9,11 @@
 
 namespace Grav\Common;
 
-use enshrined\svgSanitize\Sanitizer;
 use Grav\Common\Page\Pages;
 
 class Security
 {
 
-    /**
-     * Sanitize SVG for XSS code
-     *
-     * @param string $file
-     */
-    public static function sanitizeSVG($file)
-    {
-        if (Grav::instance()['config']->get('security.sanitize_svg') && file_exists($file)) {
-            $sanitizer = new Sanitizer();
-            $original_svg = file_get_contents($file);
-            $clean_svg = $sanitizer->sanitize($original_svg);
-            file_put_contents($file, $clean_svg);
-        }
-    }
-
-    /**
-     * Detect XSS code in Grav pages
-     *
-     * @param Pages $pages
-     * @param bool $route
-     * @param callable|null $status
-     * @return array
-     */
     public static function detectXssFromPages(Pages $pages, $route = true, callable $status = null)
     {
         $routes = $pages->routes();
@@ -54,6 +30,7 @@ class Security
         ]);
 
         foreach ($routes as $path) {
+
             $status && $status([
                 'type' => 'progress',
             ]);
@@ -74,7 +51,9 @@ class Security
                     } else {
                         $list[$page->filePathClean()] = $results;
                     }
+
                 }
+
             } catch (\Exception $e) {
                 continue;
             }
@@ -84,8 +63,6 @@ class Security
     }
 
     /**
-     * Detect XSS in an array or strings such as $_POST or $_GET
-     *
      * @param array $array      Array such as $_POST or $_GET
      * @param string $prefix    Prefix for returned values.
      * @return array            Returns flatten list of potentially dangerous input values, such as 'data.content'.
@@ -112,11 +89,10 @@ class Security
 
     /**
      * Determine if string potentially has a XSS attack. This simple function does not catch all XSS and it is likely to
-     *
      * return false positives because of it tags all potentially dangerous HTML tags and attributes without looking into
      * their content.
      *
-     * @param string|null $string The string to run XSS detection logic on
+     * @param string $string The string to run XSS detection logic on
      * @return bool|string       Type of XSS vector if the given `$string` may contain XSS, false otherwise.
      *
      * Copies the code from: https://github.com/symphonycms/xssfilter/blob/master/extension.driver.php#L138
@@ -135,18 +111,18 @@ class Security
         $string = urldecode($string);
 
         // Convert Hexadecimals
-        $string = (string)preg_replace_callback('!(&#|\\\)[xX]([0-9a-fA-F]+);?!u', function ($m) {
+        $string = (string)preg_replace_callback('!(&#|\\\)[xX]([0-9a-fA-F]+);?!u', function($m) {
             return \chr(hexdec($m[2]));
         }, $string);
 
         // Clean up entities
-        $string = preg_replace('!(&#0+[0-9]+)!u', '$1;', $string);
+        $string = preg_replace('!(&#0+[0-9]+)!u','$1;', $string);
 
         // Decode entities
         $string = html_entity_decode($string, ENT_NOQUOTES, 'UTF-8');
 
         // Strip whitespace characters
-        $string = preg_replace('!\s!u', '', $string);
+        $string = preg_replace('!\s!u','', $string);
 
         $config = Grav::instance()['config'];
 
@@ -176,9 +152,11 @@ class Security
         // Iterate over rules and return label if fail
         foreach ((array) $patterns as $name => $regex) {
             if ($enabled_rules[$name] === true) {
+
                 if (preg_match($regex, $string) || preg_match($regex, $orig)) {
                     return $name;
                 }
+
             }
         }
 

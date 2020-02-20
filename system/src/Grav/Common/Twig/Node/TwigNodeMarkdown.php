@@ -28,7 +28,7 @@ class TwigNodeMarkdown extends Node implements NodeOutputInterface
     /**
      * Compiles the node to PHP.
      *
-     * @param Compiler $compiler A Twig Compiler instance
+     * @param Compiler $compiler A Twig_Compiler instance
      */
     public function compile(Compiler $compiler)
     {

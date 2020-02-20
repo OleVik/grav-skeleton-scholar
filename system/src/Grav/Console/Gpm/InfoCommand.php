@@ -26,6 +26,9 @@ class InfoCommand extends ConsoleCommand
     /** @var string */
     protected $all_yes;
 
+    /**
+     *
+     */
     protected function configure()
     {
         $this
@@ -85,10 +88,8 @@ class InfoCommand extends ConsoleCommand
             $packageURL = '<' . $foundPackage->author['url'] . '>';
         }
 
-        $this->output->writeln('<green>' . str_pad(
-            'Author',
-            12
-        ) . ':</green> ' . $foundPackage->author['name'] . ' <' . $foundPackage->author['email'] . '> ' . $packageURL);
+        $this->output->writeln('<green>' . str_pad('Author',
+                12) . ':</green> ' . $foundPackage->author['name'] . ' <' . $foundPackage->author['email'] . '> ' . $packageURL);
 
         foreach ([
                      'version',
@@ -135,10 +136,8 @@ class InfoCommand extends ConsoleCommand
 
         // display changelog information
         $questionHelper = $this->getHelper('question');
-        $question = new ConfirmationQuestion(
-            'Would you like to read the changelog? [y|N] ',
-            false
-        );
+        $question = new ConfirmationQuestion('Would you like to read the changelog? [y|N] ',
+            false);
         $answer = $this->all_yes ? true : $questionHelper->ask($this->input, $this->output, $question);
 
         if ($answer) {
@@ -176,5 +175,6 @@ class InfoCommand extends ConsoleCommand
         }
 
         $this->output->writeln('');
+
     }
 }

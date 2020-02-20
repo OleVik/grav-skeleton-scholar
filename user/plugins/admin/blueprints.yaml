@@ -1,6 +1,6 @@
 name: Admin Panel
-version: 1.10.0-rc.2
-testing: true
+version: 1.9.12
+testing: false
 description: Adds an advanced administration panel to manage your site
 icon: empire
 author:
@@ -14,10 +14,10 @@ docs: https://github.com/getgrav/grav-plugin-admin/blob/develop/README.md
 license: MIT
 
 dependencies:
-    - { name: grav, version: '>=1.7.0-rc.2' }
-    - { name: form, version: '>=4.0.0' }
-    - { name: login, version: '>=3.0.4' }
-    - { name: email, version: '>=3.0.3' }
+    - { name: grav, version: '>=1.6.8' }
+    - { name: form, version: '>=3.0.0' }
+    - { name: login, version: '>=3.0.0' }
+    - { name: email, version: '>=3.0.0' }
 
 form:
   validation: loose
@@ -265,6 +265,15 @@ form:
       label: Hide modular page types in Admin
       value_only: true
 
+    log_viewer_files:
+        type: selectize
+        size: medium
+        label: PLUGIN_ADMIN.LOG_VIEWER_FILES
+        help: PLUGIN_ADMIN.LOG_VIEWER_FILES_HELP
+        classes: fancy
+        validate:
+            type: commalist
+
     MediaResize:
       type: section
       title: Page Media Image Resizer
@@ -352,11 +361,65 @@ form:
       title: Dashboard
       underline: true
 
-    widgets_display:
-      type: widgets
-      label: Widget Display Status
+    widgets.dashboard-maintenance:
+      type: toggle
+      label: Maintenance Widget
+      highlight: 1
+      default: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
       validate:
-        type: array
+        type: bool
+      help: Display dashboard maintenance widget
+
+    widgets.dashboard-statistics:
+      type: toggle
+      label: Statistics Widget
+      highlight: 1
+      default: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+      help: Display dashboard statistics widget
+
+    widgets.dashboard-notifications:
+      type: toggle
+      label: Notifications Feed Widget
+      highlight: 1
+      default: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+      help: Display dashboard notifications feed widget
+
+    widgets.dashboard-feed:
+      type: toggle
+      label: News Feed Widget
+      highlight: 1
+      default: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+      help: Display dashboard news feed widget
+
+    widgets.dashboard-pages:
+      type: toggle
+      label: Latest Pages Widget
+      highlight: 1
+      default: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+      help: Display dashboard latest pages widget
 
     Notifications:
       type: section

@@ -1,5 +1,30 @@
+# v4.0.3
+## 02/11/2020
+
+1. [](#new)
+    * Pass phpstan level 1 tests
+
+# v4.0.2
+## 02/03/2020
+
+1. [](#improved)
+    * Allow checkbox field to have custom value, default to 1
+1. [](#bugfix)
+    * Fixed `toggle` field not working with `toggleable: true`
+    * Fixed fatal error when form type is disabled
+    
+# v4.0.1
+## 01/02/2020
+
+1. [](#improved)
+    * Improve Grav 1.7 support by not using deprecated `$page->modular()` call
+    * Use form scope if it is defined
+1. [](#bugfix)
+    * Fixed bad HTML in select, radio, key, toggle, checkbox ad textarea when using tabindex attribute
+    * Fixed bad looking `tabs` field with a single tab in admin
+
 # v4.0.0
-## 10/06/2019
+## 11/06/2019
 
 1. [](#new)
     * Added `tabindex` to global attributes of default field

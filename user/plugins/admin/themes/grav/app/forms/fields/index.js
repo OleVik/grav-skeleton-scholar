@@ -12,7 +12,6 @@ import SelectUniqueField, { Instance as SelectUniqueInstance } from './selectuni
 import IconpickerField, { Instance as IconpickerInstance } from './iconpicker';
 import CronField, { Instance as CronFieldInstance } from './cron';
 import TextField, { Instance as TextFieldInstance } from './text';
-import ParentsField, { Instance as ParentsFieldInstance } from './parents';
 
 export default {
     FilepickerField: {
@@ -63,17 +62,11 @@ export default {
         IconpickerField,
         Instance: IconpickerInstance
     },
-    CronField: {
-        CronField,
-        Instance: CronFieldInstance
+    CronField: {CronField,
+        Insance: CronFieldInstance
     },
-    TextField: {
-        TextField,
-        Instance: TextFieldInstance
-    },
-    ParentsField: {
-        ParentsField,
-        Instance: ParentsFieldInstance
+    TextField: {TextField,
+        Insance: TextFieldInstance
     }
 };
 

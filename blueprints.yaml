@@ -1,5 +1,5 @@
 name: Scholar Skeleton
-version: 1.0.5
+version: 1.0.6
 description: A demonstration of the Scholar Theme.
 description: Grav Scholar supports a Markdown-based publishing workflow for academic-focused content, such as papers, articles, books, and documentation. Features include high accessibility, fast performance, print-friendly styles and more.
 icon: arrows-alt
@@ -14,10 +14,10 @@ readme: https://github.com/OleVik/grav-skeleton-scholar/blob/develop/README.md
 license: MIT
 
 dependencies:
-  - { name: grav, version: ">=1.7" }
-  - { name: error, version: ">=1.6.2" }
-  - { name: swiper, version: ">=1.0.0" }
-  - { name: problems, version: ">=2.0.3" }
-  - { name: breadcrumbs, version: ">=1.5.1" }
-  - { name: shortcode-core, version: ">=4.1.7" }
-  - { name: static-generator, version: ">=1.0.0" }
+  - { name: grav, version: "~1.6.21" }
+  - { name: error }
+  - { name: swiper }
+  - { name: problems }
+  - { name: breadcrumbs }
+  - { name: shortcode-core }
+  - { name: static-generator, version: "~1.0.0" }

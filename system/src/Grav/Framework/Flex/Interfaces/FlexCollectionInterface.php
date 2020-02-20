@@ -31,7 +31,7 @@ interface FlexCollectionInterface extends FlexCommonInterface, ObjectCollectionI
      *
      * @param FlexObjectInterface[] $entries    Associated array of Flex Objects to be included in the collection.
      * @param FlexDirectory         $directory  Flex Directory where all the objects belong into.
-     * @param string|null               $keyField   Key field used to index the collection.
+     * @param string                $keyField   Key field used to index the collection.
      *
      * @return static                           Returns a new Flex Collection.
      */
@@ -43,7 +43,7 @@ interface FlexCollectionInterface extends FlexCommonInterface, ObjectCollectionI
      * @used-by FlexDirectory::createCollection()   Official method to create Flex Collection.
      *
      * @param FlexObjectInterface[] $entries    Associated array of Flex Objects to be included in the collection.
-     * @param FlexDirectory|null        $directory  Flex Directory where all the objects belong into.
+     * @param FlexDirectory         $directory  Flex Directory where all the objects belong into.
      *
      * @throws \InvalidArgumentException
      */
@@ -121,19 +121,4 @@ interface FlexCollectionInterface extends FlexCommonInterface, ObjectCollectionI
      * @return FlexIndexInterface   Returns a Flex Index from the current collection.
      */
     public function getIndex();
-
-    /**
-     * Load all the objects into memory,
-     *
-     * @return FlexCollectionInterface
-     */
-    public function getCollection();
-
-    /**
-     * Get metadata associated to the object
-     *
-     * @param string $key Key.
-     * @return array
-     */
-    public function getMetaData(string $key): array;
 }

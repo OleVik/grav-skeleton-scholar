@@ -28,9 +28,9 @@ class TwigTokenParserStyle extends AbstractTokenParser
     /**
      * Parses a token and returns a node.
      *
-     * @param Token $token A Twig Token instance
+     * @param Token $token A Twig_Token instance
      *
-     * @return Node A Twig Node instance
+     * @return Node A Twig_Node instance
      */
     public function parse(Token $token)
     {

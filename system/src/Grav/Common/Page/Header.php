@@ -10,19 +10,9 @@
 namespace Grav\Common\Page;
 
 use RocketTheme\Toolbox\ArrayTraits\Constructor;
-use RocketTheme\Toolbox\ArrayTraits\Export;
-use RocketTheme\Toolbox\ArrayTraits\ExportInterface;
-use RocketTheme\Toolbox\ArrayTraits\NestedArrayAccessWithGetters;
+use RocketTheme\Toolbox\ArrayTraits\NestedArrayAccess;
 
-class Header implements \ArrayAccess, ExportInterface, \JsonSerializable
+class Header implements \ArrayAccess
 {
-    use NestedArrayAccessWithGetters, Constructor, Export;
-
-    /** @var array */
-    protected $items;
-
-    public function jsonSerialize()
-    {
-        return $this->toArray();
-    }
+    use NestedArrayAccess, Constructor;
 }

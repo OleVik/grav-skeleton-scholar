@@ -19,15 +19,14 @@ use Grav\Common\User\Interfaces\UserInterface;
 interface FlexAuthorizeInterface
 {
     /**
-     * Check if user is authorized for the action.
+     * Check if user is authorized to perform an action for the object.
      *
-     * Note: There are two deny values: denied (false), not set (null). This allows chaining multiple rules together
-     * when the previous rules were not matched.
+     * @param string $action            One of: `create`, `read`, `update`, `delete`, `save`, `list`
+     * @param string|null $scope        One of: `admin`, `site`
+     * @param UserInterface|null $user  Optional user. Defaults to the current user.
      *
-     * @param string $action
-     * @param string|null $scope
-     * @param UserInterface|null $user
-     * @return bool|null
+     * @return bool Returns `true` if user is authorized to perform action, `false` otherwise.
+     * @api
      */
-    public function isAuthorized(string $action, string $scope = null, UserInterface $user = null): ?bool;
+    public function isAuthorized(string $action, string $scope = null, UserInterface $user = null): bool;
 }

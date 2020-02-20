@@ -15,12 +15,13 @@ use Grav\Framework\Collection\ArrayCollection;
 use Grav\Framework\Object\Access\NestedPropertyCollectionTrait;
 use Grav\Framework\Object\Base\ObjectCollectionTrait;
 use Grav\Framework\Object\Collection\ObjectExpressionVisitor;
-use Grav\Framework\Object\Interfaces\NestedObjectCollectionInterface;
+use Grav\Framework\Object\Interfaces\NestedObjectInterface;
+use Grav\Framework\Object\Interfaces\ObjectCollectionInterface;
 
 /**
  * Class contains a collection of objects.
  */
-class ObjectCollection extends ArrayCollection implements NestedObjectCollectionInterface
+class ObjectCollection extends ArrayCollection implements ObjectCollectionInterface, NestedObjectInterface
 {
     use ObjectCollectionTrait;
     use NestedPropertyCollectionTrait {

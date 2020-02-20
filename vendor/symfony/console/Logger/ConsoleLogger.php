@@ -22,7 +22,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @author Kévin Dunglas <dunglas@gmail.com>
  *
- * @see https://www.php-fig.org/psr/psr-3/
+ * @see http://www.php-fig.org/psr/psr-3/
  */
 class ConsoleLogger extends AbstractLogger
 {
@@ -61,8 +61,6 @@ class ConsoleLogger extends AbstractLogger
 
     /**
      * {@inheritdoc}
-     *
-     * @return void
      */
     public function log($level, $message, array $context = [])
     {

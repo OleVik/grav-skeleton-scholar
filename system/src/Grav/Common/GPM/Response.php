@@ -14,13 +14,25 @@ use Grav\Common\Grav;
 
 class Response
 {
-    /** @var callable    The callback for the progress, either a function or callback in array notation */
+    /**
+     * The callback for the progress
+     *
+     * @var callable    Either a function or callback in array notation
+     */
     public static $callback = null;
 
-    /** @var string Which method to use for HTTP calls, can be 'curl', 'fopen' or 'auto'. Auto is default and fopen is the preferred method */
+    /**
+     * Which method to use for HTTP calls, can be 'curl', 'fopen' or 'auto'. Auto is default and fopen is the preferred method
+     *
+     * @var string
+     */
     private static $method = 'auto';
 
-    /** @var array Default parameters for `curl` and `fopen` */
+    /**
+     * Default parameters for `curl` and `fopen`
+     *
+     * @var array
+     */
     private static $defaults = [
 
         'curl'  => [
@@ -61,6 +73,7 @@ class Response
      * Sets the preferred method to use for making HTTP calls.
      *
      * @param string $method Default is `auto`
+     *
      * @return Response
      */
     public static function setMethod($method = 'auto')
@@ -79,7 +92,8 @@ class Response
      *
      * @param  string   $uri      URL to call
      * @param  array    $options  An array of parameters for both `curl` and `fopen`
-     * @param  callable|null $callback Either a function or callback in array notation
+     * @param  callable $callback Either a function or callback in array notation
+     *
      * @return string The response of the request
      */
     public static function get($uri = '', $options = [], $callback = null)
@@ -121,8 +135,7 @@ class Response
         if (!$settings['verify_peer']) {
             $overrides = array_replace_recursive([], $overrides, [
                 'curl' => [
-                    CURLOPT_SSL_VERIFYPEER => $settings['verify_peer'],
-                    CURLOPT_SSL_VERIFYHOST => false
+                    CURLOPT_SSL_VERIFYPEER => $settings['verify_peer']
                 ],
                 'fopen' => [
                     'ssl' => [
@@ -220,6 +233,7 @@ class Response
 
         if ($bytes_transferred > 0) {
             if ($notification_code == STREAM_NOTIFY_PROGRESS | STREAM_NOTIFY_COMPLETED || $isCurlResource) {
+
                 $progress = [
                     'code'        => $notification_code,
                     'filesize'    => $filesize,
@@ -237,7 +251,7 @@ class Response
     /**
      * Automatically picks the preferred method
      *
-     * @return string|null The response of the request
+     * @return string The response of the request
      */
     private static function getAuto()
     {
@@ -348,6 +362,7 @@ class Response
      * @param resource $ch
      * @param array $options
      * @param bool $callback
+     *
      * @return bool|mixed
      */
     private static function curlExecFollow($ch, $options, $callback)

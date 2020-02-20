@@ -26,41 +26,55 @@ class Medium extends Data implements RenderableInterface, MediaObjectInterface
 {
     use ParsedownHtmlTrait;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $mode = 'source';
 
-    /** @var Medium|null */
-    protected $_thumbnail;
+    /**
+     * @var Medium
+     */
+    protected $_thumbnail = null;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $thumbnailTypes = ['page', 'default'];
 
-    /** @var string|null */
-    protected $thumbnailType;
+    protected $thumbnailType = null;
 
-    /** @var Medium[] */
+    /**
+     * @var Medium[]
+     */
     protected $alternatives = [];
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $attributes = [];
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $styleAttributes = [];
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $metadata = [];
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $medium_querystring = [];
 
-    /** @var string */
     protected $timestamp;
 
     /**
      * Construct.
      *
      * @param array $items
-     * @param Blueprint|null $blueprint
+     * @param Blueprint $blueprint
      */
     public function __construct($items = [], Blueprint $blueprint = null)
     {
@@ -267,7 +281,7 @@ class Medium extends Data implements RenderableInterface, MediaObjectInterface
     /**
      * Get/set querystring for the file's url
      *
-     * @param  string|null  $querystring
+     * @param  string  $querystring
      * @param  bool $withQuestionmark
      * @return string
      */
@@ -331,10 +345,10 @@ class Medium extends Data implements RenderableInterface, MediaObjectInterface
     /**
      * Get an element (is array) that can be rendered by the Parsedown engine
      *
-     * @param  string|null  $title
-     * @param  string|null  $alt
-     * @param  string|null  $class
-     * @param  string|null  $id
+     * @param  string  $title
+     * @param  string  $alt
+     * @param  string  $class
+     * @param  string  $id
      * @param  bool $reset
      * @return array
      */
@@ -344,11 +358,10 @@ class Medium extends Data implements RenderableInterface, MediaObjectInterface
 
         $style = '';
         foreach ($this->styleAttributes as $key => $value) {
-            if (is_numeric($key)) { // Special case for inline style attributes, refer to style() method
+            if (is_numeric($key)) // Special case for inline style attributes, refer to style() method
                 $style .= $value;
-            } else {
+            else
                 $style .= $key . ': ' . $value . ';';
-            }
         }
         if ($style) {
             $attributes['style'] = $style;
@@ -465,7 +478,7 @@ class Medium extends Data implements RenderableInterface, MediaObjectInterface
      *
      * @param string $mode
      *
-     * @return self|null
+     * @return $this
      */
     public function display($mode = 'source')
     {
@@ -475,13 +488,8 @@ class Medium extends Data implements RenderableInterface, MediaObjectInterface
 
 
         $this->mode = $mode;
-        if ($mode === 'thumbnail') {
-            $thumbnail = $this->getThumbnail();
 
-            return $thumbnail ? $thumbnail->reset() : null;
-        }
-
-        return $this->reset();
+        return $mode === 'thumbnail' ? ($this->getThumbnail() ? $this->getThumbnail()->reset() : null) : $this->reset();
     }
 
     /**
@@ -639,11 +647,11 @@ class Medium extends Data implements RenderableInterface, MediaObjectInterface
     /**
      * Get the thumbnail Medium object
      *
-     * @return ThumbnailImageMedium|null
+     * @return ThumbnailImageMedium
      */
     protected function getThumbnail()
     {
-        if (null === $this->_thumbnail) {
+        if (!$this->_thumbnail) {
             $types = $this->thumbnailTypes;
 
             if ($this->thumbnailType !== 'auto') {
@@ -667,4 +675,5 @@ class Medium extends Data implements RenderableInterface, MediaObjectInterface
 
         return $this->_thumbnail;
     }
+
 }

@@ -11,11 +11,7 @@ namespace Grav\Common\Filesystem;
 
 class ZipArchiver extends Archiver
 {
-    /**
-     * @param string $destination
-     * @param callable|null $status
-     * @return $this
-     */
+
     public function extract($destination, callable $status = null)
     {
         $zip = new \ZipArchive();
@@ -35,11 +31,6 @@ class ZipArchiver extends Archiver
         throw new \RuntimeException('ZipArchiver: Failed to open ' . $this->archive_file);
     }
 
-    /**
-     * @param string $source
-     * @param callable|null $status
-     * @return $this
-     */
     public function compress($source, callable $status = null)
     {
         if (!extension_loaded('zip')) {
@@ -90,11 +81,6 @@ class ZipArchiver extends Archiver
         return $this;
     }
 
-    /**
-     * @param array $folders
-     * @param callable|null $status
-     * @return $this
-     */
     public function addEmptyFolders($folders, callable $status = null)
     {
         if (!extension_loaded('zip')) {
@@ -111,7 +97,7 @@ class ZipArchiver extends Archiver
             'message' => 'Adding empty folders...'
         ]);
 
-        foreach ($folders as $folder) {
+        foreach($folders as $folder) {
             $zip->addEmptyDir($folder);
             $status && $status([
                 'type' => 'progress',

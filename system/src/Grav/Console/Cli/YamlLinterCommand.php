@@ -10,7 +10,9 @@
 namespace Grav\Console\Cli;
 
 use Grav\Common\Grav;
+use Grav\Common\Helpers\LogViewer;
 use Grav\Common\Helpers\YamlLinter;
+use Grav\Common\Utils;
 use Grav\Console\ConsoleCommand;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -27,18 +29,6 @@ class YamlLinterCommand extends ConsoleCommand
                 InputOption::VALUE_OPTIONAL,
                 'The environment to trigger a specific configuration. For example: localhost, mysite.dev, www.mysite.com'
             )
-            ->addOption(
-                'all',
-                'a',
-                InputOption::VALUE_NONE,
-                'Go through the whole Grav installation'
-            )
-            ->addOption(
-                'folder',
-                'f',
-                InputOption::VALUE_OPTIONAL,
-                'Go through specific folder'
-            )
             ->setDescription('Checks various files for YAML errors')
             ->setHelp("Checks various files for YAML errors");
     }
@@ -52,59 +42,41 @@ class YamlLinterCommand extends ConsoleCommand
 
         $io->title('Yaml Linter');
 
-        if ($this->input->getOption('all')) {
-            $io->section('All');
-            $errors = YamlLinter::lint('');
+        $io->section('User Configuration');
+        $errors = YamlLinter::lintConfig();
 
-            if (empty($errors)) {
-                $io->success('No YAML Linting issues found');
-            } else {
-                $this->displayErrors($errors, $io);
-            }
-        } elseif ($folder = $this->input->getOption('folder')) {
-            $io->section($folder);
-            $errors = YamlLinter::lint($folder);
-
-            if (empty($errors)) {
-                $io->success('No YAML Linting issues found');
-            } else {
-                $this->displayErrors($errors, $io);
-            }
+        if (empty($errors)) {
+            $io->success('No YAML Linting issues with configuration');
         } else {
-            $io->section('User Configuration');
-            $errors = YamlLinter::lintConfig();
-
-            if (empty($errors)) {
-                $io->success('No YAML Linting issues with configuration');
-            } else {
-                $this->displayErrors($errors, $io);
-            }
-
-            $io->section('Pages Frontmatter');
-            $errors = YamlLinter::lintPages();
-
-            if (empty($errors)) {
-                $io->success('No YAML Linting issues with pages');
-            } else {
-                $this->displayErrors($errors, $io);
-            }
-
-            $io->section('Page Blueprints');
-            $errors = YamlLinter::lintBlueprints();
-
-            if (empty($errors)) {
-                $io->success('No YAML Linting issues with blueprints');
-            } else {
-                $this->displayErrors($errors, $io);
-            }
+            $this->displayErrors($errors, $io);
         }
+
+
+        $io->section('Pages Frontmatter');
+        $errors = YamlLinter::lintPages();
+
+        if (empty($errors)) {
+            $io->success('No YAML Linting issues with pages');
+        } else {
+            $this->displayErrors($errors, $io);
+        }
+
+        $io->section('Page Blueprints');
+        $errors = YamlLinter::lintBlueprints();
+
+        if (empty($errors)) {
+            $io->success('No YAML Linting issues with blueprints');
+        } else {
+            $this->displayErrors($errors, $io);
+        }
+
     }
 
-    protected function displayErrors($errors, SymfonyStyle $io)
+    protected function displayErrors($errors, $io)
     {
-        $io->error('YAML Linting issues found...');
+        $io->error("YAML Linting issues found...");
         foreach ($errors as $path => $error) {
-            $io->writeln("<yellow>{$path}</yellow> - {$error}");
+            $io->writeln("<yellow>$path</yellow> - $error");
         }
     }
 }

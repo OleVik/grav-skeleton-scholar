@@ -11,7 +11,7 @@ namespace Grav\Common\User;
 
 use Grav\Common\Grav;
 use Grav\Common\User\DataUser;
-use Grav\Common\Flex;
+use Grav\Common\User\FlexUser;
 use Grav\Common\User\Interfaces\UserCollectionInterface;
 use Grav\Common\User\Interfaces\UserInterface;
 
@@ -23,7 +23,7 @@ if (defined('GRAV_USER_INSTANCE') && GRAV_USER_INSTANCE === 'FLEX') {
     /**
      * @deprecated 1.6 Use $grav['accounts'] instead of static calls. In type hints, please use UserInterface.
      */
-    class User extends Flex\Users\UserObject
+    class User extends FlexUser\User
     {
         /**
          * Load user account.

@@ -15,10 +15,8 @@ use Whoops\Util\TemplateHelper;
 
 class SimplePageHandler extends Handler
 {
-    /** @var array */
-    private $searchPaths = [];
-    /** @var array */
-    private $resourceCache = [];
+    private $searchPaths = array();
+    private $resourceCache = array();
 
     public function __construct()
     {
@@ -27,7 +25,7 @@ class SimplePageHandler extends Handler
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function handle()
     {
@@ -38,8 +36,9 @@ class SimplePageHandler extends Handler
         $cssFile      = $this->getResource('error.css');
 
         $code = $inspector->getException()->getCode();
-        if (($code >= 400) && ($code < 600)) {
-            $this->getRun()->sendHttpCode($code);
+        if ( ($code >= 400) && ($code < 600) )
+        {
+            $this->getRun()->sendHttpCode($code);    
         }
         $message = $inspector->getException()->getMessage();
 
@@ -61,6 +60,7 @@ class SimplePageHandler extends Handler
 
     /**
      * @param string $resource
+     *
      * @return string
      * @throws \RuntimeException
      */
@@ -90,9 +90,6 @@ class SimplePageHandler extends Handler
         );
     }
 
-    /**
-     * @param string $path
-     */
     public function addResourcePath($path)
     {
         if (!is_dir($path)) {
@@ -104,9 +101,6 @@ class SimplePageHandler extends Handler
         array_unshift($this->searchPaths, $path);
     }
 
-    /**
-     * @return array
-     */
     public function getResourcePaths()
     {
         return $this->searchPaths;

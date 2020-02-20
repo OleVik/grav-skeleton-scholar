@@ -20,7 +20,9 @@ class Iterator implements \ArrayAccess, \Iterator, \Countable, \Serializable
 {
     use Constructor, ArrayAccessWithGetters, ArrayIterator, Countable, Serializable, Export;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $items = [];
 
     /**
@@ -131,7 +133,7 @@ class Iterator implements \ArrayAccess, \Iterator, \Countable, \Serializable
     /**
      * @param mixed $needle Searched value.
      *
-     * @return string|int|false  Key if found, otherwise false.
+     * @return string|bool  Key if found, otherwise false.
      */
     public function indexOf($needle)
     {
@@ -226,7 +228,8 @@ class Iterator implements \ArrayAccess, \Iterator, \Countable, \Serializable
     public function filter(callable $callback = null)
     {
         foreach ($this->items as $key => $value) {
-            if ((!$callback && !(bool)$value) ||
+            if (
+                (!$callback && !(bool)$value) ||
                 ($callback && !$callback($value, $key))
             ) {
                 unset($this->items[$key]);
@@ -245,6 +248,7 @@ class Iterator implements \ArrayAccess, \Iterator, \Countable, \Serializable
      * @param bool          $desc
      *
      * @return $this|array
+     * @internal param bool $asc
      *
      */
     public function sort(callable $callback = null, $desc = false)

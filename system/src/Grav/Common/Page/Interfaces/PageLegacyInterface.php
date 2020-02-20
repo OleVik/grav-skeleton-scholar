@@ -52,6 +52,13 @@ interface PageLegacyInterface
     public function httpHeaders();
 
     /**
+     * Sets the summary of the page
+     *
+     * @param string $summary Summary
+     */
+    public function setSummary($summary);
+
+    /**
      * Get the contentMeta array and initialize content first if it's not already
      *
      * @return mixed
@@ -62,7 +69,7 @@ interface PageLegacyInterface
      * Add an entry to the page's contentMeta array
      *
      * @param string $name
-     * @param mixed $value
+     * @param string $value
      */
     public function addContentMeta($name, $value);
 
@@ -222,9 +229,9 @@ interface PageLegacyInterface
      * Allows a page to override the output render format, usually the extension provided
      * in the URL. (e.g. `html`, `json`, `xml`, etc).
      *
-     * @param string|null $var
+     * @param null $var
      *
-     * @return string
+     * @return null
      */
     public function templateFormat($var = null);
 
@@ -281,7 +288,7 @@ interface PageLegacyInterface
      *
      * @return bool      show etag header
      */
-    public function eTag($var = null): bool;
+    public function eTag($var = null);
 
     /**
      * Gets and sets the path to the .md file for this Page object.
@@ -349,8 +356,8 @@ interface PageLegacyInterface
      * Gets and sets the modular var that helps identify this page is a modular child
      *
      * @param  bool $var true if modular_twig
+     *
      * @return bool      true if modular_twig
-     * @deprecated 1.7 Use ->isModule() or ->modularTwig() method instead.
      */
     public function modular($var = null);
 
@@ -367,7 +374,7 @@ interface PageLegacyInterface
     /**
      * Returns children of this page.
      *
-     * @return Collection
+     * @return \Grav\Common\Page\Collection
      */
     public function children();
 
@@ -404,7 +411,7 @@ interface PageLegacyInterface
      *
      * @param  int $direction either -1 or +1
      *
-     * @return PageInterface|false             the sibling page
+     * @return PageInterface|bool             the sibling page
      */
     public function adjacentSibling($direction = 1);
 
@@ -462,6 +469,7 @@ interface PageLegacyInterface
      * @param string|array $value
      * @param bool $only_published
      * @return mixed
+     * @internal
      */
     public function evaluate($value, $only_published = true);
 

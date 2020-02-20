@@ -56,13 +56,6 @@ interface FlexObjectInterface extends FlexCommonInterface, NestedObjectInterface
     public function search(string $search, $properties = null, array $options = null): float;
 
     /**
-     * Returns true if object has a key.
-     *
-     * @return bool
-     */
-    public function hasKey();
-
-    /**
      * Get a unique key for the object.
      *
      * Flex Keys can be used without knowing the Directory the Object belongs into.
@@ -172,12 +165,12 @@ interface FlexObjectInterface extends FlexCommonInterface, NestedObjectInterface
      * Returns a form instance for the object.
      *
      * @param string $name Name of the form. Can be used to create customized forms for different use cases.
-     * @param array|null $options  Options can be used to further customize the form.
+     * @param array|null $form  Can be used to further customize the form.
      *
      * @return FlexFormInterface Returns a Form.
      * @api
      */
-    public function getForm(string $name = '', array $options = null);
+    public function getForm(string $name = '', array $form = null);
 
     /**
      * Returns default value suitable to be used in a form for the given property.
@@ -185,7 +178,7 @@ interface FlexObjectInterface extends FlexCommonInterface, NestedObjectInterface
      * @see FlexObjectInterface::getForm()
      *
      * @param  string $name         Property name.
-     * @param  string|null $separator   Optional nested property separator.
+     * @param  string $separator    Optional nested property separator.
      *
      * @return mixed|null           Returns default value of the field, null if there is no default value.
      */
@@ -207,7 +200,7 @@ interface FlexObjectInterface extends FlexCommonInterface, NestedObjectInterface
      *
      * @param  string $name         Property name.
      * @param  mixed  $default      Default value.
-     * @param  string|null $separator   Optional nested property separator.
+     * @param  string $separator    Optional nested property separator.
      *
      * @return mixed                Returns value of the field.
      */

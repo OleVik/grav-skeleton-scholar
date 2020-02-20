@@ -15,16 +15,14 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class PluginsProcessor extends ProcessorBase
 {
-    /** @var string */
     public $id = 'plugins';
-    /** @var string */
     public $title = 'Plugins';
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {
         $this->startTimer();
+        // TODO: remove in 2.0.
         $this->container['accounts'];
-        $this->container['pages'];
         $this->container['plugins']->init();
         $this->container->fireEvent('onPluginsInitialized');
         $this->stopTimer();

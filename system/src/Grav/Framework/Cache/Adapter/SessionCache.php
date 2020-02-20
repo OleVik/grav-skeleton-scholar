@@ -33,6 +33,7 @@ class SessionCache extends AbstractCache
         $stored = [self::VALUE => $value];
         if (null !== $ttl) {
             $stored[self::LIFETIME] = time() + $ttl;
+
         }
 
         $_SESSION[$this->getNamespace()][$key] = $stored;

@@ -95,9 +95,7 @@ class ConsoleSectionOutput extends StreamOutput
     protected function doWrite($message, $newline)
     {
         if (!$this->isDecorated()) {
-            parent::doWrite($message, $newline);
-
-            return;
+            return parent::doWrite($message, $newline);
         }
 
         $erasedContent = $this->popStreamContentUntilCurrentSection();

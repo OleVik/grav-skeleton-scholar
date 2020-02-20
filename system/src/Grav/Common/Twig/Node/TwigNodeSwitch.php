@@ -28,17 +28,15 @@ class TwigNodeSwitch extends Node
         Node $default = null,
         $lineno = 0,
         $tag = null
-    ) {
-        $nodes = ['value' => $value, 'cases' => $cases, 'default' => $default];
-        $nodes = array_filter($nodes);
-
-        parent::__construct($nodes, [], $lineno, $tag);
+    )
+    {
+        parent::__construct(array('value' => $value, 'cases' => $cases, 'default' => $default), array(), $lineno, $tag);
     }
 
     /**
      * Compiles the node to PHP.
      *
-     * @param Compiler $compiler A Twig Compiler instance
+     * @param Compiler $compiler A Twig_Compiler instance
      */
     public function compile(Compiler $compiler)
     {
@@ -70,7 +68,7 @@ class TwigNodeSwitch extends Node
                 ->write("}\n");
         }
 
-        if ($this->hasNode('default')) {
+        if ($this->hasNode('default') && $this->getNode('default') !== null) {
             $compiler
                 ->write("default:\n")
                 ->write("{\n")

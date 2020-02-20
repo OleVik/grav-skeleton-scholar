@@ -26,9 +26,9 @@ class TwigTokenParserThrow extends AbstractTokenParser
     /**
      * Parses a token and returns a node.
      *
-     * @param Token $token A Twig Token instance
+     * @param Token $token A Twig_Token instance
      *
-     * @return Node A Twig Node instance
+     * @return Node A Twig_Node instance
      */
     public function parse(Token $token)
     {
@@ -39,7 +39,7 @@ class TwigTokenParserThrow extends AbstractTokenParser
         $message = $this->parser->getExpressionParser()->parseExpression();
         $stream->expect(Token::BLOCK_END_TYPE);
 
-        return new TwigNodeThrow((int)$code, $message, $lineno, $this->getTag());
+        return new TwigNodeThrow($code, $message, $lineno, $this->getTag());
     }
 
     /**

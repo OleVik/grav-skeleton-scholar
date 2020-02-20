@@ -17,7 +17,6 @@ use Grav\Common\Utils;
 
 class Config extends Data
 {
-    /** @var string */
     public $environment;
 
     /** @var string */
@@ -29,9 +28,6 @@ class Config extends Data
     /** @var bool */
     protected $modified = false;
 
-    /**
-     * @return string
-     */
     public function key()
     {
         if (null === $this->key) {
@@ -41,10 +37,6 @@ class Config extends Data
         return $this->key;
     }
 
-    /**
-     * @param string|null $checksum
-     * @return string|null
-     */
     public function checksum($checksum = null)
     {
         if ($checksum !== null) {
@@ -54,10 +46,6 @@ class Config extends Data
         return $this->checksum;
     }
 
-    /**
-     * @param null $modified
-     * @return bool
-     */
     public function modified($modified = null)
     {
         if ($modified !== null) {
@@ -67,10 +55,6 @@ class Config extends Data
         return $this->modified;
     }
 
-    /**
-     * @param null $timestamp
-     * @return int
-     */
     public function timestamp($timestamp = null)
     {
         if ($timestamp !== null) {
@@ -80,9 +64,6 @@ class Config extends Data
         return $this->timestamp;
     }
 
-    /**
-     * @return $this
-     */
     public function reload()
     {
         $grav = Grav::instance();

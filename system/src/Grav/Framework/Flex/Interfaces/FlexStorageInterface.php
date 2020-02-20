@@ -30,12 +30,6 @@ interface FlexStorageInterface
     public function getKeyField(): string;
 
     /**
-     * @param string[] $keys
-     * @return array
-     */
-    public function getMetaData(array $keys): array;
-
-    /**
      * Returns associated array of all existing storage keys with a timestamp.
      *
      * @return  array Returns all existing keys as `[key => [storage_key => key, storage_timestamp => timestamp], ...]`.
@@ -77,7 +71,7 @@ interface FlexStorageInterface
      * If you pass object or array as value, that value will be used to save I/O.
      *
      * @param  array  $rows  Array of `[key => row, ...]` pairs.
-     * @param  array|null $fetched  Optional reference to store only fetched items.
+     * @param  array  $fetched  Optional reference to store only fetched items.
      *
      * @return array  Returns rows. Note that non-existing rows will have `null` as their value.
      */
@@ -118,14 +112,6 @@ interface FlexStorageInterface
      *
      * @return bool
      */
-    public function copyRow(string $src, string $dst): bool;
-
-    /**
-     * @param string $src
-     * @param string $dst
-     *
-     * @return bool
-     */
     public function renameRow(string $src, string $dst): bool;
 
     /**
@@ -133,16 +119,16 @@ interface FlexStorageInterface
      *
      * @param  string|null $key Optional storage key.
      *
-     * @return string|null Path in the filesystem. Can be URI or null if storage is not filesystem based.
+     * @return string Path in the filesystem. Can be URI.
      */
-    public function getStoragePath(string $key = null): ?string;
+    public function getStoragePath(string $key = null): string;
 
     /**
      * Get filesystem path for the collection or object media.
      *
      * @param  string|null $key Optional storage key.
      *
-     * @return string|null Path in the filesystem. Can be URI or null if media isn't supported.
+     * @return string Path in the filesystem. Can be URI.
      */
-    public function getMediaPath(string $key = null): ?string;
+    public function getMediaPath(string $key = null): string;
 }

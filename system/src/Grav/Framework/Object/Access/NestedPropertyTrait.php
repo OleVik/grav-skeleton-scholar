@@ -31,8 +31,8 @@ trait NestedPropertyTrait
 
     /**
      * @param string $property      Object property to be fetched.
-     * @param mixed|null $default    Default value if property has not been set.
-     * @param string|null $separator Separator, defaults to '.'
+     * @param mixed $default        Default value if property has not been set.
+     * @param string $separator     Separator, defaults to '.'
      * @return mixed                Property value.
      */
     public function getNestedProperty($property, $default = null, $separator = null)
@@ -73,7 +73,7 @@ trait NestedPropertyTrait
 
     /**
      * @param string $property      Object property to be updated.
-     * @param mixed  $value         New value.
+     * @param string $value         New value.
      * @param string $separator     Separator, defaults to '.'
      * @return $this
      * @throws \RuntimeException

@@ -374,7 +374,7 @@ trait IntervalTrait
     /**
      * Validate sequence of cron expression.
      *
-     * @param  int|string|null  $value
+     * @param  int|string  $value
      * @param  int         $min
      * @param  int         $max
      * @return mixed
@@ -396,3 +396,4 @@ trait IntervalTrait
         return $value;
     }
 }
+

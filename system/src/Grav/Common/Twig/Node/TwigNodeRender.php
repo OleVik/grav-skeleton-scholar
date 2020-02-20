@@ -16,7 +16,6 @@ use Twig\Node\NodeCaptureInterface;
 
 class TwigNodeRender extends Node implements NodeCaptureInterface
 {
-    /** @var string */
     protected $tagName = 'render';
 
     /**
@@ -32,16 +31,14 @@ class TwigNodeRender extends Node implements NodeCaptureInterface
         ?AbstractExpression $context,
         $lineno,
         $tag = null
-    ) {
-        $nodes = ['object' => $object, 'layout' => $layout, 'context' => $context];
-        $nodes = array_filter($nodes);
-
-        parent::__construct($nodes, [], $lineno, $tag);
+    )
+    {
+        parent::__construct(['object' => $object, 'layout' => $layout, 'context' => $context], [], $lineno, $tag);
     }
     /**
      * Compiles the node to PHP.
      *
-     * @param Compiler $compiler A Twig Compiler instance
+     * @param Compiler $compiler A Twig_Compiler instance
      * @throws \LogicException
      */
     public function compile(Compiler $compiler)
@@ -49,15 +46,15 @@ class TwigNodeRender extends Node implements NodeCaptureInterface
         $compiler->addDebugInfo($this);
         $compiler->write('$object = ')->subcompile($this->getNode('object'))->raw(';' . PHP_EOL);
 
-        if ($this->hasNode('layout')) {
-            $layout = $this->getNode('layout');
+        $layout = $this->getNode('layout');
+        if ($layout) {
             $compiler->write('$layout = ')->subcompile($layout)->raw(';' . PHP_EOL);
         } else {
             $compiler->write('$layout = null;' . PHP_EOL);
         }
 
-        if ($this->hasNode('context')) {
-            $context = $this->getNode('context');
+        $context = $this->getNode('context');
+        if ($context) {
             $compiler->write('$attributes = ')->subcompile($context)->raw(';' . PHP_EOL);
         } else {
             $compiler->write('$attributes = null;' . PHP_EOL);

@@ -25,46 +25,29 @@ abstract class BaseAsset extends PropertyObject
     /** @const Regex to match CSS import content */
     protected const CSS_IMPORT_REGEX = '{@import(.*?);}';
 
-    /** @var string|false */
     protected $asset;
-    /** @var string */
+
     protected $asset_type;
-    /** @var int */
     protected $order;
-    /** @var string */
     protected $group;
-    /** @var string */
     protected $position;
-    /** @var int */
     protected $priority;
-    /** @var array */
     protected $attributes = [];
 
-    /** @var string */
+
     protected $timestamp;
-    /** @var int|false */
     protected $modified;
-    /** @var bool */
     protected $remote;
-    /** @var string */
     protected $query = '';
 
     // Private Bits
-    /** @var bool */
+    private $base_url;
+    private $fetch_command;
     private $css_rewrite = false;
-    /** @var bool */
     private $css_minify = false;
 
-    /**
-     * @return string
-     */
     abstract function render();
 
-    /**
-     * BaseAsset constructor.
-     * @param array $elements
-     * @param string|null $key
-     */
     public function __construct(array $elements = [], $key = null)
     {
         $base_config = [
@@ -81,11 +64,6 @@ abstract class BaseAsset extends PropertyObject
         parent::__construct($elements, $key);
     }
 
-    /**
-     * @param string|false $asset
-     * @param array $options
-     * @return $this|false
-     */
     public function init($asset, $options)
     {
         $config = Grav::instance()['config'];
@@ -110,6 +88,7 @@ abstract class BaseAsset extends PropertyObject
 
             // Move this to render?
             if (!$this->remote) {
+
                 $asset_parts = parse_url($asset);
                 if (isset($asset_parts['query'])) {
                     $this->query = $asset_parts['query'];
@@ -143,30 +122,19 @@ abstract class BaseAsset extends PropertyObject
         return $this;
     }
 
-    /**
-     * @return string|false
-     */
     public function getAsset()
     {
         return $this->asset;
     }
 
-    /**
-     * @return bool
-     */
     public function getRemote()
     {
         return $this->remote;
     }
 
-    /**
-     * @param string $position
-     * @return $this
-     */
     public function setPosition($position)
     {
         $this->position = $position;
-
         return $this;
     }
 
@@ -195,7 +163,7 @@ abstract class BaseAsset extends PropertyObject
      *
      * @param  string $asset    the asset string reference
      *
-     * @return string|false     the final link url to the asset
+     * @return string           the final link url to the asset
      */
     protected function buildLocalLink($asset)
     {

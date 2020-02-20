@@ -79,7 +79,7 @@ class AbstractPagination implements PaginationInterface
 
     public function getPageNumber(): int
     {
-        return $this->page ?? 1;
+        return $this->page;
     }
 
     public function getPrevNumber(int $count = 1): ?int
@@ -146,7 +146,7 @@ class AbstractPagination implements PaginationInterface
 
     public function getStart(): int
     {
-        return $this->start ?? 0;
+        return $this->start;
     }
 
     public function getLimit(): int
@@ -220,7 +220,7 @@ class AbstractPagination implements PaginationInterface
     }
 
     /**
-     * @param int|null $start
+     * @param int $start
      * @return $this
      */
     protected function setStart(int $start = null)

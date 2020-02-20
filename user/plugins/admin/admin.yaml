@@ -6,13 +6,14 @@ logo_text: ''
 body_classes: ''
 content_padding: true
 twofa_enabled: true
+log_viewer_files: ['grav', 'email']
 sidebar:
   activate: tab
   hover_delay: 100
   size: auto
 dashboard:
   days_of_stats: 7
-widgets_display:
+widgets:
   dashboard-maintenance: true
   dashboard-statistics: true
   dashboard-notifications: true

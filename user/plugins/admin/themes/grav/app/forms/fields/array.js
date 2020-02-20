@@ -87,13 +87,7 @@ export default class ArrayField {
 
             container.data('array-sort', new Sortable(container.get(0), {
                 handle: '.fa-bars',
-                animation: 150,
-                onUpdate: () => {
-                    const item = container.find('[data-grav-array-type="row"]:first');
-                    this._setTemplate(item);
-                    const template = item.data('array-template');
-                    this.refreshNames(template);
-                }
+                animation: 150
             }));
         });
     }
@@ -160,8 +154,8 @@ export default class ArrayField {
 
         inputs.each((index, input) => {
             input = $(input);
-            const preserved_name = input.closest('[data-grav-array-name]');
-            const name = `${preserved_name.attr('data-grav-array-name')}[${index}]`;
+            let name = input.attr('name');
+            name = name.replace(/\[\d+\]$/, `[${index}]`);
             input.attr('name', name);
         });
 

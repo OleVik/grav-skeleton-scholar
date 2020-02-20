@@ -14,17 +14,14 @@ use Grav\Common\Page\Interfaces\PageInterface;
 
 trait ParsedownGravTrait
 {
-    /** @var array */
-    public $completable_blocks = [];
-    /** @var array */
-    public $continuable_blocks = [];
-
     /** @var Excerpts */
     protected $excerpts;
-    /** @var array */
+
     protected $special_chars;
-    /** @var string */
     protected $twig_link_regex = '/\!*\[(?:.*)\]\((\{([\{%#])\s*(.*?)\s*(?:\2|\})\})\)/';
+
+    public $completable_blocks = [];
+    public $continuable_blocks = [];
 
     /**
      * Initialization function to setup key variables needed by the MarkdownGravLinkTrait
@@ -131,6 +128,7 @@ trait ParsedownGravTrait
      * Overrides the default behavior to allow for plugin-provided blocks to be continuable
      *
      * @param string $Type
+     *
      * @return bool
      */
     protected function isBlockContinuable($Type)
@@ -145,6 +143,7 @@ trait ParsedownGravTrait
      *  Overrides the default behavior to allow for plugin-provided blocks to be completable
      *
      * @param string $Type
+     *
      * @return bool
      */
     protected function isBlockCompletable($Type)
@@ -160,6 +159,7 @@ trait ParsedownGravTrait
      * Make the element function publicly accessible, Medium uses this to render from Twig
      *
      * @param  array $Element
+     *
      * @return string markup
      */
     public function elementToHtml(array $Element)
@@ -171,6 +171,7 @@ trait ParsedownGravTrait
      * Setter for special chars
      *
      * @param array $special_chars
+     *
      * @return $this
      */
     public function setSpecialChars($special_chars)
@@ -195,10 +196,6 @@ trait ParsedownGravTrait
         return null;
     }
 
-    /**
-     * @param array $excerpt
-     * @return array|null
-     */
     protected function inlineSpecialCharacter($excerpt)
     {
         if ($excerpt['text'][0] === '&' && !preg_match('/^&#?\w+;/', $excerpt['text'])) {
@@ -218,10 +215,6 @@ trait ParsedownGravTrait
         return null;
     }
 
-    /**
-     * @param array $excerpt
-     * @return array
-     */
     protected function inlineImage($excerpt)
     {
         if (preg_match($this->twig_link_regex, $excerpt['text'], $matches)) {
@@ -244,10 +237,6 @@ trait ParsedownGravTrait
         return $excerpt;
     }
 
-    /**
-     * @param array $excerpt
-     * @return array
-     */
     protected function inlineLink($excerpt)
     {
         $type = $excerpt['type'] ?? 'link';
@@ -274,17 +263,13 @@ trait ParsedownGravTrait
 
     /**
      * For extending this class via plugins
-     *
-     * @param string $method
-     * @param array $args
-     * @return mixed|null
      */
     public function __call($method, $args)
     {
         if (isset($this->{$method}) === true) {
             $func = $this->{$method};
 
-            return \call_user_func_array($func, $args);
+            return  \call_user_func_array($func, $args);
         }
 
         return null;

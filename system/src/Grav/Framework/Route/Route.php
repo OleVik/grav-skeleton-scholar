@@ -77,14 +77,6 @@ class Route
     /**
      * @return string
      */
-    public function getLanguage()
-    {
-        return $this->language;
-    }
-
-    /**
-     * @return string
-     */
     public function getLanguagePrefix()
     {
         return $this->language !== '' ? '/' . $this->language : '';
@@ -195,10 +187,9 @@ class Route
      */
     public function withRoute($route)
     {
-        $new = $this->copy();
-        $new->route = $route;
+        $this->route = $route;
 
-        return $new;
+        return $this;
     }
 
     /**
@@ -209,22 +200,9 @@ class Route
      */
     public function withRoot($root)
     {
-        $new = $this->copy();
-        $new->root = $root;
+        $this->root = $root;
 
-        return $new;
-    }
-
-    /**
-     * @param string $language
-     * @return Route
-     */
-    public function withLanguage($language)
-    {
-        $new = $this->copy();
-        $new->language = $language ?? '';
-
-        return $new;
+        return $this;
     }
 
     /**
@@ -233,10 +211,9 @@ class Route
      */
     public function withAddedPath($path)
     {
-        $new = $this->copy();
-        $new->route .= '/' . ltrim($path, '/');
+        $this->route .= '/' . ltrim($path, '/');
 
-        return $new;
+        return $this;
     }
 
     /**
@@ -245,10 +222,9 @@ class Route
      */
     public function withExtension($extension)
     {
-        $new = $this->copy();
-        $new->extension = $extension;
+        $this->extension = $extension;
 
-        return $new;
+        return $this;
     }
 
     /**
@@ -271,34 +247,23 @@ class Route
         return $this->withParam('queryParams', $param, $value);
     }
 
-    /**
-     * @return Route
-     */
     public function withoutParams()
     {
         return $this->withoutGravParams()->withoutQueryParams();
     }
 
-    /**
-     * @return Route
-     */
     public function withoutGravParams()
     {
-        $new = $this->copy();
-        $new->gravParams = [];
+        $this->gravParams = [];
 
-        return $new;
+        return $this;
     }
 
-    /**
-     * @return Route
-     */
     public function withoutQueryParams()
     {
-        $new = $this->copy();
-        $new->queryParams = [];
+        $this->queryParams = [];
 
-        return $new;
+        return $this;
     }
 
     /**
@@ -411,6 +376,7 @@ class Route
             $this->extension = $gravParts['extension'] ?? '';
             $this->gravParams = $gravParts['params'] ?: [];
             $this->queryParams = $parts['query_params'] ?: [];
+
         } else {
             $this->root = RouteFactory::getRoot();
             $this->language = RouteFactory::getLanguage();

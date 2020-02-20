@@ -57,7 +57,7 @@ interface FlexIndexInterface extends FlexCollectionInterface
     public function withKeyField(string $keyField = null);
 
     /**
-     * @param string|null $indexKey
+     * @param string $indexKey
      * @return array
      */
     public function getIndexMap(string $indexKey = null);

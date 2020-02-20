@@ -13,7 +13,9 @@ use Grav\Common\Grav;
 
 class Themes extends AbstractPackageCollection
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $type = 'themes';
 
     /**

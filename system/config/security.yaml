@@ -36,4 +36,3 @@ uploads_dangerous_extensions:
     - htm
     - js
     - exe
-sanitize_svg: true

@@ -17,9 +17,7 @@ abstract class ProcessorBase implements ProcessorInterface
     /** @var Grav */
     protected $container;
 
-    /** @var string */
     public $id = 'processorbase';
-    /** @var string */
     public $title = 'ProcessorBase';
 
     public function __construct(Grav $container)
@@ -27,21 +25,21 @@ abstract class ProcessorBase implements ProcessorInterface
         $this->container = $container;
     }
 
-    protected function startTimer($id = null, $title = null): void
+    protected function startTimer($id = null, $title = null)
     {
         /** @var Debugger $debugger */
         $debugger = $this->container['debugger'];
         $debugger->startTimer($id ?? $this->id, $title ?? $this->title);
     }
 
-    protected function stopTimer($id = null): void
+    protected function stopTimer($id = null)
     {
         /** @var Debugger $debugger */
         $debugger = $this->container['debugger'];
         $debugger->stopTimer($id ?? $this->id);
     }
 
-    protected function addMessage($message, $label = 'info', $isString = true): void
+    protected function addMessage($message, $label = 'info', $isString = true)
     {
         /** @var Debugger $debugger */
         $debugger = $this->container['debugger'];

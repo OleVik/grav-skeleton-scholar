@@ -19,7 +19,9 @@ use Grav\Framework\Cache\Exception\InvalidArgumentException;
  */
 class DoctrineCache extends AbstractCache
 {
-    /** @var CacheProvider */
+    /**
+     * @var CacheProvider
+     */
     protected $driver;
 
     /**

@@ -11,7 +11,6 @@ namespace Grav\Framework\Collection;
 
 use ArrayIterator;
 use Closure;
-use Grav\Framework\Flex\Interfaces\FlexObjectInterface;
 
 /**
  * Abstract Index Collection.
@@ -45,7 +44,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
     public function first()
     {
         $value = reset($this->entries);
-        $key = (string)key($this->entries);
+        $key = key($this->entries);
 
         return $this->loadElement($key, $value);
     }
@@ -56,7 +55,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
     public function last()
     {
         $value = end($this->entries);
-        $key = (string)key($this->entries);
+        $key = key($this->entries);
 
         return $this->loadElement($key, $value);
     }
@@ -66,7 +65,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
      */
     public function key()
     {
-        return (string)key($this->entries);
+        return key($this->entries);
     }
 
     /**
@@ -75,7 +74,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
     public function next()
     {
         $value = next($this->entries);
-        $key = (string)key($this->entries);
+        $key = key($this->entries);
 
         return $this->loadElement($key, $value);
     }
@@ -86,7 +85,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
     public function current()
     {
         $value = current($this->entries);
-        $key = (string)key($this->entries);
+        $key = key($this->entries);
 
         return $this->loadElement($key, $value);
     }
@@ -103,7 +102,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
         $value = $this->entries[$key];
         unset($this->entries[$key]);
 
-        return $this->loadElement((string)$key, $value);
+        return $this->loadElement($key, $value);
     }
 
     /**
@@ -111,7 +110,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
      */
     public function removeElement($element)
     {
-        $key = $this->isAllowedElement($element) ? $this->getCurrentKey($element) : null;
+        $key = $this->isAllowedElement($element) ? $element->getKey() : null;
 
         if (!$key || !isset($this->entries[$key])) {
             return false;
@@ -179,7 +178,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
      */
     public function contains($element)
     {
-        $key = $this->isAllowedElement($element) ? $this->getCurrentKey($element) : null;
+        $key = $this->isAllowedElement($element) ? $element->getKey() : null;
 
         return $key && isset($this->entries[$key]);
     }
@@ -197,9 +196,9 @@ abstract class AbstractIndexCollection implements CollectionInterface
      */
     public function indexOf($element)
     {
-        $key = $this->isAllowedElement($element) ? $this->getCurrentKey($element) : null;
+        $key = $this->isAllowedElement($element) ? $element->getKey() : null;
 
-        return $key && isset($this->entries[$key]) ? $key : false;
+        return $key && isset($this->entries[$key]) ? $key : null;
     }
 
     /**
@@ -211,7 +210,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
             return null;
         }
 
-        return $this->loadElement((string)$key, $this->entries[$key]);
+        return $this->loadElement($key, $this->entries[$key]);
     }
 
     /**
@@ -247,6 +246,10 @@ abstract class AbstractIndexCollection implements CollectionInterface
             throw new \InvalidArgumentException('Invalid argument $value');
         }
 
+        if ($key !== $value->getKey()) {
+            $value->setKey($key);
+        }
+
         $this->entries[$key] = $this->getElementMeta($value);
     }
 
@@ -259,7 +262,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
             throw new \InvalidArgumentException('Invalid argument $element');
         }
 
-        $this->entries[$this->getCurrentKey($element)] = $this->getElementMeta($element);
+        $this->entries[$element->getKey()] = $this->getElementMeta($element);
 
         return true;
     }
@@ -370,7 +373,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
         $keys = $this->getKeys();
         shuffle($keys);
 
-        return $this->createFrom(array_replace(array_flip($keys), $this->entries) ?? []);
+        return $this->createFrom(array_replace(array_flip($keys), $this->entries));
     }
 
     /**
@@ -461,7 +464,7 @@ abstract class AbstractIndexCollection implements CollectionInterface
     /**
      * @return array
      */
-    protected function getEntries(): array
+    protected function getEntries() : array
     {
         return $this->entries;
     }
@@ -469,18 +472,9 @@ abstract class AbstractIndexCollection implements CollectionInterface
     /**
      * @param array $entries
      */
-    protected function setEntries(array $entries): void
+    protected function setEntries(array $entries) : void
     {
         $this->entries = $entries;
-    }
-
-    /**
-     * @param FlexObjectInterface $element
-     * @return string
-     */
-    protected function getCurrentKey($element)
-    {
-        return $element->getKey();
     }
 
     /**
@@ -494,19 +488,19 @@ abstract class AbstractIndexCollection implements CollectionInterface
      * @param array|null $entries
      * @return array
      */
-    abstract protected function loadElements(array $entries = null): array;
+    abstract protected function loadElements(array $entries = null) : array;
 
     /**
      * @param array|null $entries
      * @return CollectionInterface
      */
-    abstract protected function loadCollection(array $entries = null): CollectionInterface;
+    abstract protected function loadCollection(array $entries = null) : CollectionInterface;
 
     /**
      * @param mixed $value
      * @return bool
      */
-    abstract protected function isAllowedElement($value): bool;
+    abstract protected function isAllowedElement($value) : bool;
 
     /**
      * @param mixed $element

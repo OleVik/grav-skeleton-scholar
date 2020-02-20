@@ -16,25 +16,39 @@ use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 
 class ImageMedium extends Medium
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $thumbnailTypes = ['page', 'media', 'default'];
 
-    /** @var ImageFile|null */
+    /**
+     * @var ImageFile
+     */
     protected $image;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $format = 'guess';
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $quality;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $default_quality;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     protected $debug_watermarked = false;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     public static $magic_actions = [
         'resize', 'forceResize', 'cropResize', 'crop', 'zoomCrop',
         'negate', 'brightness', 'contrast', 'grayscale', 'emboss',
@@ -42,7 +56,9 @@ class ImageMedium extends Medium
         'rotate', 'flip', 'fixOrientation', 'gaussianBlur'
     ];
 
-    /** @var array */
+    /**
+     * @var array
+     */
     public static $magic_resize_actions = [
         'resize' => [0, 1],
         'forceResize' => [0, 1],
@@ -51,14 +67,16 @@ class ImageMedium extends Medium
         'zoomCrop' => [0, 1]
     ];
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $sizes = '100vw';
 
     /**
      * Construct.
      *
      * @param array $items
-     * @param Blueprint|null $blueprint
+     * @param Blueprint $blueprint
      */
     public function __construct($items = [], Blueprint $blueprint = null)
     {
@@ -608,7 +626,6 @@ class ImageMedium extends Medium
      * Filter image by using user defined filter parameters.
      *
      * @param string $filter Filter to be used.
-     * @return $this
      */
     public function filter($filter = 'image.filters.default')
     {
@@ -618,21 +635,21 @@ class ImageMedium extends Medium
             $method = array_shift($params);
             $this->__call($method, $params);
         }
-
-        return $this;
     }
 
     /**
      * Return the image higher quality version
      *
-     * @return Medium|ImageMedium the alternative version with higher quality
+     * @return ImageMedium the alternative version with higher quality
      */
     public function higherQualityAlternative()
     {
         if ($this->alternatives) {
             $max = reset($this->alternatives);
-            foreach ($this->alternatives as $alternative) {
-                if ($alternative->quality() > $max->quality()) {
+            foreach($this->alternatives as $alternative)
+            {
+                if($alternative->quality() > $max->quality())
+                {
                     $max = $alternative;
                 }
             }
@@ -642,4 +659,5 @@ class ImageMedium extends Medium
 
         return $this;
     }
+
 }

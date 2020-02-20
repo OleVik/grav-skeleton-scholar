@@ -26,17 +26,15 @@ class TwigNodeTryCatch extends Node
         Node $catch = null,
         $lineno = 0,
         $tag = null
-    ) {
-        $nodes = ['try' => $try, 'catch' => $catch];
-        $nodes = array_filter($nodes);
-
-        parent::__construct($nodes, [], $lineno, $tag);
+    )
+    {
+        parent::__construct(['try' => $try, 'catch' => $catch], [], $lineno, $tag);
     }
 
     /**
      * Compiles the node to PHP.
      *
-     * @param Compiler $compiler A Twig Compiler instance
+     * @param Compiler $compiler A Twig_Compiler instance
      * @throws \LogicException
      */
     public function compile(Compiler $compiler)
@@ -52,7 +50,7 @@ class TwigNodeTryCatch extends Node
             ->subcompile($this->getNode('try'))
         ;
 
-        if ($this->hasNode('catch')) {
+        if ($this->hasNode('catch') && null !== $this->getNode('catch')) {
             $compiler
                 ->outdent()
                 ->write('} catch (\Exception $e) {' . "\n")

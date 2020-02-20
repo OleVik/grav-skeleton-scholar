@@ -109,8 +109,8 @@ class ImageFile extends Image
      * Gets the hash.
      * @param string $type
      * @param int $quality
-     * @param array $extras
-     * @return string
+     * @param [] $extras
+     * @return null
      */
     public function getHash($type = 'guess', $quality = 80, $extras = [])
     {
@@ -141,4 +141,5 @@ class ImageFile extends Image
 
         $this->hash = sha1(serialize($datas));
     }
+
 }

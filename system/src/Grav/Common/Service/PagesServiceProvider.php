@@ -22,19 +22,34 @@ class PagesServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $container)
     {
-        $container['pages'] = function (Grav $grav) {
-            return new Pages($grav);
+        $container['pages'] = function ($c) {
+            return new Pages($c);
         };
 
-        $container['page'] = static function (Grav $grav) {
+        if (\defined('GRAV_CLI')) {
+            $container['page'] = static function ($c) {
+                $path = $c['locator']->findResource('system://pages/notfound.md');
+                $page = new Page();
+                $page->init(new \SplFileInfo($path));
+                $page->routable(false);
+
+                return $page;
+            };
+
+            return;
+        }
+
+        $container['page'] = function ($c) {
+            /** @var Grav $c */
+
             /** @var Pages $pages */
-            $pages = $grav['pages'];
+            $pages = $c['pages'];
 
             /** @var Config $config */
-            $config = $grav['config'];
+            $config = $c['config'];
 
             /** @var Uri $uri */
-            $uri = $grav['uri'];
+            $uri = $c['uri'];
 
             $path = $uri->path() ?: '/'; // Don't trim to support trailing slash default routes
             $page = $pages->dispatch($path);
@@ -43,13 +58,13 @@ class PagesServiceProvider implements ServiceProviderInterface
             if ($page) {
                 // some debugger override logic
                 if ($page->debugger() === false) {
-                    $grav['debugger']->enabled(false);
+                    $c['debugger']->enabled(false);
                 }
 
                 if ($config->get('system.force_ssl')) {
                     if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
                         $url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-                        $grav->redirect($url);
+                        $c->redirect($url);
                     }
                 }
 
@@ -70,25 +85,26 @@ class PagesServiceProvider implements ServiceProviderInterface
                 }
 
                 /** @var Language $language */
-                $language = $grav['language'];
+                $language = $c['language'];
 
                 // Language-specific redirection scenarios
                 if ($language->enabled() && ($language->isLanguageInUrl() xor $language->isIncludeDefaultLanguage())) {
-                    $grav->redirect($url);
+                    $c->redirect($url);
                 }
                 // Default route test and redirect
                 if ($config->get('system.pages.redirect_default_route') && $page->route() !== $path) {
-                    $grav->redirect($url);
+                    $c->redirect($url);
                 }
             }
 
             // if page is not found, try some fallback stuff
             if (!$page || !$page->routable()) {
+
                 // Try fallback URL stuff...
-                $page = $grav->fallbackUrl($path);
+                $page = $c->fallbackUrl($path);
 
                 if (!$page) {
-                    $path = $grav['locator']->findResource('system://pages/notfound.md');
+                    $path = $c['locator']->findResource('system://pages/notfound.md');
                     $page = new Page();
                     $page->init(new \SplFileInfo($path));
                     $page->routable(false);

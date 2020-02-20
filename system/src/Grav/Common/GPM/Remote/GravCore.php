@@ -14,21 +14,16 @@ use \Doctrine\Common\Cache\FilesystemCache;
 
 class GravCore extends AbstractPackageCollection
 {
-    /** @var string */
     protected $repository = 'https://getgrav.org/downloads/grav.json';
-
-    /** @var array */
     private $data;
-    /** @var string */
+
     private $version;
-    /** @var string */
     private $date;
-    /** @var string|null */
     private $min_php;
 
     /**
      * @param bool $refresh
-     * @param callable|null $callback
+     * @param null $callback
      * @throws \InvalidArgumentException
      */
     public function __construct($refresh = false, $callback = null)
@@ -67,6 +62,7 @@ class GravCore extends AbstractPackageCollection
      * Returns the changelog list for each version of Grav
      *
      * @param string $diff the version number to start the diff from
+     *
      * @return array changelog list for each version
      */
     public function getChangelog($diff = null)

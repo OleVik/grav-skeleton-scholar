@@ -13,11 +13,6 @@ use Grav\Common\GPM\Common\CachedCollection;
 
 class Packages extends CachedCollection
 {
-    /**
-     * Packages constructor.
-     * @param bool $refresh
-     * @param callable|null $callback
-     */
     public function __construct($refresh = false, $callback = null)
     {
         $items = [

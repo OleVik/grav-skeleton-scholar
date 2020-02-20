@@ -1,6 +1,7 @@
-title: Scholar
+title: Grav
 author:
   name: Joe Bloggs
   email: 'joe@example.com'
 metadata:
-  description: 'Scholar is an academic-focused theme, for publishing papers, articles, books, documentation, your resumé or other content with Grav.'
+    description: 'Grav is an easy to use, yet powerful, open source flat-file CMS'
+

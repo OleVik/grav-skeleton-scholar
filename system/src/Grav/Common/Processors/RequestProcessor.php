@@ -17,12 +17,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class RequestProcessor extends ProcessorBase
 {
-    /** @var string */
     public $id = 'request';
-    /** @var string */
     public $title = 'Request';
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {
         $this->startTimer();
 

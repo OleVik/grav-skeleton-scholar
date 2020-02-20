@@ -14,16 +14,18 @@ use Grav\Common\Page\Markdown\Excerpts;
 
 trait ParsedownHtmlTrait
 {
-    /** @var Parsedown|null */
+    /**
+     * @var \Grav\Common\Markdown\Parsedown
+     */
     protected $parsedown;
 
     /**
      * Return HTML markup from the medium.
      *
-     * @param string|null $title
-     * @param string|null $alt
-     * @param string|null $class
-     * @param string|null $id
+     * @param string $title
+     * @param string $alt
+     * @param string $class
+     * @param string $id
      * @param bool $reset
      * @return string
      */

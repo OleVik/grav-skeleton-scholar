@@ -26,14 +26,15 @@ class TwigNodeThrow extends Node
         Node $message,
         $lineno = 0,
         $tag = null
-    ) {
+    )
+    {
         parent::__construct(['message' => $message], ['code' => $code], $lineno, $tag);
     }
 
     /**
      * Compiles the node to PHP.
      *
-     * @param Compiler $compiler A Twig Compiler instance
+     * @param Compiler $compiler A Twig_Compiler instance
      * @throws \LogicException
      */
     public function compile(Compiler $compiler)

@@ -18,9 +18,6 @@ form:
           title: PLUGIN_ADMIN.CONTENT
 
           fields:
-            xss_check:
-              type: xss
-
             frontmatter:
               classes: frontmatter
               type: editor
@@ -42,7 +39,7 @@ form:
             header.media_order:
               type: pagemedia
               label: PLUGIN_ADMIN.PAGE_MEDIA
-
+              
         options:
           type: tab
           title: PLUGIN_ADMIN.OPTIONS
@@ -86,7 +83,7 @@ form:
                     name:
                       type: select
                       classes: fancy
-                      label: PLUGIN_ADMIN.MODULE_TEMPLATE
+                      label: PLUGIN_ADMIN.MODULAR_TEMPLATE
                       default: default
                       data-options@: '\Grav\Plugin\AdminPlugin::pagesModularTypes'
                       validate:

@@ -40,23 +40,23 @@ class Errors
                 $error_page->setPageTitle('Crikey! There was an error...');
                 $error_page->addResourcePath(GRAV_ROOT . '/system/assets');
                 $error_page->addCustomCss('whoops.css');
-                $whoops->prependHandler($error_page);
+                $whoops->pushHandler($error_page);
                 break;
             case -1:
-                $whoops->prependHandler(new BareHandler);
+                $whoops->pushHandler(new BareHandler);
                 break;
             default:
-                $whoops->prependHandler(new SimplePageHandler);
+                $whoops->pushHandler(new SimplePageHandler);
                 break;
         }
 
         if (Whoops\Util\Misc::isAjaxRequest() || $jsonRequest) {
-            $whoops->prependHandler(new Whoops\Handler\JsonResponseHandler);
+            $whoops->pushHandler(new Whoops\Handler\JsonResponseHandler);
         }
 
         if (isset($config['log']) && $config['log']) {
             $logger = $grav['log'];
-            $whoops->prependHandler(function ($exception, $inspector, $run) use ($logger) {
+            $whoops->pushHandler(function($exception, $inspector, $run) use ($logger) {
                 try {
                     $logger->addCritical($exception->getMessage() . ' - Trace: ' . $exception->getTraceAsString());
                 } catch (\Exception $e) {

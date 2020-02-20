@@ -16,7 +16,6 @@ use Twig\Node\NodeCaptureInterface;
 
 class TwigNodeStyle extends Node implements NodeCaptureInterface
 {
-    /** @var string */
     protected $tagName = 'style';
 
     /**
@@ -30,23 +29,21 @@ class TwigNodeStyle extends Node implements NodeCaptureInterface
      * @param string|null $tag
      */
     public function __construct(
-        ?Node $body,
-        ?AbstractExpression $file,
-        ?AbstractExpression $group,
-        ?AbstractExpression $priority,
-        ?AbstractExpression $attributes,
+        Node $body = null,
+        AbstractExpression $file = null,
+        AbstractExpression $group = null,
+        AbstractExpression $priority = null,
+        AbstractExpression $attributes = null,
         $lineno = 0,
         $tag = null
-    ) {
-        $nodes = ['body' => $body, 'file' => $file, 'group' => $group, 'priority' => $priority, 'attributes' => $attributes];
-        $nodes = array_filter($nodes);
-
-        parent::__construct($nodes, [], $lineno, $tag);
+    )
+    {
+        parent::__construct(['body' => $body, 'file' => $file, 'group' => $group, 'priority' => $priority, 'attributes' => $attributes], [], $lineno, $tag);
     }
     /**
      * Compiles the node to PHP.
      *
-     * @param Compiler $compiler A Twig Compiler instance
+     * @param Compiler $compiler A Twig_Compiler instance
      * @throws \LogicException
      */
     public function compile(Compiler $compiler)
@@ -55,7 +52,7 @@ class TwigNodeStyle extends Node implements NodeCaptureInterface
 
         $compiler->write("\$assets = \\Grav\\Common\\Grav::instance()['assets'];\n");
 
-        if ($this->hasNode('attributes')) {
+        if ($this->getNode('attributes') !== null) {
             $compiler
                 ->write('$attributes = ')
                 ->subcompile($this->getNode('attributes'))
@@ -69,7 +66,7 @@ class TwigNodeStyle extends Node implements NodeCaptureInterface
             $compiler->write('$attributes = [];' . "\n");
         }
 
-        if ($this->hasNode('group')) {
+        if ($this->getNode('group') !== null) {
             $compiler
                 ->write("\$attributes['group'] = ")
                 ->subcompile($this->getNode('group'))
@@ -81,14 +78,14 @@ class TwigNodeStyle extends Node implements NodeCaptureInterface
                 ->write("}\n");
         }
 
-        if ($this->hasNode('priority')) {
+        if ($this->getNode('priority') !== null) {
             $compiler
                 ->write("\$attributes['priority'] = (int)(")
                 ->subcompile($this->getNode('priority'))
                 ->raw(");\n");
         }
 
-        if ($this->hasNode('file')) {
+        if ($this->getNode('file') !== null) {
             $compiler
                 ->write('$assets->addCss(')
                 ->subcompile($this->getNode('file'))

@@ -11,7 +11,7 @@ namespace Grav\Framework\Object;
 
 use Doctrine\Common\Collections\Criteria;
 use Grav\Framework\Collection\AbstractIndexCollection;
-use Grav\Framework\Object\Interfaces\NestedObjectCollectionInterface;
+use Grav\Framework\Object\Interfaces\NestedObjectInterface;
 use Grav\Framework\Object\Interfaces\ObjectCollectionInterface;
 
 /**
@@ -21,12 +21,14 @@ use Grav\Framework\Object\Interfaces\ObjectCollectionInterface;
  * This is an abstract class and has some protected abstract methods to load objects which you need to implement in
  * order to use the class.
  */
-abstract class ObjectIndex extends AbstractIndexCollection implements NestedObjectCollectionInterface
+abstract class ObjectIndex extends AbstractIndexCollection implements ObjectCollectionInterface, NestedObjectInterface
 {
     /** @var string */
-    protected static $type;
+    static protected $type;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $_key;
 
     /**
@@ -66,7 +68,7 @@ abstract class ObjectIndex extends AbstractIndexCollection implements NestedObje
 
     /**
      * @param string $property      Object property name.
-     * @return bool[]               True if property has been defined (can be null).
+     * @return array                True if property has been defined (can be null).
      */
     public function hasProperty($property)
     {
@@ -76,7 +78,7 @@ abstract class ObjectIndex extends AbstractIndexCollection implements NestedObje
     /**
      * @param string $property      Object property to be fetched.
      * @param mixed $default        Default value if property has not been set.
-     * @return mixed[]             Property values.
+     * @return array                Property values.
      */
     public function getProperty($property, $default = null)
     {
@@ -115,7 +117,7 @@ abstract class ObjectIndex extends AbstractIndexCollection implements NestedObje
     /**
      * @param string $property      Object property name.
      * @param string $separator     Separator, defaults to '.'
-     * @return bool[]               True if property has been defined (can be null).
+     * @return bool                 True if property has been defined (can be null).
      */
     public function hasNestedProperty($property, $separator = null)
     {
@@ -126,7 +128,7 @@ abstract class ObjectIndex extends AbstractIndexCollection implements NestedObje
      * @param string $property      Object property to be fetched.
      * @param mixed  $default       Default value if property has not been set.
      * @param string $separator     Separator, defaults to '.'
-     * @return mixed[]              Property values.
+     * @return mixed                Property value.
      */
     public function getNestedProperty($property, $default = null, $separator = null)
     {
@@ -135,7 +137,7 @@ abstract class ObjectIndex extends AbstractIndexCollection implements NestedObje
 
     /**
      * @param string $property      Object property to be updated.
-     * @param mixed  $value         New value.
+     * @param string $value         New value.
      * @param string $separator     Separator, defaults to '.'
      * @return ObjectCollectionInterface
      */

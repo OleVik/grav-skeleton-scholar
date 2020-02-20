@@ -15,23 +15,6 @@ use Grav\Common\Utils;
 trait AssetUtilsTrait
 {
     /**
-     * @var \Closure|null
-     *
-     * Closure used by the pipeline to fetch assets.
-     *
-     * Useful when file_get_contents() function is not available in your PHP
-     * installation or when you want to apply any kind of preprocessing to
-     * your assets before they get pipelined.
-     *
-     * The closure will receive as the only parameter a string with the path/URL of the asset and
-     * it should return the content of the asset file as a string.
-     */
-    protected $fetch_command;
-
-    /** @var string */
-    protected $base_url;
-
-    /**
      * Determine whether a link is local or remote.
      * Understands both "http://" and "https://" as well as protocol agnostic links "//"
      *
@@ -55,6 +38,7 @@ trait AssetUtilsTrait
      *
      * @param  array $assets
      * @param  bool $css
+     *
      * @return string
      */
     protected function gatherLinks(array $assets, $css = true)
@@ -85,8 +69,7 @@ trait AssetUtilsTrait
                 $link = ROOT_DIR . $relative_path;
             }
 
-            // TODO: looks like this is not being used.
-            $file = $this->fetch_command instanceof \Closure ? @$this->fetch_command->__invoke($link) : @file_get_contents($link);
+            $file = ($this->fetch_command instanceof \Closure) ? @$this->fetch_command->__invoke($link) : @file_get_contents($link);
 
             // No file found, skip it...
             if ($file === false) {
@@ -119,6 +102,7 @@ trait AssetUtilsTrait
      * Moves @import statements to the top of the file per the CSS specification
      *
      * @param  string $file the file containing the combined CSS files
+     *
      * @return string       the modified file with any @imports at the top of the file
      */
     protected function moveImports($file)

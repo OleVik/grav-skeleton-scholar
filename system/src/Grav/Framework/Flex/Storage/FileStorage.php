@@ -25,7 +25,7 @@ class FileStorage extends FolderStorage
      */
     public function __construct(array $options)
     {
-        $this->dataPattern = '{FOLDER}/{KEY}{EXT}';
+        $this->dataPattern = '{FOLDER}/{KEY}';
 
         if (!isset($options['formatter']) && isset($options['pattern'])) {
             $options['formatter'] = $this->detectDataFormatter($options['pattern']);
@@ -38,14 +38,9 @@ class FileStorage extends FolderStorage
      * {@inheritdoc}
      * @see FlexStorageInterface::getMediaPath()
      */
-    public function getMediaPath(string $key = null): ?string
+    public function getMediaPath(string $key = null): string
     {
-        $path = $this->getStoragePath();
-        if (!$path) {
-            return null;
-        }
-
-        return $key ? "{$path}/{$key}" : $path;
+        return $key ? \dirname($this->getStoragePath($key)) . '/' . $key : $this->getStoragePath();
     }
 
     /**
@@ -61,13 +56,12 @@ class FileStorage extends FolderStorage
      */
     protected function buildIndex(): array
     {
-        $path = $this->getStoragePath();
-        if (!$path || !file_exists($path)) {
+        if (!file_exists($this->getStoragePath())) {
             return [];
         }
 
         $flags = \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS;
-        $iterator = new \FilesystemIterator($path, $flags);
+        $iterator = new \FilesystemIterator($this->getStoragePath(), $flags);
         $list = [];
         /** @var \SplFileInfo $info */
         foreach ($iterator as $filename => $info) {
@@ -75,7 +69,10 @@ class FileStorage extends FolderStorage
                 continue;
             }
 
-            $list[$key] = $this->getObjectMeta($key);
+            $list[$key] = [
+                'storage_key' => $key,
+                'storage_timestamp' => $info->getMTime()
+            ];
         }
 
         ksort($list, SORT_NATURAL);

@@ -122,11 +122,10 @@ trait CacheTrait
         if ($keys instanceof \Traversable) {
             $keys = iterator_to_array($keys, false);
         } elseif (!\is_array($keys)) {
-            $isObject = \is_object($keys);
             throw new InvalidArgumentException(
                 sprintf(
                     'Cache keys must be array or Traversable, "%s" given',
-                     $isObject ? \get_class($keys) : \gettype($keys)
+                    \is_object($keys) ? \get_class($keys) : \gettype($keys)
                 )
             );
         }
@@ -138,9 +137,6 @@ trait CacheTrait
         $this->validateKeys($keys);
         $keys = array_unique($keys);
         $keys = array_combine($keys, $keys);
-        if (empty($keys)) {
-            return [];
-        }
 
         $list = $this->doGetMultiple($keys, $this->miss);
 
@@ -166,11 +162,10 @@ trait CacheTrait
         if ($values instanceof \Traversable) {
             $values = iterator_to_array($values, true);
         } elseif (!is_array($values)) {
-            $isObject = \is_object($values);
             throw new InvalidArgumentException(
                 sprintf(
                     'Cache values must be array or Traversable, "%s" given',
-                    $isObject ? \get_class($values) : \gettype($values)
+                    \is_object($values) ? \get_class($values) : \gettype($values)
                 )
             );
         }
@@ -198,11 +193,10 @@ trait CacheTrait
         if ($keys instanceof \Traversable) {
             $keys = iterator_to_array($keys, false);
         } elseif (!is_array($keys)) {
-            $isObject = \is_object($keys);
             throw new InvalidArgumentException(
                 sprintf(
                     'Cache keys must be array or Traversable, "%s" given',
-                    $isObject ? \get_class($keys) : \gettype($keys)
+                    \is_object($keys) ? \get_class($keys) : \gettype($keys)
                 )
             );
         }
@@ -253,7 +247,7 @@ trait CacheTrait
 
     /**
      * @param array $values
-     * @param int|null $ttl
+     * @param int $ttl
      * @return bool
      */
     public function doSetMultiple($values, $ttl)
@@ -303,7 +297,7 @@ trait CacheTrait
         }
         if (\strlen($key) > 64) {
             throw new InvalidArgumentException(
-                sprintf('Cache key length must be less than 65 characters, key had %d characters', \strlen($key))
+                sprintf('Cache key length must be less than 65 characters, key had %s characters', \strlen($key))
             );
         }
         if (strpbrk($key, '{}()/\@:') !== false) {
@@ -329,7 +323,7 @@ trait CacheTrait
     }
 
     /**
-     * @param null|int|\DateInterval    $ttl
+     * @param null|int|\DateInterval|mixed    $ttl
      * @return int|null
      * @throws \Psr\SimpleCache\InvalidArgumentException|InvalidArgumentException
      */
@@ -344,8 +338,7 @@ trait CacheTrait
         }
 
         if ($ttl instanceof \DateInterval) {
-            $date = \DateTime::createFromFormat('U', '0');
-            $ttl = $date ? (int)$date->add($ttl)->format('U') : 0;
+            $ttl = (int) \DateTime::createFromFormat('U', '0')->add($ttl)->format('U');
         }
 
         throw new InvalidArgumentException(

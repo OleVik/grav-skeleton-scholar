@@ -1,0 +1,310 @@
+<?php
+return [
+    '@class' => 'Grav\\Common\\File\\CompiledYamlFile',
+    'filename' => 'C:/Users/Ole/GitHub/grav-skeleton-scholar/user/themes/scholar/blueprints.yaml',
+    'modified' => 1582226806,
+    'data' => [
+        'name' => 'Scholar',
+        'version' => '1.0.3',
+        'description' => 'An academic-focused theme, for publishing papers, articles, books, documentation, your blog, and even your resumé. Features include high accessibility, fast performance, print-friendly styles and more.',
+        'icon' => 'book',
+        'author' => [
+            'name' => 'Ole Vik',
+            'email' => 'git@olevik.net'
+        ],
+        'homepage' => 'https://github.com/OleVik/grav-theme-scholar',
+        'demo' => 'https://olevik.me/staging/grav-skeleton-scholar',
+        'keywords' => 'grav, theme, academic, paper, papers, article, articles, book, books, docs, documentation, resume, cv',
+        'bugs' => 'https://github.com/OleVik/grav-theme-scholar/issues',
+        'readme' => 'https://github.com/OleVik/grav-theme-scholar/blob/develop/README.md',
+        'license' => 'MIT',
+        'dependencies' => [
+            0 => [
+                'name' => 'grav',
+                'version' => '~1.6.21'
+            ],
+            1 => [
+                'name' => 'error'
+            ],
+            2 => [
+                'name' => 'swiper'
+            ],
+            3 => [
+                'name' => 'problems'
+            ],
+            4 => [
+                'name' => 'breadcrumbs'
+            ],
+            5 => [
+                'name' => 'shortcode-core'
+            ],
+            6 => [
+                'name' => 'static-generator',
+                'version' => '~1.0.0'
+            ]
+        ],
+        'form' => [
+            'validation' => 'strict',
+            'fields' => [
+                'tabs' => [
+                    'type' => 'tabs',
+                    'active' => 1,
+                    'fields' => [
+                        'options' => [
+                            'type' => 'tab',
+                            'title' => 'PLUGIN_ADMIN.OPTIONS',
+                            'fields' => [
+                                'enabled' => [
+                                    'type' => 'toggle',
+                                    'label' => 'PLUGIN_ADMIN.PLUGIN_STATUS',
+                                    'options' => [
+                                        1 => 'PLUGIN_ADMIN.ENABLED',
+                                        0 => 'PLUGIN_ADMIN.DISABLED'
+                                    ],
+                                    'validate' => [
+                                        'type' => 'bool'
+                                    ]
+                                ],
+                                'style' => [
+                                    'type' => 'select',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.STYLE',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.STYLE',
+                                    'data-options@' => '\\Grav\\Theme\\Scholar::getStylesBlueprint'
+                                ],
+                                'toolbar.breadcrumbs' => [
+                                    'type' => 'toggle',
+                                    'label' => 'THEME_SCHOLAR.TOOLBAR.BREADCRUMBS',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.TOOLBAR',
+                                    'options' => [
+                                        1 => 'PLUGIN_ADMIN.ENABLED',
+                                        0 => 'PLUGIN_ADMIN.DISABLED'
+                                    ],
+                                    'validate' => [
+                                        'type' => 'bool'
+                                    ]
+                                ],
+                                'toolbar.search' => [
+                                    'type' => 'toggle',
+                                    'label' => 'THEME_SCHOLAR.TOOLBAR.SEARCH',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.TOOLBAR',
+                                    'options' => [
+                                        1 => 'PLUGIN_ADMIN.ENABLED',
+                                        0 => 'PLUGIN_ADMIN.DISABLED'
+                                    ],
+                                    'validate' => [
+                                        'type' => 'bool'
+                                    ]
+                                ],
+                                'toolbar.navigation' => [
+                                    'type' => 'toggle',
+                                    'label' => 'THEME_SCHOLAR.TOOLBAR.NAVIGATION',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.TOOLBAR',
+                                    'options' => [
+                                        1 => 'PLUGIN_ADMIN.ENABLED',
+                                        0 => 'PLUGIN_ADMIN.DISABLED'
+                                    ],
+                                    'validate' => [
+                                        'type' => 'bool'
+                                    ]
+                                ],
+                                'css' => [
+                                    'type' => 'toggle',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.CSS',
+                                    'options' => [
+                                        1 => 'PLUGIN_ADMIN.ENABLED',
+                                        0 => 'PLUGIN_ADMIN.DISABLED'
+                                    ],
+                                    'validate' => [
+                                        'type' => 'bool'
+                                    ]
+                                ],
+                                'js' => [
+                                    'type' => 'toggle',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.JS',
+                                    'options' => [
+                                        1 => 'PLUGIN_ADMIN.ENABLED',
+                                        0 => 'PLUGIN_ADMIN.DISABLED'
+                                    ],
+                                    'validate' => [
+                                        'type' => 'bool'
+                                    ]
+                                ],
+                                'itemize' => [
+                                    'type' => 'toggle',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.ITEMIZE',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.ITEMIZE',
+                                    'options' => [
+                                        1 => 'PLUGIN_ADMIN.ENABLED',
+                                        0 => 'PLUGIN_ADMIN.DISABLED'
+                                    ],
+                                    'validate' => [
+                                        'type' => 'bool'
+                                    ]
+                                ],
+                                'linked_data' => [
+                                    'type' => 'toggle',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.LINKED_DATA',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.LINKED_DATA',
+                                    'options' => [
+                                        1 => 'PLUGIN_ADMIN.ENABLED',
+                                        0 => 'PLUGIN_ADMIN.DISABLED'
+                                    ],
+                                    'validate' => [
+                                        'type' => 'bool'
+                                    ]
+                                ],
+                                'highlighter' => [
+                                    'type' => 'toggle',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.HIGHLIGHTER',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.HIGHLIGHTER',
+                                    'options' => [
+                                        1 => 'PLUGIN_ADMIN.ENABLED',
+                                        0 => 'PLUGIN_ADMIN.DISABLED'
+                                    ],
+                                    'validate' => [
+                                        'type' => 'bool'
+                                    ]
+                                ],
+                                'flexsearch.enabled' => [
+                                    'type' => 'toggle',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.FLEXSEARCH',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.FLEXSEARCH',
+                                    'options' => [
+                                        1 => 'PLUGIN_ADMIN.ENABLED',
+                                        0 => 'PLUGIN_ADMIN.DISABLED'
+                                    ],
+                                    'validate' => [
+                                        'type' => 'bool'
+                                    ]
+                                ]
+                            ]
+                        ],
+                        'advanced' => [
+                            'type' => 'tab',
+                            'title' => 'PLUGIN_ADMIN.ADVANCED',
+                            'fields' => [
+                                'components' => [
+                                    'type' => 'selectize',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.COMPONENTS',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.COMPONENTS',
+                                    'allowEmptyOption' => true,
+                                    'merge_items' => true,
+                                    'selectize' => [
+                                        'create' => false,
+                                        'data-options@' => '\\Grav\\Theme\\Scholar::getComponentsBlueprint'
+                                    ],
+                                    'validate' => [
+                                        'type' => 'commalist'
+                                    ]
+                                ],
+                                'router' => [
+                                    'type' => 'toggle',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.API.ROUTER',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.ROUTER',
+                                    'options' => [
+                                        1 => 'PLUGIN_ADMIN.ENABLED',
+                                        0 => 'PLUGIN_ADMIN.DISABLED'
+                                    ],
+                                    'validate' => [
+                                        'type' => 'bool'
+                                    ]
+                                ],
+                                'highlighter_theme' => [
+                                    'type' => 'select',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.HIGHLIGHTER_THEME',
+                                    'data-options@' => '\\Grav\\Theme\\Scholar::getHighlighterThemeBlueprint'
+                                ],
+                                'routes.data' => [
+                                    'type' => 'text',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.ROUTES.DATA',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.ROUTES.DATA'
+                                ],
+                                'routes.embed' => [
+                                    'type' => 'text',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.ROUTES.EMBED',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.ROUTES.EMBED'
+                                ],
+                                'routes.search' => [
+                                    'type' => 'text',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.ROUTES.SEARCH',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.ROUTES.SEARCH'
+                                ],
+                                'routes.print' => [
+                                    'type' => 'text',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.ROUTES.PRINT',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.ROUTES.PRINT'
+                                ]
+                            ]
+                        ],
+                        'expert' => [
+                            'type' => 'tab',
+                            'title' => 'PLUGIN_ADMIN.EXPERT',
+                            'fields' => [
+                                'notice' => [
+                                    'type' => 'spacer',
+                                    'title' => 'THEME_SCHOLAR.ADMIN.NOTICE.TITLE',
+                                    'text' => 'THEME_SCHOLAR.ADMIN.NOTICE.EXPERT',
+                                    'underline' => true
+                                ],
+                                'api.content' => [
+                                    'type' => 'select',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.API.CONTENT',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.API.CONTENT',
+                                    'data-options@' => [
+                                        0 => '\\Grav\\Theme\\Scholar::getClassNames',
+                                        1 => 'Content'
+                                    ]
+                                ],
+                                'api.linked_data.default' => [
+                                    'type' => 'select',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.API.LINKED_DATA.DEFAULT',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.API.LINKED_DATA.DEFAULT',
+                                    'data-options@' => [
+                                        0 => '\\Grav\\Theme\\Scholar::getClassNames',
+                                        1 => 'LinkedData'
+                                    ]
+                                ],
+                                'api.linked_data.cv' => [
+                                    'type' => 'select',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.API.LINKED_DATA.CV',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.API.LINKED_DATA.CV',
+                                    'data-options@' => [
+                                        0 => '\\Grav\\Theme\\Scholar::getClassNames',
+                                        1 => 'LinkedData'
+                                    ]
+                                ],
+                                'api.router' => [
+                                    'type' => 'select',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.API.ROUTER',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.API.ROUTER',
+                                    'data-options@' => [
+                                        0 => '\\Grav\\Theme\\Scholar::getClassNames',
+                                        1 => 'Router'
+                                    ]
+                                ],
+                                'api.source' => [
+                                    'type' => 'select',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.API.SOURCE',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.API.SOURCE',
+                                    'data-options@' => [
+                                        0 => '\\Grav\\Theme\\Scholar::getClassNames',
+                                        1 => 'Source'
+                                    ]
+                                ],
+                                'api.taxonomy_map' => [
+                                    'type' => 'select',
+                                    'label' => 'THEME_SCHOLAR.ADMIN.API.TAXONOMY_MAP',
+                                    'description' => 'THEME_SCHOLAR.ADMIN.DESCRIPTION.API.TAXONOMY_MAP',
+                                    'data-options@' => [
+                                        0 => '\\Grav\\Theme\\Scholar::getClassNames',
+                                        1 => 'TaxonomyMap'
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+];

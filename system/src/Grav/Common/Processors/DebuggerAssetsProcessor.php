@@ -9,23 +9,23 @@
 
 namespace Grav\Common\Processors;
 
+use Grav\Framework\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 class DebuggerAssetsProcessor extends ProcessorBase
 {
-    /** @var string */
     public $id = 'debugger_assets';
-    /** @var string */
     public $title = 'Debugger Assets';
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {
         $this->startTimer();
         $this->container['debugger']->addAssets();
         $this->stopTimer();
 
         return $handler->handle($request);
+
     }
 }

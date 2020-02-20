@@ -96,7 +96,7 @@ class FormPlugin extends Plugin
     public function onPluginsInitialized()
     {
         // Backwards compatibility for plugins that use forms.
-        class_alias(Form::class, \Grav\Plugin\Form::class);
+        class_alias(Form::class, 'Grav\Plugin\Form');
 
         $this->grav['forms'] = function () {
             $forms = new Forms();
@@ -157,7 +157,7 @@ class FormPlugin extends Plugin
 
         // Force never_cache_twig if modular form (recursively up)
         $current = $page;
-        while ($current && $current->modular()) {
+        while ($current && $current->modularTwig()) {
             $header = $current->header();
             $header->never_cache_twig = true;
 
@@ -712,10 +712,14 @@ class FormPlugin extends Plugin
      * Add a form to the forms plugin
      *
      * @param string|null $page_route
-     * @param FormInterface $form
+     * @param FormInterface|null $form
      */
-    public function addForm(?string $page_route, FormInterface $form)
+    public function addForm(?string $page_route, ?FormInterface $form)
     {
+        if (null === $form) {
+            return;
+        }
+
         $name = $form->getName();
 
         if (!isset($this->forms[$page_route][$name])) {

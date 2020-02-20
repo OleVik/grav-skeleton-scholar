@@ -68,6 +68,7 @@ class VersionCommand extends ConsoleCommand
                 if ($upgrader->isUpgradable()) {
                     $updatable = " [upgradable: v<green>{$upgrader->getRemoteVersion()}</green>]";
                 }
+
             } else {
                 // get currently installed version
                 $locator = \Grav\Common\Grav::instance()['locator'];

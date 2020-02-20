@@ -18,7 +18,10 @@ namespace Grav\Framework\Object\Property;
  */
 trait ArrayPropertyTrait
 {
-    /** @var array Properties of the object. */
+    /**
+     * Properties of the object.
+     * @var array
+     */
     private $_elements;
 
     /**
@@ -92,9 +95,7 @@ trait ArrayPropertyTrait
      */
     protected function getElements()
     {
-        return array_filter($this->_elements, function ($val) {
-            return $val !== null;
-        });
+        return array_filter($this->_elements, function ($val) { return $val !== null; });
     }
 
     /**

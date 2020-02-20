@@ -35,17 +35,10 @@ abstract class AbstractFilesystemStorage implements FlexStorageInterface
     /** @var string */
     protected $keyField = 'storage_key';
 
-    /**
-     * @return bool
-     */
-    public function isIndexed(): bool
-    {
-        return false;
-    }
 
     /**
      * {@inheritdoc}
-     * @see FlexStorageInterface::hasKeys()
+     * @see FlexStorageInterface::hasKey()
      */
     public function hasKeys(array $keys): array
     {
@@ -58,56 +51,11 @@ abstract class AbstractFilesystemStorage implements FlexStorageInterface
     }
 
     /**
-     * {@inheritDoc}
-     * @see FlexStorageInterface::getKeyField()
+     * @return string
      */
     public function getKeyField(): string
     {
         return $this->keyField;
-    }
-
-    /**
-     * @param array $keys
-     * @param bool $includeParams
-     * @return string
-     */
-    public function buildStorageKey(array $keys, bool $includeParams = true): string
-    {
-        $key = $keys['key'] ?? '';
-        $params = $includeParams ? $this->buildStorageKeyParams($keys) : '';
-
-        return $params ? "{$key}|{$params}" : $key;
-    }
-
-    /**
-     * @param array $keys
-     * @return string
-     */
-    public function buildStorageKeyParams(array $keys): string
-    {
-        return '';
-    }
-
-    /**
-     * @param array $row
-     * @return array
-     */
-    public function extractKeysFromRow(array $row): array
-    {
-        return [
-            'key' => $row[$this->keyField] ?? ''
-        ];
-    }
-
-    /**
-     * @param string $key
-     * @return array
-     */
-    public function extractKeysFromStorageKey(string $key): array
-    {
-        return [
-            'key' => $key
-        ];
     }
 
     protected function initDataFormatter($formatter): void
@@ -150,7 +98,6 @@ abstract class AbstractFilesystemStorage implements FlexStorageInterface
     {
         $filename = $this->resolvePath($filename);
 
-        // TODO: start using the new file classes.
         switch ($this->dataFormatter->getDefaultFileExtension()) {
             case '.json':
                 $file = CompiledJsonFile::instance($filename);
@@ -202,6 +149,6 @@ abstract class AbstractFilesystemStorage implements FlexStorageInterface
      */
     protected function validateKey(string $key): bool
     {
-        return $key && (bool) preg_match('/^[^\\/\\?\\*:;{}\\\\\\n]+$/u', $key);
+        return (bool) preg_match('/^[^\\/\\?\\*:;{}\\\\\\n]+$/u', $key);
     }
 }

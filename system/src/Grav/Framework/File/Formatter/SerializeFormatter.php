@@ -34,7 +34,7 @@ class SerializeFormatter extends AbstractFormatter
      *
      * By default only allow stdClass class.
      *
-     * @return array
+     * @return array|bool
      */
     public function getOptions()
     {
@@ -56,8 +56,7 @@ class SerializeFormatter extends AbstractFormatter
      */
     public function decode($data)
     {
-        $classes = $this->getOptions()['allowed_classes'] ?? false;
-        $decoded = @unserialize($data, ['allowed_classes' => $classes]);
+        $decoded = @unserialize($data, $this->getOptions());
 
         if ($decoded === false && $data !== serialize(false)) {
             throw new \RuntimeException('Decoding serialized data failed');

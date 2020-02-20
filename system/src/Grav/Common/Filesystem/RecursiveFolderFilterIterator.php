@@ -13,7 +13,6 @@ use Grav\Common\Grav;
 
 class RecursiveFolderFilterIterator extends \RecursiveFilterIterator
 {
-    /** @var array */
     protected static $ignore_folders;
 
     /**

@@ -13,11 +13,6 @@ use Grav\Common\Utils;
 
 class InlineJs extends BaseAsset
 {
-    /**
-     * InlineJs constructor.
-     * @param array $elements
-     * @param string|null $key
-     */
     public function __construct(array $elements = [], $key = null)
     {
         $base_options = [
@@ -30,9 +25,6 @@ class InlineJs extends BaseAsset
         parent::__construct($merged_attributes, $key);
     }
 
-    /**
-     * @return string
-     */
     public function render()
     {
         return '<script' . $this->renderAttributes(). ">\n" . trim($this->asset) . "\n</script>\n";

@@ -11,7 +11,11 @@ namespace Grav\Common;
 
 abstract class Getters implements \ArrayAccess, \Countable
 {
-    /** @var string Define variable used in getters. */
+    /**
+     * Define variable used in getters.
+     *
+     * @var string
+     */
     protected $gettersVariable = null;
 
     /**

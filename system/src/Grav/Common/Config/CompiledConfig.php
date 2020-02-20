@@ -13,18 +13,16 @@ use Grav\Common\File\CompiledYamlFile;
 
 class CompiledConfig extends CompiledBase
 {
-    /** @var callable  Blueprints loader. */
+    /**
+     * @var callable  Blueprints loader.
+     */
     protected $callable;
 
-    /** @var bool */
-    protected $withDefaults = false;
-
     /**
-     * CompiledConfig constructor.
-     * @param string $cacheFolder
-     * @param array $files
-     * @param string $path
+     * @var bool
      */
+    protected $withDefaults;
+
     public function __construct($cacheFolder, array $files, $path)
     {
         parent::__construct($cacheFolder, $files, $path);

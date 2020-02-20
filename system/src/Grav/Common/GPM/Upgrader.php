@@ -18,10 +18,13 @@ use Grav\Common\GPM\Remote\GravCore;
  */
 class Upgrader
 {
-    /** @var GravCore Remote details about latest Grav version */
+    /**
+     * Remote details about latest Grav version
+     *
+     * @var GravCore
+     */
     private $remote;
 
-    /** @var string|null */
     private $min_php;
 
     /**
@@ -80,6 +83,7 @@ class Upgrader
      * Returns the changelog list for each version of Grav
      *
      * @param string $diff the version number to start the diff from
+     *
      * @return array return the changelog list for each version
      */
     public function getChangelog($diff = null)
@@ -105,7 +109,7 @@ class Upgrader
     /**
      * Get minimum PHP version from remote
      *
-     * @return string
+     * @return null
      */
     public function minPHPVersion()
     {

@@ -12,7 +12,6 @@ namespace Grav\Common\Page\Medium;
 use Grav\Common\Grav;
 use Grav\Common\Data\Blueprint;
 use Grav\Framework\Form\FormFlashFile;
-use Psr\Http\Message\UploadedFileInterface;
 
 class MediumFactory
 {
@@ -21,7 +20,7 @@ class MediumFactory
      *
      * @param  string $file
      * @param  array  $params
-     * @return Medium|null
+     * @return Medium
      */
     public static function fromFile($file, array $params = [])
     {
@@ -32,12 +31,12 @@ class MediumFactory
         $parts = pathinfo($file);
         $path = $parts['dirname'];
         $filename = $parts['basename'];
-        $ext = $parts['extension'] ?? '';
+        $ext = $parts['extension'];
         $basename = $parts['filename'];
 
         $config = Grav::instance()['config'];
 
-        $media_params = $ext ? $config->get('media.types.' . strtolower($ext)) : null;
+        $media_params = $config->get('media.types.' . strtolower($ext));
         if (!\is_array($media_params)) {
             return null;
         }
@@ -72,32 +71,22 @@ class MediumFactory
     /**
      * Create Medium from an uploaded file
      *
-     * @param  UploadedFileInterface $uploadedFile
+     * @param  FormFlashFile $uploadedFile
      * @param  array  $params
-     * @return Medium|null
+     * @return Medium
      */
-    public static function fromUploadedFile(UploadedFileInterface $uploadedFile, array $params = [])
+    public static function fromUploadedFile(FormFlashFile $uploadedFile, array $params = [])
     {
-        // For now support only FormFlashFiles, which exist over multiple requests. Also ignore errored and moved media.
-        if (!$uploadedFile instanceof FormFlashFile || $uploadedFile->getError() !== \UPLOAD_ERR_OK || $uploadedFile->isMoved()) {
-            return null;
-        }
-
-        $clientName = $uploadedFile->getClientFilename();
-        if (!$clientName) {
-            return null;
-        }
-
-        $parts = pathinfo($clientName);
+        $parts = pathinfo($uploadedFile->getClientFilename());
         $filename = $parts['basename'];
-        $ext = $parts['extension'] ?? '';
+        $ext = $parts['extension'];
         $basename = $parts['filename'];
         $file = $uploadedFile->getTmpFile();
-        $path = $file ? dirname($file) : '';
+        $path = dirname($file);
 
         $config = Grav::instance()['config'];
 
-        $media_params = $ext ? $config->get('media.types.' . strtolower($ext)) : null;
+        $media_params = $config->get('media.types.' . strtolower($ext));
         if (!\is_array($media_params)) {
             return null;
         }
@@ -115,7 +104,7 @@ class MediumFactory
             'basename' => $basename,
             'extension' => $ext,
             'path' => $path,
-            'modified' => $file ? filemtime($file) : 0,
+            'modified' => filemtime($file),
             'thumbnails' => []
         ];
 
@@ -160,7 +149,7 @@ class MediumFactory
     /**
      * Create a new ImageMedium by scaling another ImageMedium object.
      *
-     * @param  ImageMedium|Medium $medium
+     * @param  ImageMedium $medium
      * @param  int         $from
      * @param  int         $to
      * @return Medium|array

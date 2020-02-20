@@ -34,13 +34,13 @@ export default class Cache {
     enable() {
         this.element
             .removeAttr('disabled')
-            .find('> .fa').removeClass('fa-refresh fa-spin fa-retweet').addClass('fa-retweet');
+            .find('> .fa').removeClass('fa-refresh fa-spin').addClass('fa-trash');
     }
 
     disable() {
         this.element
             .attr('disabled', 'disabled')
-            .find('> .fa').removeClass('fa-retweet').addClass('fa-refresh fa-spin');
+            .find('> .fa').removeClass('fa-trash').addClass('fa-refresh fa-spin');
     }
 }
 

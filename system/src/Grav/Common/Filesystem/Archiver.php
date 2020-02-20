@@ -13,19 +13,13 @@ use Grav\Common\Utils;
 
 abstract class Archiver
 {
-    /** @var array */
     protected $options = [
         'exclude_files' => ['.DS_Store'],
         'exclude_paths' => []
     ];
 
-    /** @var string */
     protected $archive_file;
 
-    /**
-     * @param string $compression
-     * @return ZipArchiver
-     */
     public static function create($compression)
     {
         if ($compression === 'zip') {
@@ -35,20 +29,12 @@ abstract class Archiver
         return new ZipArchiver();
     }
 
-    /**
-     * @param string $archive_file
-     * @return $this
-     */
     public function setArchive($archive_file)
     {
         $this->archive_file = $archive_file;
         return $this;
     }
 
-    /**
-     * @param array $options
-     * @return $this
-     */
     public function setOptions($options)
     {
         // Set infinite PHP execution time if possible.
@@ -60,31 +46,12 @@ abstract class Archiver
         return $this;
     }
 
-    /**
-     * @param string $folder
-     * @param callable|null $status
-     * @return $this
-     */
-    abstract public function compress($folder, callable $status = null);
+    public abstract function compress($folder, callable $status = null);
 
-    /**
-     * @param string $destination
-     * @param callable|null $status
-     * @return $this
-     */
-    abstract public function extract($destination, callable $status = null);
+    public abstract function extract($destination, callable $status = null);
 
-    /**
-     * @param array $folders
-     * @param callable|null $status
-     * @return $this
-     */
-    abstract public function addEmptyFolders($folders, callable $status = null);
+    public abstract function addEmptyFolders($folders, callable $status = null);
 
-    /**
-     * @param string $rootPath
-     * @return \RecursiveIteratorIterator
-     */
     protected function getArchiveFiles($rootPath)
     {
         $exclude_paths = $this->options['exclude_paths'];
@@ -95,4 +62,5 @@ abstract class Archiver
 
         return $files;
     }
+
 }

@@ -27,14 +27,14 @@ interface ObjectInterface extends \Serializable, \JsonSerializable
 
     /**
      * @param  string       $property   Object property name.
-     * @return bool                     True if property has been defined (property can be null).
+     * @return bool|bool[]              True if property has been defined (can be null).
      */
     public function hasProperty($property);
 
     /**
      * @param  string       $property   Object property to be fetched.
      * @param  mixed|null   $default    Default value if property has not been set.
-     * @return mixed                    Property value.
+     * @return mixed|mixed[]            Property value.
      */
     public function getProperty($property, $default = null);
 

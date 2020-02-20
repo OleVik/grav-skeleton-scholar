@@ -1,3 +1,11 @@
+# v1.0.6
+##  20-02-2020
+
+1. [](#improved)
+    * Align Theme
+2. [](#new)
+    * Temporarily drop submodiles
+
 # v1.0.5
 ##  27-12-2019
 

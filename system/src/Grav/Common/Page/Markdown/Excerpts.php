@@ -12,7 +12,6 @@ namespace Grav\Common\Page\Markdown;
 use Grav\Common\Grav;
 use Grav\Common\Page\Interfaces\PageInterface;
 use Grav\Common\Page\Medium\Link;
-use Grav\Common\Page\Pages;
 use Grav\Common\Uri;
 use Grav\Common\Page\Medium\Medium;
 use Grav\Common\Utils;
@@ -21,16 +20,11 @@ use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 
 class Excerpts
 {
-    /** @var PageInterface|null */
+    /** @var PageInterface */
     protected $page;
     /** @var array */
     protected $config;
 
-    /**
-     * Excerpts constructor.
-     * @param PageInterface|null $page
-     * @param array|null $config
-     */
     public function __construct(PageInterface $page = null, array $config = null)
     {
         $this->page = $page ?? Grav::instance()['page'] ?? null;
@@ -48,25 +42,16 @@ class Excerpts
         $this->config = $config;
     }
 
-    /**
-     * @return PageInterface|null
-     */
-    public function getPage(): ?PageInterface
+    public function getPage(): PageInterface
     {
         return $this->page;
     }
 
-    /**
-     * @return array
-     */
     public function getConfig(): array
     {
         return $this->config;
     }
 
-    /**
-     * @param object $markdown
-     */
     public function fireInitializedEvent($markdown): void
     {
         $grav = Grav::instance();
@@ -123,12 +108,12 @@ class Excerpts
                 }
             }
 
-            $url_parts['query'] = http_build_query($actions, '', '&', PHP_QUERY_RFC3986);
+            $url_parts['query'] = http_build_query($actions, null, '&', PHP_QUERY_RFC3986);
         }
 
         // If no query elements left, unset query.
         if (empty($url_parts['query'])) {
-            unset($url_parts['query']);
+            unset ($url_parts['query']);
         }
 
         // Set path to / if not set.
@@ -177,10 +162,9 @@ class Excerpts
             $filename = $url_parts['scheme'] . '://' . ($url_parts['path'] ?? '');
 
             $media = $this->page->getMedia();
+
         } else {
             $grav = Grav::instance();
-            /** @var Pages $pages */
-            $pages = $grav['pages'];
 
             // File is also local if scheme is http(s) and host matches.
             $local_file = isset($url_parts['path'])
@@ -197,10 +181,11 @@ class Excerpts
                     $media = $this->page->getMedia();
                 } else {
                     // see if this is an external page to this one
-                    $base_url = rtrim($grav['base_url_relative'] . $pages->base(), '/');
+                    $base_url = rtrim($grav['base_url_relative'] . $grav['pages']->base(), '/');
                     $page_route = '/' . ltrim(str_replace($base_url, '', $folder), '/');
 
-                    $ext_page = $pages->find($page_route, true);
+                    /** @var PageInterface $ext_page */
+                    $ext_page = $grav['pages']->dispatch($page_route, true);
                     if ($ext_page) {
                         $media = $ext_page->getMedia();
                     } else {
@@ -226,6 +211,7 @@ class Excerpts
             $id = $element_excerpt['id'] ?? '';
 
             $excerpt['element'] = $medium->parsedownElement($title, $alt, $class, $id, true);
+
         } else {
             // Not a current page media file, see if it needs converting to relative.
             $excerpt['element']['attributes']['src'] = Uri::buildUrl($url_parts);

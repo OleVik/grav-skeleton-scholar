@@ -9,9 +9,7 @@
 
 namespace Grav\Common\Twig;
 
-use Twig\Environment;
-
-class TwigEnvironment extends Environment
+class TwigEnvironment extends \Twig_Environment
 {
     use WriteCacheFileTrait;
 }

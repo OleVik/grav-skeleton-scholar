@@ -14,9 +14,8 @@ use Grav\Common\Data\Blueprints;
 use Grav\Common\Data\Data;
 use Grav\Common\File\CompiledYamlFile;
 use Grav\Common\Grav;
-use Grav\Common\Media\Interfaces\MediaCollectionInterface;
 use Grav\Common\Page\Media;
-use Grav\Common\Page\Medium\Medium;
+use Grav\Common\Page\Medium\ImageMedium;
 use Grav\Common\Page\Medium\MediumFactory;
 use Grav\Common\User\Authentication;
 use Grav\Common\User\Interfaces\UserInterface;
@@ -26,7 +25,6 @@ class User extends Data implements UserInterface
 {
     use UserTrait;
 
-    /** @var MediaCollectionInterface */
     protected $_media;
 
     /**
@@ -105,7 +103,7 @@ class User extends Data implements UserInterface
      */
     public function save()
     {
-        /** @var CompiledYamlFile|null $file */
+        /** @var CompiledYamlFile $file */
         $file = $this->file();
         if (!$file || !$file->filename()) {
             user_error(__CLASS__ . ': calling \$user = new ' . __CLASS__ . "() is deprecated since Grav 1.6, use \$grav['accounts']->load(\$username) or \$grav['accounts']->load('') instead", E_USER_DEPRECATED);
@@ -137,7 +135,7 @@ class User extends Data implements UserInterface
     {
         if (null === $this->_media) {
             // Media object should only contain avatar, nothing else.
-            $media = new Media($this->getMediaFolder() ?? '', $this->getMediaOrder(), false);
+            $media = new Media($this->getMediaFolder(), $this->getMediaOrder(), false);
 
             $path = $this->getAvatarFile();
             if ($path && is_file($path)) {
@@ -209,7 +207,7 @@ class User extends Data implements UserInterface
     /**
      * Return media object for the User's avatar.
      *
-     * @return Medium|null
+     * @return ImageMedium|null
      * @deprecated 1.6 Use ->getAvatarImage() method instead.
      */
     public function getAvatarMedia()
@@ -245,7 +243,7 @@ class User extends Data implements UserInterface
     {
         user_error(__CLASS__ . '::' . __FUNCTION__ . '() is deprecated since Grav 1.5, use authorize() method instead', E_USER_DEPRECATED);
 
-        return $this->authorize($action) ?? false;
+        return $this->authorize($action);
     }
 
     /**

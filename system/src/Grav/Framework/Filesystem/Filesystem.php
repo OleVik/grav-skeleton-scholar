@@ -18,14 +18,14 @@ class Filesystem implements FilesystemInterface
     /** @var bool|null */
     private $normalize;
 
-    /** @var static|null */
-    protected static $default;
+    /** @var static */
+    static protected $default;
 
-    /** @var static|null */
-    protected static $unsafe;
+    /** @var static */
+    static protected $unsafe;
 
-    /** @var static|null */
-    protected static $safe;
+    /** @var static */
+    static protected $safe;
 
     /**
      * @param bool|null $normalize See $this->setNormalization()
@@ -184,15 +184,11 @@ class Filesystem implements FilesystemInterface
      * @param string $path
      * @param int|null $options
      *
-     * @return array|string
+     * @return array
      */
     protected function pathinfoInternal(?string $scheme, string $path, int $options = null)
     {
-        if ($options) {
-            return \pathinfo($path, $options);
-        }
-
-        $info = \pathinfo($path);
+        $info = $options ? \pathinfo($path, $options) : \pathinfo($path);
 
         if (null !== $scheme) {
             $info['scheme'] = $scheme;

@@ -30,11 +30,11 @@ class Theme extends Plugin
     /**
      * Get configuration of the plugin.
      *
-     * @return array
+     * @return Config
      */
     public function config()
     {
-        return $this->config["themes.{$this->name}"] ?? [];
+        return $this->config["themes.{$this->name}"];
     }
 
     /**
@@ -42,7 +42,7 @@ class Theme extends Plugin
      *
      * @param string $theme_name The name of the theme whose config it should store.
      *
-     * @return bool
+     * @return true
      */
     public static function saveConfig($theme_name)
     {

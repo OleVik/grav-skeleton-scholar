@@ -11,8 +11,6 @@ namespace Grav\Common\User\Traits;
 
 use Grav\Common\Grav;
 use Grav\Common\Page\Medium\ImageMedium;
-use Grav\Common\Page\Medium\Medium;
-use Grav\Common\Page\Medium\StaticImageMedium;
 use Grav\Common\User\Authentication;
 use Grav\Common\Utils;
 
@@ -65,22 +63,15 @@ trait UserTrait
      *
      * @param  string $action
      * @param  string|null $scope
-     * @return bool|null
+     * @return bool
      */
-    public function authorize(string $action, string $scope = null): ?bool
+    public function authorize(string $action, string $scope = null): bool
     {
-        // User needs to be enabled.
-        if ($this->get('state', 'enabled') !== 'enabled') {
-            return false;
-        }
-
-        // User needs to be logged in.
         if (!$this->get('authenticated')) {
             return false;
         }
 
-        // User needs to be authorized (2FA).
-        if (strpos($action, 'login') === false && !$this->get('authorized', true)) {
+        if ($this->get('state', 'enabled') !== 'enabled') {
             return false;
         }
 
@@ -116,9 +107,9 @@ trait UserTrait
      *
      * Note: if there's no local avatar image for the user, you should call getAvatarUrl() to get the external avatar URL.
      *
-     * @return ImageMedium|StaticImageMedium|null
+     * @return ImageMedium|null
      */
-    public function getAvatarImage(): ?Medium
+    public function getAvatarImage(): ?ImageMedium
     {
         $avatars = $this->get('avatar');
         if (\is_array($avatars) && $avatars) {
@@ -128,8 +119,7 @@ trait UserTrait
             $name = $avatar['name'] ?? null;
 
             $image = $name ? $media[$name] : null;
-            if ($image instanceof ImageMedium ||
-                $image instanceof StaticImageMedium) {
+            if ($image instanceof ImageMedium) {
                 return $image;
             }
         }

@@ -1,3 +1,22 @@
+# v3.0.6
+## 02/11/2020
+
+1. [](#improved)
+    * Updated email validator library
+
+# v3.0.5
+## 02/03/2020
+
+1. [](#bugfix)
+    * Fixed a date in changelog (no other changes)
+
+# v3.0.4
+## 01/17/2020
+
+1. [](#improved)
+    * Added ZOHO configuration example
+    * Updated SwiftMailer library for PHP 7.4 support
+
 # v3.0.3
 ## 08/16/2019
 

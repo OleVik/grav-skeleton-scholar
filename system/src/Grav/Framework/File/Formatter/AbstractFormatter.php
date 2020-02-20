@@ -49,16 +49,6 @@ abstract class AbstractFormatter implements FileFormatterInterface
     }
 
     /**
-     * @return string
-     */
-    public function getMimeType(): string
-    {
-        $mime = $this->getConfig('mime');
-
-        return \is_string($mime) ? $mime : 'application/octet-stream';
-    }
-
-    /**
      * {@inheritdoc}
      * @see FileFormatterInterface::getDefaultFileExtension()
      */
@@ -67,7 +57,7 @@ abstract class AbstractFormatter implements FileFormatterInterface
         $extensions = $this->getSupportedFileExtensions();
 
         // Call fails on bad configuration.
-        return reset($extensions) ?: '';
+        return reset($extensions);
     }
 
     /**

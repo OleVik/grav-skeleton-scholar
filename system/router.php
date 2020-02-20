@@ -20,7 +20,6 @@ if (is_file($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $_SERVER['SCRIPT_N
 $grav_index = 'index.php';
 
 /* Check the GRAV_BASEDIR environment variable and use if set */
-
 $grav_basedir = getenv('GRAV_BASEDIR') ?: '';
 if ($grav_basedir) {
     $grav_index = ltrim($grav_basedir, '/') . DIRECTORY_SEPARATOR . $grav_index;

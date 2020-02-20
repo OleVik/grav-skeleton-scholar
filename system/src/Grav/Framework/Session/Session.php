@@ -9,6 +9,7 @@
 
 namespace Grav\Framework\Session;
 
+use Grav\Common\User\Interfaces\UserInterface;
 use Grav\Framework\Session\Exceptions\SessionException;
 
 /**
@@ -175,9 +176,13 @@ class Session implements SessionInterface
             return $this;
         }
 
+        $sessionName = session_name();
+        $sessionExists = isset($_COOKIE[$sessionName]);
+
         // Protection against invalid session cookie names throwing exception: http://php.net/manual/en/function.session-id.php#116836
-        if (isset($_COOKIE[session_name()]) && !preg_match('/^[-,a-zA-Z0-9]{1,128}$/', $_COOKIE[session_name()])) {
-            unset($_COOKIE[session_name()]);
+        if ($sessionExists && !preg_match('/^[-,a-zA-Z0-9]{1,128}$/', $_COOKIE[$sessionName])) {
+            unset($_COOKIE[$sessionName]);
+            $sessionExists = false;
         }
 
         $options = $this->options;
@@ -194,28 +199,28 @@ class Session implements SessionInterface
             throw new SessionException('Failed to start session: ' . $error, 500);
         }
 
-        try {
-            if ($user && !$user->isValid()) {
-                throw new \RuntimeException('Invalid User');
-            }
-        } catch (\TypeError|\RuntimeException $e) {
-            $this->clear();
-            throw new SessionException('Invalid User Object, restarting session', 500, $e);
+        $this->started = true;
+
+        if ($user && (!$user instanceof UserInterface || !$user->isValid())) {
+            $this->invalidate();
+
+            throw new SessionException('Invalid User object, session destroyed.', 500);
         }
 
-        $params = session_get_cookie_params();
+        // Extend the lifetime of the session.
+        if ($sessionExists) {
+            $params = session_get_cookie_params();
 
-        setcookie(
-            session_name(),
-            session_id(),
-            time() + $params['lifetime'],
-            $params['path'],
-            $params['domain'],
-            $params['secure'],
-            $params['httponly']
-        );
-
-        $this->started = true;
+            setcookie(
+                $sessionName,
+                session_id(),
+                time() + $params['lifetime'],
+                $params['path'],
+                $params['domain'],
+                $params['secure'],
+                $params['httponly']
+            );
+        }
 
         return $this;
     }

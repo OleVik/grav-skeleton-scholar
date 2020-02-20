@@ -20,7 +20,9 @@ use Grav\Framework\Cache\AbstractCache;
  */
 class MemoryCache extends AbstractCache
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $cache = [];
 
     public function doGet($key, $miss)

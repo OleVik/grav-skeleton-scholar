@@ -13,28 +13,33 @@ use Grav\Common\Data\Blueprint;
 use Grav\Common\Data\Data;
 use Grav\Common\Page\Interfaces\PageInterface;
 use Grav\Common\Config\Config;
+use RocketTheme\Toolbox\Event\EventDispatcher;
 use RocketTheme\Toolbox\Event\EventSubscriberInterface;
 use RocketTheme\Toolbox\File\YamlFile;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Plugin implements EventSubscriberInterface, \ArrayAccess
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     public $name;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     public $features = [];
 
-    /** @var Grav */
+    /**
+     * @var Grav
+     */
     protected $grav;
 
-    /** @var Config */
+    /**
+     * @var Config
+     */
     protected $config;
 
-    /** @var bool */
     protected $active = true;
-
-    /** @var Blueprint */
     protected $blueprint;
 
     /**
@@ -61,7 +66,7 @@ class Plugin implements EventSubscriberInterface, \ArrayAccess
      *
      * @param string $name
      * @param Grav   $grav
-     * @param Config|null $config
+     * @param Config $config
      */
     public function __construct($name, Grav $grav, Config $config = null)
     {
@@ -163,7 +168,8 @@ class Plugin implements EventSubscriberInterface, \ArrayAccess
     {
         $grav = Grav::instance();
         $override = implode('.', ["priorities", $this->name, $eventName, $params[0]]);
-        if ($grav['config']->get($override) !== null) {
+        if ($grav['config']->get($override) !== null)
+        {
             return $grav['config']->get($override);
         } elseif (isset($params[1])) {
             return $params[1];
@@ -299,7 +305,7 @@ class Plugin implements EventSubscriberInterface, \ArrayAccess
 
             // Create new config object and set it on the page object so it's cached for next time
             $page->modifyHeader($class_name_merged, new Data($header));
-        } elseif (isset($page_header->{$class_name_merged})) {
+        } else if (isset($page_header->{$class_name_merged})) {
             $merged = $page_header->{$class_name_merged};
             $header = $merged->toArray();
         }

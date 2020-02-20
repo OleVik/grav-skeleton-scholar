@@ -8,8 +8,8 @@
 
 // Some standard defines
 define('GRAV', true);
-define('GRAV_VERSION', '1.7.0-rc.2');
-define('GRAV_TESTING', true);
+define('GRAV_VERSION', '1.6.21');
+define('GRAV_TESTING', false);
 define('DS', '/');
 
 if (!defined('GRAV_PHP_MIN')) {

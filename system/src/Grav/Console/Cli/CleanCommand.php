@@ -319,4 +319,5 @@ class CleanCommand extends Command
         $this->output->getFormatter()->setStyle('magenta', new OutputFormatterStyle('magenta', null, ['bold']));
         $this->output->getFormatter()->setStyle('white', new OutputFormatterStyle('white', null, ['bold']));
     }
+
 }

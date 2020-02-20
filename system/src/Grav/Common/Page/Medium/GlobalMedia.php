@@ -17,7 +17,7 @@ class GlobalMedia extends AbstractMedia
     /**
      * Return media path.
      *
-     * @return string|null
+     * @return null
      */
     public function getPath()
     {
@@ -25,7 +25,8 @@ class GlobalMedia extends AbstractMedia
     }
 
     /**
-     * @param string $offset
+     * @param mixed $offset
+     *
      * @return bool
      */
     public function offsetExists($offset)
@@ -34,7 +35,8 @@ class GlobalMedia extends AbstractMedia
     }
 
     /**
-     * @param string $offset
+     * @param mixed $offset
+     *
      * @return mixed
      */
     public function offsetGet($offset)

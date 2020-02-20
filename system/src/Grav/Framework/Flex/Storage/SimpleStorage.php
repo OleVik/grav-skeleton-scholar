@@ -26,8 +26,6 @@ class SimpleStorage extends AbstractFilesystemStorage
     protected $dataPattern;
     /** @var array */
     protected $data;
-    /** @var int */
-    protected $modified;
 
     /**
      * {@inheritdoc}
@@ -47,7 +45,6 @@ class SimpleStorage extends AbstractFilesystemStorage
 
         $this->dataPattern = basename($pattern, $extension) . $extension;
         $this->dataFolder = \dirname($options['folder']);
-        $this->keyField = $options['key'] ?? 'storage_key';
 
         // Make sure that the data folder exists.
         if (!file_exists($this->dataFolder)) {
@@ -57,24 +54,6 @@ class SimpleStorage extends AbstractFilesystemStorage
                 throw new \RuntimeException(sprintf('Flex: %s', $e->getMessage()));
             }
         }
-    }
-
-    /**
-     * @param string[] $keys
-     * @return array
-     */
-    public function getMetaData(array $keys): array
-    {
-        if (null === $this->data) {
-            $this->buildIndex();
-        }
-
-        $list = [];
-        foreach ($keys as $key) {
-            $list[$key] = $this->getObjectMeta((string)$key);
-        }
-
-        return $list;
     }
 
     /**
@@ -111,7 +90,8 @@ class SimpleStorage extends AbstractFilesystemStorage
 
         $list = [];
         foreach ($rows as $key => $row) {
-            $list[$key] = $this->saveRow('@@', $rows);
+            $key = $this->getNewKey();
+            $this->data[$key] = $list[$key] = $row;
         }
 
         if ($list) {
@@ -133,10 +113,10 @@ class SimpleStorage extends AbstractFilesystemStorage
 
         $list = [];
         foreach ($rows as $key => $row) {
-            if (null === $row || \is_scalar($row)) {
+            if (null === $row || (!\is_object($row) && !\is_array($row))) {
                 // Only load rows which haven't been loaded before.
                 $key = (string)$key;
-                $list[$key] = $this->hasKey($key) ? $this->loadRow($key) : null;
+                $list[$key] = $this->hasKey($key) ? $this->data[$key] : null;
                 if (null !== $fetched) {
                     $fetched[$key] = $list[$key];
                 }
@@ -159,19 +139,15 @@ class SimpleStorage extends AbstractFilesystemStorage
             $this->buildIndex();
         }
 
-        $save = false;
         $list = [];
         foreach ($rows as $key => $row) {
             $key = (string)$key;
             if ($this->hasKey($key)) {
-                $list[$key] = $this->saveRow($key, $row);
-                $save = true;
-            } else {
-                $list[$key] = null;
+                $this->data[$key] = $list[$key] = $row;
             }
         }
 
-        if ($save) {
+        if ($list) {
             $this->save();
         }
 
@@ -216,7 +192,10 @@ class SimpleStorage extends AbstractFilesystemStorage
 
         $list = [];
         foreach ($rows as $key => $row) {
-            $list[$key] = $this->saveRow($key, $row);
+            if (strpos($key, '@@')) {
+                $key = $this->getNewKey();
+            }
+            $this->data[$key] = $list[$key] = $row;
         }
 
         if ($list) {
@@ -224,26 +203,6 @@ class SimpleStorage extends AbstractFilesystemStorage
         }
 
         return $list;
-    }
-
-    /**
-     * @param string $src
-     * @param string $dst
-     * @return bool
-     */
-    public function copyRow(string $src, string $dst): bool
-    {
-        if ($this->hasKey($dst)) {
-            throw new \RuntimeException("Cannot copy object: key '{$dst}' is already taken");
-        }
-
-        if (!$this->hasKey($src)) {
-            return false;
-        }
-
-        $this->data[$dst] = $this->data[$src];
-
-        return true;
     }
 
     /**
@@ -282,7 +241,7 @@ class SimpleStorage extends AbstractFilesystemStorage
      * {@inheritdoc}
      * @see FlexStorageInterface::getStoragePath()
      */
-    public function getStoragePath(string $key = null): ?string
+    public function getStoragePath(string $key = null): string
     {
         return $this->dataFolder . '/' . $this->dataPattern;
     }
@@ -291,90 +250,20 @@ class SimpleStorage extends AbstractFilesystemStorage
      * {@inheritdoc}
      * @see FlexStorageInterface::getMediaPath()
      */
-    public function getMediaPath(string $key = null): ?string
+    public function getMediaPath(string $key = null): string
     {
-        return null;
+        return sprintf('%s/%s/%s', $this->dataFolder, basename($this->dataPattern, $this->dataFormatter->getDefaultFileExtension()), $key);
     }
 
-    /**
-     * Prepares the row for saving and returns the storage key for the record.
-     *
-     * @param array $row
-     */
-    protected function prepareRow(array &$row): void
-    {
-        unset($row[$this->keyField]);
-    }
-
-    /**
-     * @param string $key
-     * @return array
-     */
-    protected function loadRow(string $key): ?array
-    {
-        $data = $this->data[$key] ?? [];
-        if ($this->keyField !== 'storage_key') {
-            $data[$this->keyField] = $key;
-        }
-        $data['__META'] = $this->getObjectMeta($key);
-
-        return $data;
-    }
-
-    /**
-     * @param string $key
-     * @param array $row
-     * @return array
-     */
-    protected function saveRow(string $key, array $row): array
-    {
-        try {
-            if (isset($row[$this->keyField])) {
-                $key = $row[$this->keyField];
-            }
-            if (strpos($key, '@@') !== false) {
-                $key = $this->getNewKey();
-            }
-
-            $this->prepareRow($row);
-            unset($row['__META'], $row['__ERROR']);
-
-            $this->data[$key] = $row;
-        } catch (\RuntimeException $e) {
-            throw new \RuntimeException(sprintf('Flex saveRow(%s): %s', $key, $e->getMessage()));
-        }
-
-        $row['__META'] = $this->getObjectMeta($key, true);
-
-        return $row;
-    }
-
-    /**
-     * @param string $key
-     * @param bool $variations
-     * @return array
-     */
-    public function parseKey(string $key, bool $variations = true): array
-    {
-        return [
-            'key' => $key,
-        ];
-    }
-
-    protected function save(): void
+    protected function save() : void
     {
         if (null === $this->data) {
             $this->buildIndex();
         }
 
         try {
-            $path = $this->getStoragePath();
-            if (!$path) {
-                throw new \RuntimeException('Storage path is not defined');
-            }
-            $file = $this->getFile($path);
+            $file = $this->getFile($this->getStoragePath());
             $file->save($this->data);
-            $this->modified = (int)$file->modified(); // cast false to 0
             $file->free();
         } catch (\RuntimeException $e) {
             throw new \RuntimeException(sprintf('Flex save(): %s', $e->getMessage()));
@@ -399,36 +288,20 @@ class SimpleStorage extends AbstractFilesystemStorage
      */
     protected function buildIndex(): array
     {
-        $path = $this->getStoragePath();
-        if (!$path) {
-            return [];
-        }
+        $file = $this->getFile($this->getStoragePath());
+        $modified = $file->modified();
 
-        $file = $this->getFile($path);
-        $this->modified = (int)$file->modified(); // cast false to 0
         $this->data = (array) $file->content();
 
         $list = [];
         foreach ($this->data as $key => $info) {
-            $list[$key] = $this->getObjectMeta($key);
+            $list[$key] = [
+                'storage_key' => $key,
+                'storage_timestamp' => $modified
+            ];
         }
 
         return $list;
-    }
-
-    /**
-     * @param string $key
-     * @param bool $reload
-     * @return array
-     */
-    protected function getObjectMeta(string $key, bool $reload = false): array
-    {
-        $modified = isset($this->data[$key]) ? $this->modified : 0;
-
-        return [
-            'storage_key' => $key,
-            'storage_timestamp' => $modified
-        ];
     }
 
     /**

@@ -12,21 +12,18 @@ namespace Grav\Framework\Form\Traits;
 use Grav\Common\Data\Blueprint;
 use Grav\Common\Data\Data;
 use Grav\Common\Data\ValidationException;
-use Grav\Common\Debugger;
 use Grav\Common\Form\FormFlash;
 use Grav\Common\Grav;
 use Grav\Common\Twig\Twig;
 use Grav\Common\User\Interfaces\UserInterface;
 use Grav\Common\Utils;
 use Grav\Framework\ContentBlock\HtmlBlock;
-use Grav\Framework\Form\Interfaces\FormFlashInterface;
 use Grav\Framework\Form\Interfaces\FormInterface;
 use Grav\Framework\Session\SessionInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Twig\Error\LoaderError;
 use Twig\Error\SyntaxError;
-use Twig\Template;
 use Twig\TemplateWrapper;
 
 /**
@@ -37,7 +34,7 @@ trait FormTrait
 {
     /** @var string */
     public $status = 'success';
-    /** @var string|null */
+    /** @var string */
     public $message;
     /** @var string[] */
     public $messages = [];
@@ -48,18 +45,14 @@ trait FormTrait
     private $id;
     /** @var string */
     private $uniqueid;
-    /** @var string */
-    private $sessionid;
     /** @var bool */
     private $submitted;
-    /** @var \ArrayAccess|Data|null */
+    /** @var Data|object|null */
     private $data;
     /** @var array|UploadedFileInterface[] */
     private $files;
-    /** @var FormFlashInterface|null */
+    /** @var FormFlash|null */
     private $flash;
-    /** @var string */
-    private $flashFolder;
     /** @var Blueprint */
     private $blueprint;
 
@@ -187,6 +180,7 @@ trait FormTrait
             /** @var Twig $twig */
             $twig = $grav['twig'];
             $twig->twig_vars['form'] = $this;
+
         }
 
         try {
@@ -194,10 +188,6 @@ trait FormTrait
 
             $this->submit($data, $files);
         } catch (\Exception $e) {
-            /** @var Debugger $debugger */
-            $debugger = $grav['debugger'];
-            $debugger->addException($e);
-
             $this->setError($e->getMessage());
         }
 
@@ -249,11 +239,7 @@ trait FormTrait
             $this->validateUploads($this->getFiles());
         } catch (ValidationException $e) {
             $this->setErrors($e->getMessages());
-        } catch (\Exception $e) {
-            /** @var Debugger $debugger */
-            $debugger = Grav::instance()['debugger'];
-            $debugger->addException($e);
-
+        }  catch (\Exception $e) {
             $this->setError($e->getMessage());
         }
 
@@ -264,7 +250,7 @@ trait FormTrait
 
     /**
      * @param array $data
-     * @param UploadedFileInterface[]|null $files
+     * @param UploadedFileInterface[] $files
      * @return FormInterface|$this
      */
     public function submit(array $data, array $files = null): FormInterface
@@ -285,10 +271,6 @@ trait FormTrait
 
             $this->submitted = true;
         } catch (\Exception $e) {
-            /** @var Debugger $debugger */
-            $debugger = Grav::instance()['debugger'];
-            $debugger->addException($e);
-
             $this->setError($e->getMessage());
         }
 
@@ -351,9 +333,9 @@ trait FormTrait
     /**
      * Get form flash object.
      *
-     * @return FormFlashInterface
+     * @return FormFlash
      */
-    public function getFlash()
+    public function getFlash(): FormFlash
     {
         if (null === $this->flash) {
             $grav = Grav::instance();
@@ -375,7 +357,7 @@ trait FormTrait
     /**
      * Get all available form flash objects for this form.
      *
-     * @return FormFlashInterface[]
+     * @return FormFlash[]
      */
     public function getAllFlashes(): array
     {
@@ -403,6 +385,7 @@ trait FormTrait
         }
 
         return $list;
+
     }
 
     /**
@@ -431,22 +414,13 @@ trait FormTrait
 
     protected function getSessionId(): string
     {
-        if (null === $this->sessionid) {
-            /** @var Grav $grav */
-            $grav = Grav::instance();
+        /** @var Grav $grav */
+        $grav = Grav::instance();
 
-            /** @var SessionInterface|null $session */
-            $session = $grav['session'] ?? null;
+        /** @var SessionInterface $session */
+        $session = $grav['session'] ?? null;
 
-            $this->sessionid = $session ? ($session->getId() ?? '') : '';
-        }
-
-        return $this->sessionid;
-    }
-
-    protected function setSessionId(string $sessionId): void
-    {
-        $this->sessionid = $sessionId;
+        return $session ? ($session->getId() ?? '') : '';
     }
 
     protected function unsetFlash(): void
@@ -458,15 +432,11 @@ trait FormTrait
     {
         $grav = Grav::instance();
 
-        /** @var UserInterface|null $user */
+        /** @var UserInterface $user */
         $user = $grav['user'] ?? null;
-        if (null !== $user && $user->exists()) {
-            $username = $user->username;
-            $mediaFolder = $user->getMediaFolder();
-        } else {
-            $username = null;
-            $mediaFolder = null;
-        }
+        $userExists = $user && $user->exists();
+        $username = $userExists ? $user->username : null;
+        $mediaFolder = $userExists ? $user->getMediaFolder() : null;
         $session = $grav['session'] ?? null;
         $sessionId = $session ? $session->getId() : null;
 
@@ -479,26 +449,12 @@ trait FormTrait
             '[ACCOUNT]' => $mediaFolder ?? '!!'
         ];
 
-        $flashLookupFolder = $this->getFlashLookupFolder();
+        $flashFolder = $this->getBlueprint()->get('form/flash_folder', 'tmp://forms/[SESSIONID]');
 
-        $path = str_replace(array_keys($dataMap), array_values($dataMap), $flashLookupFolder);
+        $path = str_replace(array_keys($dataMap), array_values($dataMap), $flashFolder);
 
         // Make sure we only return valid paths.
         return strpos($path, '!!') === false ? rtrim($path, '/') : null;
-    }
-
-    protected function getFlashLookupFolder(): string
-    {
-        if (null === $this->flashFolder) {
-            $this->flashFolder = $this->getBlueprint()->get('form/flash_folder') ?? 'tmp://forms/[SESSIONID]';
-        }
-
-        return $this->flashFolder;
-    }
-
-    protected function setFlashLookupFolder(string $folder): void
-    {
-        $this->flashFolder = $folder;
     }
 
     /**
@@ -525,7 +481,7 @@ trait FormTrait
 
     /**
      * @param string $layout
-     * @return Template|TemplateWrapper
+     * @return TemplateWrapper
      * @throws LoaderError
      * @throws SyntaxError
      */
@@ -592,11 +548,11 @@ trait FormTrait
     /**
      * Validate data and throw validation exceptions if validation fails.
      *
-     * @param \ArrayAccess|Data|null $data
+     * @param \ArrayAccess $data
      * @throws ValidationException
      * @throws \Exception
      */
-    protected function validateData($data = null): void
+    protected function validateData(\ArrayAccess $data): void
     {
         if ($data instanceof Data) {
             $data->validate();
@@ -606,9 +562,9 @@ trait FormTrait
     /**
      * Filter validated data.
      *
-     * @param \ArrayAccess|Data|null $data
+     * @param \ArrayAccess $data
      */
-    protected function filterData($data = null): void
+    protected function filterData(\ArrayAccess $data): void
     {
         if ($data instanceof Data) {
             $data->filter();
@@ -644,7 +600,7 @@ trait FormTrait
         // Handle bad filenames.
         $filename = $file->getClientFilename();
 
-        if ($filename && !Utils::checkFilename($filename)) {
+        if (!Utils::checkFilename($filename)) {
             $grav = Grav::instance();
             throw new \RuntimeException(
                 sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_UPLOAD', null, true), $filename, 'Bad filename')
@@ -667,9 +623,6 @@ trait FormTrait
         // Decode JSON encoded fields and merge them to data.
         if (isset($data['_json'])) {
             $data = array_replace_recursive($data, $this->jsonDecode($data['_json']));
-            if (null === $data) {
-                throw new \RuntimeException(__METHOD__ . '(): Unexpected error');
-            }
             unset($data['_json']);
         }
 

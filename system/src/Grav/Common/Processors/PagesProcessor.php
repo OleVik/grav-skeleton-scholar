@@ -17,12 +17,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class PagesProcessor extends ProcessorBase
 {
-    /** @var string */
     public $id = 'pages';
-    /** @var string */
     public $title = 'Pages';
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {
         $this->startTimer();
 
@@ -43,7 +41,7 @@ class PagesProcessor extends ProcessorBase
             $event = $this->container->fireEvent('onPageNotFound', $event);
 
             if (isset($event->page)) {
-                unset($this->container['page']);
+                unset ($this->container['page']);
                 $this->container['page'] = $page = $event->page;
             } else {
                 throw new \RuntimeException('Page Not Found', 404);

@@ -77,3 +77,4 @@ class ClearCacheCommand extends ConsoleCommand
         }
     }
 }
+

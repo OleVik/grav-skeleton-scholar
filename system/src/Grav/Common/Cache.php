@@ -15,7 +15,7 @@ use Grav\Common\Filesystem\Folder;
 use Grav\Common\Scheduler\Scheduler;
 use Psr\SimpleCache\CacheInterface;
 use RocketTheme\Toolbox\Event\Event;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use RocketTheme\Toolbox\Event\EventDispatcher;
 
 /**
  * The GravCache object is used throughout Grav to store and retrieve cached data.
@@ -29,34 +29,36 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  */
 class Cache extends Getters
 {
-    /** @var string Cache key. */
+    /**
+     * @var string Cache key.
+     */
     protected $key;
 
-    /** @var int */
     protected $lifetime;
-
-    /** @var int */
     protected $now;
 
     /** @var Config $config */
     protected $config;
 
-    /** @var DoctrineCache\CacheProvider */
+    /**
+     * @var DoctrineCache\CacheProvider
+     */
     protected $driver;
 
-    /** @var CacheInterface */
+    /**
+     * @var CacheInterface
+     */
     protected $simpleCache;
 
-    /** @var string */
     protected $driver_name;
 
-    /** @var string */
     protected $driver_setting;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     protected $enabled;
 
-    /** @var string */
     protected $cache_dir;
 
     protected static $standard_remove = [
@@ -258,10 +260,8 @@ class Cache extends Getters
             case 'memcache':
                 if (extension_loaded('memcache')) {
                     $memcache = new \Memcache();
-                    $memcache->connect(
-                        $this->config->get('system.cache.memcache.server', 'localhost'),
-                        $this->config->get('system.cache.memcache.port', 11211)
-                    );
+                    $memcache->connect($this->config->get('system.cache.memcache.server', 'localhost'),
+                        $this->config->get('system.cache.memcache.port', 11211));
                     $driver = new DoctrineCache\MemcacheCache();
                     $driver->setMemcache($memcache);
                 } else {
@@ -272,10 +272,8 @@ class Cache extends Getters
             case 'memcached':
                 if (extension_loaded('memcached')) {
                     $memcached = new \Memcached();
-                    $memcached->addServer(
-                        $this->config->get('system.cache.memcached.server', 'localhost'),
-                        $this->config->get('system.cache.memcached.port', 11211)
-                    );
+                    $memcached->addServer($this->config->get('system.cache.memcached.server', 'localhost'),
+                        $this->config->get('system.cache.memcached.port', 11211));
                     $driver = new DoctrineCache\MemcachedCache();
                     $driver->setMemcached($memcached);
                 } else {
@@ -292,10 +290,8 @@ class Cache extends Getters
                     if ($socket) {
                         $redis->connect($socket);
                     } else {
-                        $redis->connect(
-                            $this->config->get('system.cache.redis.server', 'localhost'),
-                            $this->config->get('system.cache.redis.port', 6379)
-                        );
+                        $redis->connect($this->config->get('system.cache.redis.server', 'localhost'),
+                            $this->config->get('system.cache.redis.port', 6379));
                     }
 
                     // Authenticate with password if set
@@ -323,7 +319,7 @@ class Cache extends Getters
      *
      * @param  string $id the id of the cached entry
      *
-     * @return mixed|bool     returns the cached entry, can be any type, or false if doesn't exist
+     * @return object|bool     returns the cached entry, can be any type, or false if doesn't exist
      */
     public function fetch($id)
     {
@@ -338,7 +334,7 @@ class Cache extends Getters
      * Stores a new cached entry.
      *
      * @param  string       $id       the id of the cached entry
-     * @param  array|object|int $data     the data for the cached entry to store
+     * @param  array|object $data     the data for the cached entry to store
      * @param  int          $lifetime the lifetime to store the entry in seconds
      */
     public function save($id, $data, $lifetime = null)
@@ -450,6 +446,7 @@ class Cache extends Getters
                 } else {
                     $remove_paths = self::$standard_remove_no_images;
                 }
+
         }
 
         // Delete entries in the doctrine cache if required
@@ -462,12 +459,11 @@ class Cache extends Getters
         Grav::instance()->fireEvent('onBeforeCacheClear', new Event(['remove' => $remove, 'paths' => &$remove_paths]));
 
         foreach ($remove_paths as $stream) {
+
             // Convert stream to a real path
             try {
                 $path = $locator->findResource($stream, true, true);
-                if ($path === false) {
-                    continue;
-                }
+                if($path === false) continue;
 
                 $anything = false;
                 $files = glob($path . '/*');
@@ -532,6 +528,7 @@ class Cache extends Getters
         if (function_exists('opcache_reset')) {
             @opcache_reset();
         }
+
     }
 
     /**
@@ -637,7 +634,7 @@ class Cache extends Getters
         $name = 'cache-purge';
         $logs = 'logs/' . $name . '.out';
 
-        $job = $scheduler->addFunction('Grav\Common\Cache::purgeJob', [], $name);
+        $job = $scheduler->addFunction('Grav\Common\Cache::purgeJob', [], $name );
         $job->at($at);
         $job->output($logs);
         $job->backlink('/config/system#caching');
@@ -648,9 +645,12 @@ class Cache extends Getters
         $name = 'cache-clear';
         $logs = 'logs/' . $name . '.out';
 
-        $job = $scheduler->addFunction('Grav\Common\Cache::clearJob', [$clear_type], $name);
+        $job = $scheduler->addFunction('Grav\Common\Cache::clearJob', [$clear_type], $name );
         $job->at($at);
         $job->output($logs);
         $job->backlink('/config/system#caching');
+
     }
+
+
 }

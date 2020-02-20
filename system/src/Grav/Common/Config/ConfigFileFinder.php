@@ -13,7 +13,6 @@ use Grav\Common\Filesystem\Folder;
 
 class ConfigFileFinder
 {
-    /** @var string */
     protected $base = '';
 
     /**

@@ -13,6 +13,7 @@ use RocketTheme\Toolbox\ArrayTraits\Countable;
 use RocketTheme\Toolbox\ArrayTraits\Export;
 use RocketTheme\Toolbox\ArrayTraits\ExportInterface;
 use RocketTheme\Toolbox\ArrayTraits\NestedArrayAccessWithGetters;
+use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\File\FileInterface;
 
 class Data implements DataInterface, \ArrayAccess, \Countable, \JsonSerializable, ExportInterface
@@ -25,20 +26,48 @@ class Data implements DataInterface, \ArrayAccess, \Countable, \JsonSerializable
     /** @var array */
     protected $items;
 
-    /** @var Blueprint|null */
+    /** @var Blueprint */
     protected $blueprints;
 
-    /** @var FileInterface|null */
+    /** @var File */
     protected $storage;
+
+    /** @var bool */
+    private $missingValuesAsNull = false;
+
+    /** @var bool */
+    private $keepEmptyValues = true;
 
     /**
      * @param array $items
-     * @param Blueprint|callable|null $blueprints
+     * @param Blueprint|callable $blueprints
      */
     public function __construct(array $items = [], $blueprints = null)
     {
         $this->items = $items;
         $this->blueprints = $blueprints;
+    }
+
+    /**
+     * @param bool $value
+     * @return $this
+     */
+    public function setKeepEmptyValues(bool $value)
+    {
+        $this->keepEmptyValues = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param bool $value
+     * @return $this
+     */
+    public function setMissingValuesAsNull(bool $value)
+    {
+        $this->missingValuesAsNull = $value;
+
+        return $this;
     }
 
     /**
@@ -201,8 +230,8 @@ class Data implements DataInterface, \ArrayAccess, \Countable, \JsonSerializable
     public function filter()
     {
         $args = func_get_args();
-        $missingValuesAsNull = (bool)(array_shift($args) ?: false);
-        $keepEmptyValues = (bool)(array_shift($args) ?: false);
+        $missingValuesAsNull = (bool)(array_shift($args) ?? $this->missingValuesAsNull);
+        $keepEmptyValues = (bool)(array_shift($args) ?? $this->keepEmptyValues);
 
         $this->items = $this->blueprints()->filter($this->items, $missingValuesAsNull, $keepEmptyValues);
 
@@ -226,7 +255,7 @@ class Data implements DataInterface, \ArrayAccess, \Countable, \JsonSerializable
      */
     public function blueprints()
     {
-        if (!$this->blueprints) {
+        if (!$this->blueprints){
             $this->blueprints = new Blueprint;
         } elseif (\is_callable($this->blueprints)) {
             // Lazy load blueprints.
@@ -279,8 +308,8 @@ class Data implements DataInterface, \ArrayAccess, \Countable, \JsonSerializable
     /**
      * Set or get the data storage.
      *
-     * @param FileInterface|null $storage Optionally enter a new storage.
-     * @return FileInterface|null
+     * @param FileInterface $storage Optionally enter a new storage.
+     * @return FileInterface
      */
     public function file(FileInterface $storage = null)
     {

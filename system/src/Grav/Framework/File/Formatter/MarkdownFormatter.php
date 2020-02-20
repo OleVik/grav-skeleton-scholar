@@ -93,10 +93,7 @@ class MarkdownFormatter extends AbstractFormatter
         $encoded .= $body;
 
         // Normalize line endings to Unix style.
-        $encoded = preg_replace("/(\r\n|\r)/u", "\n", $encoded);
-        if (null === $encoded) {
-            throw new \RuntimeException('Encoding markdown failed');
-        }
+        $encoded = preg_replace("/(\r\n|\r)/", "\n", $encoded);
 
         return $encoded;
     }
@@ -120,14 +117,11 @@ class MarkdownFormatter extends AbstractFormatter
         $headerRegex = "/^---\n(.+?)\n---\n{0,}(.*)$/uis";
 
         // Normalize line endings to Unix style.
-        $data = preg_replace("/(\r\n|\r)/u", "\n", $data);
-        if (null === $data) {
-            throw new \RuntimeException('Decoding markdown failed');
-        }
+        $data = preg_replace("/(\r\n|\r)/", "\n", $data);
 
         // Parse header.
         preg_match($headerRegex, ltrim($data), $matches);
-        if (empty($matches)) {
+        if(empty($matches)) {
             $content[$bodyVar] = $data;
         } else {
             // Normalize frontmatter.

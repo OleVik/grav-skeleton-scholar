@@ -18,7 +18,6 @@ class BlueprintSchema extends BlueprintSchemaBase implements ExportInterface
 {
     use Export;
 
-    /** @var array */
     protected $ignoreFormKeys = [
         'title' => true,
         'help' => true,
@@ -54,7 +53,8 @@ class BlueprintSchema extends BlueprintSchemaBase implements ExportInterface
     public function validate(array $data)
     {
         try {
-            $messages = $this->validateArray($data, $this->nested);
+            $messages = $this->validateArray($data, $this->nested, $this->items['']['form'] ?? []);
+
         } catch (\RuntimeException $e) {
             throw (new ValidationException($e->getMessage(), $e->getCode(), $e))->setMessages();
         }
@@ -129,14 +129,15 @@ class BlueprintSchema extends BlueprintSchemaBase implements ExportInterface
     /**
      * @param array $data
      * @param array $rules
+     * @param array $parent
      * @return array
      * @throws \RuntimeException
      */
-    protected function validateArray(array $data, array $rules)
+    protected function validateArray(array $data, array $rules, array $parent)
     {
         $messages = $this->checkRequired($data, $rules);
 
-        foreach ($data as $key => $field) {
+        foreach ($data as $key => $child) {
             $val = $rules[$key] ?? $rules['*'] ?? null;
             $rule = \is_string($val) ? $this->items[$val] : null;
 
@@ -147,11 +148,11 @@ class BlueprintSchema extends BlueprintSchemaBase implements ExportInterface
                     continue;
                 }
 
-                $messages += Validation::validate($field, $rule);
-            } elseif (\is_array($field) && \is_array($val)) {
+                $messages += Validation::validate($child, $rule);
+            } elseif (\is_array($child) && \is_array($val)) {
                 // Array has been defined in blueprints.
-                $messages += $this->validateArray($field, $val);
-            } elseif (isset($rules['validation']) && $rules['validation'] === 'strict') {
+                $messages += $this->validateArray($child, $val, $rule ?? []);
+            } elseif (isset($parent['validation']) && $parent['validation'] === 'strict') {
                 // Undefined/extra item.
                 throw new \RuntimeException(sprintf('%s is not defined in blueprints', $key));
             }
@@ -201,6 +202,7 @@ class BlueprintSchema extends BlueprintSchemaBase implements ExportInterface
             } elseif (\is_array($field) && \is_array($val)) {
                 // Array has been defined in blueprints.
                 $field = $this->filterArray($field, $val, $missingValuesAsNull, $keepEmptyValues);
+
             } elseif (isset($rules['validation']) && $rules['validation'] === 'strict') {
                 // Skip any extra data.
                 continue;
@@ -243,8 +245,8 @@ class BlueprintSchema extends BlueprintSchemaBase implements ExportInterface
                     || !empty($field['disabled'])
                     // Field validation is set to be ignored
                     || !empty($field['validate']['ignore'])
-                    // Field is overridable and the toggle is turned off
-                    || (!empty($field['overridable']) && empty($toggles[$key]))
+                    // Field is toggleable and the toggle is turned off
+                    || (!empty($field['toggleable']) && empty($toggles[$key]))
                 ) {
                     continue;
                 }
@@ -278,15 +280,10 @@ class BlueprintSchema extends BlueprintSchemaBase implements ExportInterface
                 continue;
             }
 
-            // Skip overridable fields without value.
-            // TODO: We need better overridable support, which is not just ignoring required values but also looking if defaults are good.
-            if (!empty($field['overridable']) && !isset($data[$name])) {
-                continue;
-            }
-
             // Check if required.
             if (isset($field['validate']['required'])
                 && $field['validate']['required'] === true) {
+
                 if (isset($data[$name])) {
                     continue;
                 }

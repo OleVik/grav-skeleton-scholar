@@ -22,9 +22,7 @@ use Grav\Framework\Cache\Exception\InvalidArgumentException;
  */
 class FileCache extends AbstractCache
 {
-    /** @var string */
     private $directory;
-    /** @var string|null */
     private $tmp;
 
     /**
@@ -53,12 +51,12 @@ class FileCache extends AbstractCache
             fclose($h);
             @unlink($file);
         } else {
-            $i = rawurldecode(rtrim((string)fgets($h)));
-            $value = stream_get_contents($h) ?: '';
+            $i = rawurldecode(rtrim(fgets($h)));
+            $value = stream_get_contents($h);
             fclose($h);
 
             if ($i === $key) {
-                return unserialize($value, ['allowed_classes' => true]);
+                return unserialize($value);
             }
         }
 

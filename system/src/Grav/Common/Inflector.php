@@ -9,29 +9,21 @@
 
 namespace Grav\Common;
 
-use Grav\Common\Language\Language;
-
 /**
 * This file was originally part of the Akelos Framework
 */
 
 class Inflector
 {
-    /** @var array */
     protected static $plural;
-    /** @var array */
     protected static $singular;
-    /** @var array */
     protected static $uncountable;
-    /** @var array */
     protected static $irregular;
-    /** @var array */
     protected static $ordinals;
 
     public static function init()
     {
         if (empty(static::$plural)) {
-            /** @var Language $language */
             $language = Grav::instance()['language'];
             static::$plural = $language->translate('GRAV.INFLECTOR_PLURALS', null, true) ?: [];
             static::$singular = $language->translate('GRAV.INFLECTOR_SINGULAR', null, true) ?: [];
@@ -47,7 +39,7 @@ class Inflector
      * @param string $word  English noun to pluralize
      * @param int    $count The count
      *
-     * @return string|false Plural noun
+     * @return string Plural noun
      */
     public static function pluralize($word, $count = 2)
     {
@@ -78,6 +70,7 @@ class Inflector
         }
 
         return false;
+
     }
 
     /**

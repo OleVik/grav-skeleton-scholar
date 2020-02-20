@@ -16,24 +16,28 @@ use \Doctrine\Common\Cache\FilesystemCache;
 
 class AbstractPackageCollection extends BaseCollection
 {
-    /** @var string The cached data previously fetched */
+    /**
+     * The cached data previously fetched
+     * @var string
+     */
     protected $raw;
 
-    /** @var int The lifetime to store the entry in seconds */
+    /**
+     * The lifetime to store the entry in seconds
+     * @var int
+     */
     private $lifetime = 86400;
 
-    /** @var string */
     protected $repository;
 
-    /** @var FilesystemCache */
     protected $cache;
 
     /**
      * AbstractPackageCollection constructor.
      *
-     * @param string|null $repository
+     * @param null $repository
      * @param bool $refresh
-     * @param callable|null $callback
+     * @param null $callback
      */
     public function __construct($repository = null, $refresh = false, $callback = null)
     {
@@ -60,11 +64,6 @@ class AbstractPackageCollection extends BaseCollection
         }
     }
 
-    /**
-     * @param bool $refresh
-     * @param callable|null $callback
-     * @return string
-     */
     public function fetch($refresh = false, $callback = null)
     {
         if (!$this->raw || $refresh) {

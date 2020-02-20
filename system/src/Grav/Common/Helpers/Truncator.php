@@ -26,11 +26,10 @@ use DOMLettersIterator;
  * file that was distributed with this source code.
  */
 
-class Truncator
-{
+class Truncator {
+
     /**
      * Safely truncates HTML by a given number of words.
-     *
      * @param  string  $html     Input HTML.
      * @param  int     $limit    Limit to how many words we preserve.
      * @param  string  $ellipsis String to use as ellipsis (if any).
@@ -50,8 +49,10 @@ class Truncator
         $words = new DOMWordsIterator($container);
         $truncated = false;
         foreach ($words as $word) {
+
             // If we have exceeded the limit, we delete the remainder of the content.
             if ($words->key() >= $limit) {
+
                 // Grab current position.
                 $currentWordPosition = $words->currentWordPosition();
                 $curNode = $currentWordPosition[0];
@@ -74,6 +75,7 @@ class Truncator
 
                 break;
             }
+
         }
 
         // Return original HTML if not truncated.
@@ -86,7 +88,6 @@ class Truncator
 
     /**
      * Safely truncates HTML by a given number of letters.
-     *
      * @param  string  $html     Input HTML.
      * @param  int     $limit    Limit to how many letters we preserve.
      * @param  string  $ellipsis String to use as ellipsis (if any).
@@ -106,8 +107,10 @@ class Truncator
         $letters = new DOMLettersIterator($container);
         $truncated = false;
         foreach ($letters as $letter) {
+
             // If we have exceeded the limit, we want to delete the remainder of this document.
             if ($letters->key() >= $limit) {
+
                 $currentText = $letters->currentTextPosition();
                 $currentText[0]->nodeValue = mb_substr($currentText[0]->nodeValue, 0, $currentText[1] + 1);
                 self::removeProceedingNodes($currentText[0], $container);
@@ -132,9 +135,8 @@ class Truncator
 
     /**
      * Builds a DOMDocument object from a string containing HTML.
-     *
      * @param string $html HTML to load
-     * @return DOMDocument Returns a DOMDocument object.
+     * @returns DOMDocument Returns a DOMDocument object.
      */
     public static function htmlToDomDocument($html)
     {
@@ -158,14 +160,12 @@ class Truncator
 
     /**
      * Removes all nodes after the current node.
-     *
      * @param  DOMNode|DOMElement $domNode
      * @param  DOMNode|DOMElement $topNode
      * @return void
      */
     private static function removeProceedingNodes($domNode, $topNode)
     {
-        /** @var DOMNode|null $nextNode */
         $nextNode = $domNode->nextSibling;
 
         if ($nextNode !== null) {
@@ -190,7 +190,7 @@ class Truncator
      * Clean extra code
      *
      * @param DOMDocument $doc
-     * @param DOMDocument $container
+     * @param $container
      * @return string
      */
     private static function getCleanedHTML(DOMDocument $doc, $container)
@@ -199,16 +199,16 @@ class Truncator
             $doc->removeChild($doc->firstChild);
         }
 
-        while ($container->firstChild) {
+        while ($container->firstChild ) {
             $doc->appendChild($container->firstChild);
         }
 
-        return trim($doc->saveHTML());
+        $html = trim($doc->saveHTML());
+        return $html;
     }
 
     /**
      * Inserts an ellipsis
-     *
      * @param  DOMNode|DOMElement $domNode  Element to insert after.
      * @param  string             $ellipsis Text used to suffix our document.
      * @return void
@@ -221,13 +221,12 @@ class Truncator
             // Append as text node to parent instead
             $textNode = new DOMText($ellipsis);
 
-            /** @var DOMNode|null $nextSibling */
-            $nextSibling = $domNode->parentNode->parentNode->nextSibling;
-            if ($nextSibling) {
+            if ($domNode->parentNode->parentNode->nextSibling) {
                 $domNode->parentNode->parentNode->insertBefore($textNode, $domNode->parentNode->parentNode->nextSibling);
             } else {
                 $domNode->parentNode->parentNode->appendChild($textNode);
             }
+
         } else {
             // Append to current node
             $domNode->nodeValue = rtrim($domNode->nodeValue) . $ellipsis;
@@ -235,12 +234,7 @@ class Truncator
     }
 
     /**
-     * @param string $text
-     * @param int $length
-     * @param string $ending
-     * @param bool $exact
-     * @param bool $considerHtml
-     * @return string
+     *
      */
     public function truncate(
         $text,
@@ -254,13 +248,11 @@ class Truncator
             if (strlen(preg_replace('/<.*?>/', '', $text)) <= $length) {
                 return $text;
             }
-
             // splits all html-tags to scanable lines
             preg_match_all('/(<.+?>)?([^<>]*)/s', $text, $lines, PREG_SET_ORDER);
             $total_length = strlen($ending);
+            $open_tags = array();
             $truncate = '';
-            $open_tags = [];
-
             foreach ($lines as $line_matchings) {
                 // if there is any html-tag in this line, handle it and add it (uncounted) to the output
                 if (!empty($line_matchings[1])) {
@@ -268,14 +260,14 @@ class Truncator
                     if (preg_match('/^<(\s*.+?\/\s*|\s*(img|br|input|hr|area|base|basefont|col|frame|isindex|link|meta|param)(\s.+?)?)>$/is', $line_matchings[1])) {
                         // do nothing
                         // if tag is a closing tag
-                    } elseif (preg_match('/^<\s*\/([^\s]+?)\s*>$/s', $line_matchings[1], $tag_matchings)) {
+                    } else if (preg_match('/^<\s*\/([^\s]+?)\s*>$/s', $line_matchings[1], $tag_matchings)) {
                         // delete tag from $open_tags list
                         $pos = array_search($tag_matchings[1], $open_tags);
                         if ($pos !== false) {
                             unset($open_tags[$pos]);
                         }
                         // if tag is an opening tag
-                    } elseif (preg_match('/^<\s*([^\s>!]+).*?>$/s', $line_matchings[1], $tag_matchings)) {
+                    } else if (preg_match('/^<\s*([^\s>!]+).*?>$/s', $line_matchings[1], $tag_matchings)) {
                         // add tag to the beginning of $open_tags list
                         array_unshift($open_tags, strtolower($tag_matchings[1]));
                     }
@@ -309,29 +301,29 @@ class Truncator
                     $total_length += $content_length;
                 }
                 // if the maximum length is reached, get off the loop
-                if ($total_length>= $length) {
+                if($total_length>= $length) {
                     break;
                 }
             }
         } else {
             if (strlen($text) <= $length) {
                 return $text;
+            } else {
+                $truncate = substr($text, 0, $length - strlen($ending));
             }
-
-            $truncate = substr($text, 0, $length - strlen($ending));
         }
         // if the words shouldn't be cut in the middle...
         if (!$exact) {
             // ...search the last occurance of a space...
             $spacepos = strrpos($truncate, ' ');
-            if (false !== $spacepos) {
+            if (isset($spacepos)) {
                 // ...and cut the text in this position
                 $truncate = substr($truncate, 0, $spacepos);
             }
         }
         // add the defined ending to the text
         $truncate .= $ending;
-        if (isset($open_tags)) {
+        if($considerHtml) {
             // close all unclosed html-tags
             foreach ($open_tags as $tag) {
                 $truncate .= '</' . $tag . '>';
@@ -339,4 +331,5 @@ class Truncator
         }
         return $truncate;
     }
+
 }

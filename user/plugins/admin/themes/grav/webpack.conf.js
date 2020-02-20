@@ -9,6 +9,7 @@ module.exports = {
             'chartist',
             'selectize',
             'rangetouch',
+            'remodal',
             'toastr',
             'bootstrap',
             'sortablejs',

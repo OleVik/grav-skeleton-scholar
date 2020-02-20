@@ -14,14 +14,8 @@ use Grav\Common\GPM\Common\Package as BasePackage;
 
 class Package extends BasePackage
 {
-    /** @var array */
     protected $settings;
 
-    /**
-     * Package constructor.
-     * @param Data $package
-     * @param string|null $package_type
-     */
     public function __construct(Data $package, $package_type = null)
     {
         $data = new Data($package->blueprints()->toArray());
@@ -37,10 +31,10 @@ class Package extends BasePackage
     }
 
     /**
-     * @return bool
+     * @return mixed
      */
     public function isEnabled()
     {
-        return (bool)$this->settings['enabled'];
+        return $this->settings['enabled'];
     }
 }

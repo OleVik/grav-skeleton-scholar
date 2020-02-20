@@ -13,6 +13,7 @@ use Grav\Common\Assets;
 
 trait LegacyAssetsTrait
 {
+
     /**
      * @param array $args
      * @param string $type
@@ -38,31 +39,35 @@ trait LegacyAssetsTrait
         }
 
         switch ($type) {
-            case (Assets::JS_TYPE):
+            case(Assets::JS_TYPE):
                 $defaults = ['priority' => null, 'pipeline' => true, 'loading' => null, 'group' => null];
                 $arguments = $this->createArgumentsFromLegacy($args, $defaults);
                 break;
 
-            case (Assets::INLINE_JS_TYPE):
+            case(Assets::INLINE_JS_TYPE):
                 $defaults = ['priority' => null, 'group' => null, 'attributes' => null];
                 $arguments = $this->createArgumentsFromLegacy($args, $defaults);
 
                 // special case to handle old attributes being passed in
                 if (isset($arguments['attributes'])) {
                     $old_attributes = $arguments['attributes'];
-                    $arguments = array_merge($arguments, $old_attributes);
+                    if (is_array($old_attributes)) {
+                        $arguments = array_merge($arguments, $old_attributes);
+                    } else {
+                        $arguments['type'] = $old_attributes;
+                    }
                 }
                 unset($arguments['attributes']);
 
                 break;
 
-            case (Assets::INLINE_CSS_TYPE):
+            case(Assets::INLINE_CSS_TYPE):
                 $defaults = ['priority' => null, 'group' => null];
                 $arguments = $this->createArgumentsFromLegacy($args, $defaults);
                 break;
 
             default:
-            case (Assets::CSS_TYPE):
+            case(Assets::CSS_TYPE):
                 $defaults = ['priority' => null, 'pipeline' => true, 'group' => null, 'loading' => null];
                 $arguments = $this->createArgumentsFromLegacy($args, $defaults);
         }
@@ -70,11 +75,6 @@ trait LegacyAssetsTrait
         return $arguments;
     }
 
-    /**
-     * @param array $args
-     * @param array $defaults
-     * @return array
-     */
     protected function createArgumentsFromLegacy(array $args, array $defaults)
     {
         // Remove arguments with old default values.
@@ -97,7 +97,8 @@ trait LegacyAssetsTrait
      * @param int           $priority
      * @param bool          $pipeline
      * @param string        $group name of the group
-     * @return Assets
+     *
+     * @return \Grav\Common\Assets
      * @deprecated Please use dynamic method with ['loading' => 'async'].
      */
     public function addAsyncJs($asset, $priority = 10, $pipeline = true, $group = 'head')
@@ -114,7 +115,8 @@ trait LegacyAssetsTrait
      * @param int           $priority
      * @param bool          $pipeline
      * @param string        $group name of the group
-     * @return Assets
+     *
+     * @return \Grav\Common\Assets
      * @deprecated Please use dynamic method with ['loading' => 'defer'].
      */
     public function addDeferJs($asset, $priority = 10, $pipeline = true, $group = 'head')
@@ -123,4 +125,5 @@ trait LegacyAssetsTrait
 
         return $this->addJs($asset, $priority, $pipeline, 'defer', $group);
     }
+
 }

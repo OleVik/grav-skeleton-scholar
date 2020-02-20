@@ -32,10 +32,6 @@ class RouteFactory
     public static function createFromString($path)
     {
         $path = ltrim($path, '/');
-        if (self::$language && mb_strpos($path, self::$language) === 0) {
-            $path = ltrim(mb_substr($path, mb_strlen(self::$language)), '/');
-        }
-
         $parts = [
             'path' => $path,
             'query' => '',
@@ -43,8 +39,8 @@ class RouteFactory
             'grav' => [
                 'root' => self::$root,
                 'language' => self::$language,
-                'route' => static::trimParams($path),
-                'params' => static::getParams($path)
+                'route' => $path,
+                'params' => ''
             ],
         ];
         return new Route($parts);
@@ -132,26 +128,6 @@ class RouteFactory
         return $params !== '' ? static::parseParams($params) : [];
     }
 
-    public static function trimParams($str)
-    {
-        if ($str === '') {
-            return $str;
-        }
-
-        $delimiter = self::$delimiter;
-
-        /** @var array $params */
-        $params = explode('/', $str);
-        $list = [];
-        foreach ($params as $param) {
-            if (mb_strpos($param, $delimiter) === false) {
-                $list[] = $param;
-            }
-        }
-
-        return implode('/', $list);
-    }
-
     /**
      * @param string $str
      * @return array
@@ -166,17 +142,16 @@ class RouteFactory
 
         /** @var array $params */
         $params = explode('/', $str);
-        $list = [];
         foreach ($params as &$param) {
             /** @var array $parts */
             $parts = explode($delimiter, $param, 2);
             if (isset($parts[1])) {
                 $var = rawurldecode($parts[0]);
                 $val = rawurldecode($parts[1]);
-                $list[$var] = $val;
+                $param = [$var => $val];
             }
         }
 
-        return $list;
+        return $params;
     }
 }

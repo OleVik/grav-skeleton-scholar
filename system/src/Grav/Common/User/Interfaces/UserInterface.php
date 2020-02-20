@@ -13,7 +13,6 @@ use Grav\Common\Data\Blueprint;
 use Grav\Common\Data\DataInterface;
 use Grav\Common\Media\Interfaces\MediaInterface;
 use Grav\Common\Page\Medium\ImageMedium;
-use Grav\Common\Page\Medium\Medium;
 use RocketTheme\Toolbox\ArrayTraits\ExportInterface;
 
 /**
@@ -30,7 +29,7 @@ use RocketTheme\Toolbox\ArrayTraits\ExportInterface;
  * @property bool $authenticated
  * @property bool $authorized
  */
-interface UserInterface extends AuthorizeInterface, DataInterface, MediaInterface, \ArrayAccess, \JsonSerializable, ExportInterface
+interface UserInterface extends DataInterface, MediaInterface, \ArrayAccess, \JsonSerializable, ExportInterface
 {
     /**
      * @param array $items
@@ -173,13 +172,22 @@ interface UserInterface extends AuthorizeInterface, DataInterface, MediaInterfac
     public function authenticate(string $password): bool;
 
     /**
+     * Checks user authorization to the action.
+     *
+     * @param  string $action
+     * @param  string|null $scope
+     * @return bool
+     */
+    public function authorize(string $action, string $scope = null): bool;
+
+    /**
      * Return media object for the User's avatar.
      *
      * Note: if there's no local avatar image for the user, you should call getAvatarUrl() to get the external avatar URL.
      *
-     * @return Medium|null
+     * @return ImageMedium|null
      */
-    public function getAvatarImage(): ?Medium;
+    public function getAvatarImage(): ?ImageMedium;
 
     /**
      * Return the User's avatar URL.

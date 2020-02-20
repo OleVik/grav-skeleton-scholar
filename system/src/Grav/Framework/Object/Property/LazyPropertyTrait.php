@@ -69,6 +69,7 @@ trait LazyPropertyTrait
     /**
      * @param string $property      Object property to be updated.
      * @param mixed  $value         New value.
+     * @return $this
      */
     protected function doSetProperty($property, $value)
     {
@@ -77,15 +78,20 @@ trait LazyPropertyTrait
         } else {
             $this->setArrayProperty($property, $value);
         }
+
+        return $this;
     }
 
     /**
      * @param string  $property     Object property to be unset.
+     * @return $this
      */
     protected function doUnsetProperty($property)
     {
         $this->hasObjectProperty($property) ?
             $this->unsetObjectProperty($property) : $this->unsetArrayProperty($property);
+
+        return $this;
     }
 
     /**

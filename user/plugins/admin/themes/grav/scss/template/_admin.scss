@@ -639,11 +639,6 @@ body.sidebar-quickopen #admin-main {
             }
         }
 
-        span.button {
-            cursor: default;
-            pointer-events: none;
-        }
-
 
 
         @include breakpoint(mobile-only) {

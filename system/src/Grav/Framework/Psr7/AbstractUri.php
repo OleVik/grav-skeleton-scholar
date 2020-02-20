@@ -20,7 +20,6 @@ use Psr\Http\Message\UriInterface;
  */
 abstract class AbstractUri implements UriInterface
 {
-    /** @var array */
     protected static $defaultPorts = [
         'http'  => 80,
         'https' => 443

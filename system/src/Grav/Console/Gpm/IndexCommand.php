@@ -19,7 +19,7 @@ use Symfony\Component\Console\Input\InputOption;
 
 class IndexCommand extends ConsoleCommand
 {
-    /** @var Packages */
+    /** @var array */
     protected $data;
 
     /** @var GPM */
@@ -27,6 +27,9 @@ class IndexCommand extends ConsoleCommand
 
     /** @var array */
     protected $options;
+
+    /** @var array */
+    protected $sortKeys = ['name', 'slug', 'author', 'date'];
 
     protected function configure()
     {
@@ -114,6 +117,7 @@ class IndexCommand extends ConsoleCommand
             $packages = $this->sort($packages);
 
             if (!empty($packages)) {
+
                 $table = [];
                 $index    = 0;
 
@@ -184,9 +188,9 @@ class IndexCommand extends ConsoleCommand
     }
 
     /**
-     * @param Packages $data
+     * @param array $data
      *
-     * @return Packages
+     * @return mixed
      */
     public function filter($data)
     {
@@ -241,7 +245,6 @@ class IndexCommand extends ConsoleCommand
 
     /**
      * @param Packages $packages
-     * @return Packages
      */
     public function sort($packages)
     {

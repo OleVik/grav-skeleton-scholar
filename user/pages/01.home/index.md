@@ -2,7 +2,10 @@
 title: Scholar
 content:
   items:
-    "@page.children": "/docs"
+    "@page.descendants": "/docs"
+  order:
+    by: date
+    dir: desc
   limit: 10
 aside:
   items:

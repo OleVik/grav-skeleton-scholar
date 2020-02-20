@@ -118,14 +118,14 @@ class Session extends \Grav\Framework\Session\Session
 
                 /** @var Uri $uri */
                 $uri = $grav['uri'];
-                /** @var Grav\Plugin\Form\Forms|null $form */
+                /** @var Grav\Plugin\Form\Forms $form */
                 $form = $grav['forms']->getActiveForm();
 
                 $sessionField = base64_encode($uri->url);
 
-                /** @var FormFlash|null $flash */
+                /** @var FormFlash $flash */
                 $flash = $form ? $form->getFlash() : null;
-                $object = $flash && method_exists($flash, 'getLegacyFiles') ? [$sessionField => $flash->getLegacyFiles()] : null;
+                $object = $flash ? [$sessionField => $flash->getLegacyFiles()] : null;
             }
         }
 

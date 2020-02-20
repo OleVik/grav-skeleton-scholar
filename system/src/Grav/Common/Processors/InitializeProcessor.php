@@ -10,122 +10,42 @@
 namespace Grav\Common\Processors;
 
 use Grav\Common\Config\Config;
-use Grav\Common\Debugger;
-use Grav\Common\Page\Pages;
+use Grav\Common\Grav;
 use Grav\Common\Uri;
 use Grav\Common\Utils;
-use Grav\Framework\Psr7\Response;
 use Grav\Framework\Session\Exceptions\SessionException;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\SyslogHandler;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 class InitializeProcessor extends ProcessorBase
 {
-    /** @var string */
-    public $id = '_init';
-    /** @var string */
+    public $id = 'init';
     public $title = 'Initialize';
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    /** @var bool */
+    private static $cli_initialized = false;
+
+    /**
+     * @param Grav $grav
+     */
+    public static function initializeCli(Grav $grav)
     {
-        $config = $this->initializeConfig();
-        $this->initializeLogger($config);
-        $this->initializeErrors();
+        if (!static::$cli_initialized) {
+            static::$cli_initialized = true;
 
-        $this->startTimer('_debugger', 'Init Debugger');
-        /** @var Debugger $debugger */
-        $debugger = $this->container['debugger']->init();
-        // Clockwork integration.
-        $clockwork = $debugger->getClockwork();
-        if ($clockwork) {
-            $server = $request->getServerParams();
-//            $baseUri = str_replace('\\', '/', dirname(parse_url($server['SCRIPT_NAME'], PHP_URL_PATH)));
-//            if ($baseUri === '/') {
-//                $baseUri = '';
-//            }
-            $requestTime = $server['REQUEST_TIME_FLOAT'] ?? GRAV_REQUEST_TIME;
-
-            $request = $request->withAttribute('request_time', $requestTime);
-
-            // Handle clockwork API calls.
-            $uri = $request->getUri();
-            if (Utils::contains($uri->getPath(), '/__clockwork/')) {
-                return $debugger->debuggerRequest($request);
-            }
-
-            $this->container['clockwork'] = $clockwork;
+            $instance = new static($grav);
+            $instance->processCli();
         }
-        $this->stopTimer('_debugger');
-
-        $this->initialize($config);
-        $this->initializeSession($config);
-
-        // Wrap call to next handler so that debugger can profile it.
-        /** @var Response $response */
-        $response = $debugger->profile(function () use ($handler, $request) {
-            return $handler->handle($request);
-        });
-
-        // Log both request and response and return the response.
-        return $debugger->logRequest($request, $response);
     }
 
-    protected function initializeConfig(): Config
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {
-        $this->startTimer('_config', 'Configuration');
+        $this->startTimer();
 
-        // Initialize Configuration
-        $grav = $this->container;
         /** @var Config $config */
-        $config = $grav['config'];
-        $config->init();
-        $grav['plugins']->setup();
-
-        $this->stopTimer('_config');
-
-        return $config;
-    }
-
-    protected function initializeLogger(Config $config): void
-    {
-        $this->startTimer('_logger', 'Logger');
-
-        // Initialize Logging
-        $grav = $this->container;
-
-        switch ($config->get('system.log.handler', 'file')) {
-            case 'syslog':
-                $log = $grav['log'];
-                $log->popHandler();
-
-                $facility = $config->get('system.log.syslog.facility', 'local6');
-                $logHandler = new SyslogHandler('grav', $facility);
-                $formatter = new LineFormatter("%channel%.%level_name%: %message% %extra%");
-                $logHandler->setFormatter($formatter);
-
-                $log->pushHandler($logHandler);
-                break;
-        }
-
-        $this->stopTimer('_logger');
-    }
-
-    protected function initializeErrors(): void
-    {
-        $this->startTimer('_errors', 'Error Handlers Reset');
-
-        // Initialize Error Handlers
-        $this->container['errors']->resetHandlers();
-
-        $this->stopTimer('_errors');
-    }
-
-    protected function initialize(Config $config): void
-    {
-        $this->startTimer('_init', 'Initialize');
+        $config = $this->container['config'];
+        $config->debug();
 
         // Use output buffering to prevent headers from being sent too early.
         ob_start();
@@ -140,34 +60,8 @@ class InitializeProcessor extends ProcessorBase
             date_default_timezone_set($timezone);
         }
 
-        /** @var Pages $pages */
-        $pages = $this->container['pages'];
-        $pages->register();
-
-        /** @var Uri $uri */
-        $uri = $this->container['uri'];
-        $uri->init();
-
-        // Redirect pages with trailing slash if configured to do so.
-        $path = $uri->path() ?: '/';
-        if ($path !== '/'
-            && $config->get('system.pages.redirect_trailing_slash', false)
-            && Utils::endsWith($path, '/')) {
-            $redirect = (string) $uri::getCurrentRoute()->toString();
-            $this->container->redirect($redirect);
-        }
-
-        $this->container->setLocale();
-
-        $this->stopTimer('_init');
-    }
-
-    protected function initializeSession(Config $config): void
-    {
         // FIXME: Initialize session should happen later after plugins have been loaded. This is a workaround to fix session issues in AWS.
         if (isset($this->container['session']) && $config->get('system.session.initialize', true)) {
-            $this->startTimer('_session', 'Start Session');
-
             // TODO: remove in 2.0.
             $this->container['accounts'];
 
@@ -179,8 +73,56 @@ class InitializeProcessor extends ProcessorBase
                 $this->addMessage($message);
                 $this->container['messages']->add($message, 'error');
             }
-
-            $this->stopTimer('_session');
         }
+
+        /** @var Uri $uri */
+        $uri = $this->container['uri'];
+        $uri->init();
+
+        // Redirect pages with trailing slash if configured to do so.
+        $path = $uri->path() ?: '/';
+        if ($path !== '/'
+            && $config->get('system.pages.redirect_trailing_slash', false)
+            && Utils::endsWith($path, '/')) {
+
+            $redirect = (string) $uri::getCurrentRoute()->toString();
+            $this->container->redirect($redirect);
+        }
+
+        $this->container->setLocale();
+        $this->stopTimer();
+
+        return $handler->handle($request);
+    }
+
+    public function processCli(): void
+    {
+        // Load configuration.
+        $this->container['config']->init();
+        $this->container['plugins']->setup();
+
+        // Disable debugger.
+        $this->container['debugger']->enabled(false);
+
+        // Set timezone, locale.
+        /** @var Config $config */
+        $config = $this->container['config'];
+        $timezone = $config->get('system.timezone');
+        if ($timezone) {
+            date_default_timezone_set($timezone);
+        }
+        $this->container->setLocale();
+
+        // Load plugins.
+        $this->container['plugins']->init();
+
+        // Initialize URI.
+        /** @var Uri $uri */
+        $uri = $this->container['uri'];
+        $uri->init();
+
+        // Load accounts.
+        // TODO: remove in 2.0.
+        $this->container['accounts'];
     }
 }

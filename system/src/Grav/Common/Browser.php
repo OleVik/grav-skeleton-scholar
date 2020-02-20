@@ -14,7 +14,6 @@ namespace Grav\Common;
  */
 class Browser
 {
-    /** @var string[] */
     protected $useragent = [];
 
     /**
@@ -109,7 +108,7 @@ class Browser
     /**
      * Get the current major version identifier
      *
-     * @return int the browser major version identifier
+     * @return string the browser major version identifier
      */
     public function getVersion()
     {
@@ -136,7 +135,7 @@ class Browser
 
         return true;
     }
-
+    
     /**
      * Determine if “Do Not Track” is set by browser
      * @see https://www.w3.org/TR/tracking-dnt/

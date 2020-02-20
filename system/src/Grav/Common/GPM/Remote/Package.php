@@ -14,22 +14,14 @@ use Grav\Common\GPM\Common\Package as BasePackage;
 
 class Package extends BasePackage implements \JsonSerializable
 {
-    /**
-     * Package constructor.
-     * @param array $package
-     * @param string|null $package_type
-     */
     public function __construct($package, $package_type = null)
     {
         $data = new Data($package);
         parent::__construct($data, $package_type);
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize()
     {
-        return $this->data->toArray();
+        return $this->data;
     }
 }

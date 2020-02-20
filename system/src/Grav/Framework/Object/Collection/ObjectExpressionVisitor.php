@@ -94,14 +94,14 @@ class ObjectExpressionVisitor extends ClosureExpressionVisitor
      *
      * @param string   $name
      * @param int      $orientation
-     * @param \Closure|null $next
+     * @param \Closure $next
      *
      * @return \Closure
      */
     public static function sortByField($name, $orientation = 1, \Closure $next = null)
     {
         if (!$next) {
-            $next = function ($a, $b) {
+            $next = function($a, $b) {
                 return 0;
             };
         }

@@ -24,12 +24,14 @@ namespace Grav\Framework\Object\Property;
  */
 trait ObjectPropertyTrait
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     private $_definedProperties;
 
     /**
      * @param array $elements
-     * @param string|null $key
+     * @param string $key
      * @throws \InvalidArgumentException
      */
     public function __construct(array $elements = [], $key = null)

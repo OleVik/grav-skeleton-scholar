@@ -1,0 +1,41 @@
+title: Scholar Options
+extends@:
+  type: default
+  context: blueprints://pages
+
+form:
+  fields:
+    tabs:
+      type: tabs
+      fields:
+        options:
+          type: tab
+          fields:
+            scholar_basic:
+              type: section
+              title: THEME_SCHOLAR.ADMIN.TITLES.BASIC
+              underline: true
+              fields:
+                header.theme.style:
+                  type: select
+                  label: THEME_SCHOLAR.ADMIN.STYLE
+                  description: THEME_SCHOLAR.ADMIN.DESCRIPTION.STYLE
+                  data-options@: '\Grav\Theme\Scholar::getStylesBlueprint'
+                header.theme.itemize:
+                  type: toggle
+                  label: THEME_SCHOLAR.ADMIN.ITEMIZE
+                  description: THEME_SCHOLAR.ADMIN.DESCRIPTION.ITEMIZE
+                  options:
+                    1: PLUGIN_ADMIN.ENABLED
+                    0: PLUGIN_ADMIN.DISABLED
+                  validate:
+                    type: bool
+                header.theme.highlighter:
+                  type: toggle
+                  label: THEME_SCHOLAR.ADMIN.HIGHLIGHTER
+                  description: THEME_SCHOLAR.ADMIN.DESCRIPTION.HIGHLIGHTER
+                  options:
+                    1: PLUGIN_ADMIN.ENABLED
+                    0: PLUGIN_ADMIN.DISABLED
+                  validate:
+                    type: bool

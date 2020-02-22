@@ -1,0 +1,17 @@
+enabled: true
+css: true
+js: true
+templates: true
+shortcodes: true
+defaults:
+  a11y:
+    enabled: true
+  autoHeight: true
+  centeredSlides: true
+  direction: horizontal
+  keyboard:
+    enabled: true
+  navigation:
+    nextEl: ".swiper-button-next"
+    prevEl: ".swiper-button-prev"
+  lazy: true

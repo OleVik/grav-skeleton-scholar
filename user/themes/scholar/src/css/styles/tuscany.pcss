@@ -1,0 +1,36 @@
+@import "../styles.base.pcss";
+
+:root {
+  --primary: #beaa94;
+  --secondary: #524841;
+  --text: #120706;
+  --text-alt: #f2f1f1;
+  --background: #eee8e3;
+  --foreground: #ffffff;
+  --border-color: rgba(114, 126, 128, 0.6);
+  --header-background: #634d36;
+  --aside-text: #f3f3f3;
+  --aside-text-active: #f3f3f3;
+  --aside-background: var(--header-background);
+  --aside-background-active: #524022;
+  --aside-background-active-state: #715538;
+}
+
+.docs {
+  main {
+    background-color: var(--text-alt);
+  }
+}
+header[role="banner"] {
+  .search {
+    input,
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+      color: var(--text-alt);
+      &::placeholder {
+        color: var(--text-alt);
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{% extends 'partials/base.html.twig' %}
+
+{% set body_classes = (body_classes|default('page')) %}
+{% set navigablePage = page_navigation(page.content ?? '', page.header.itemize ?? theme.itemize ?? false) %}
+
+{% block javascripts %}
+    {% if config.theme.toolbar.navigation and navigablePage.headings is not empty %}
+        {% do assets.addInlineJs('Scholar.drawerInit();', {group: 'bottom'}) %}
+    {% endif %}
+    {% with {
+        'mode': 'field'
+        } %}
+        {{ block('javascripts', 'partials/components/search/assets.html.twig') }}
+    {% endwith %}
+{% endblock %}
+
+{% block main %}
+
+{% block header %}
+<header role="banner">
+    {% include 'partials/header.html.twig' with {'page': page, 'navigablePage': navigablePage} %}
+</header>
+{% endblock %}
+
+<main>
+    {% block article %}
+    <section>
+        <article>
+            {% block content %}
+            <header>
+                <h1>{{ page.title }}</h1>
+            </header>
+            {% include 'partials/components/default/metadata.html.twig' with {'page': page} %}
+            {{ navigablePage.content }}
+            {% endblock %}
+        </article>
+    </section>
+    {% endblock %}
+    {% block search_results %}
+    {% include 'partials/components/search/wrapper.html.twig' %}
+    {% endblock %}
+</main>
+
+{% block footer %}
+{% include 'partials/footer.html.twig' %}
+{% endblock %}
+
+{% endblock %}
+
+{% block append %}
+    {% if config.theme.toolbar.navigation and navigablePage.headings is not empty %}
+        {% include 'partials/drawer.html.twig' with {headings: navigablePage.headings} %}
+    {% endif %}
+{% endblock %}

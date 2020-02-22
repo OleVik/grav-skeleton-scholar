@@ -1,0 +1,32 @@
+@import "./sidebar.pcss";
+@import "./toolbar.pcss";
+@import "./article.pcss";
+@import "./footer.pcss";
+
+.docs {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  margin: 0 auto;
+  min-height: 100%;
+  min-height: 100vh;
+  main {
+    display: flex;
+    flex-direction: column;
+    order: 1;
+    grid-column-end: span 12;
+  }
+  .sidebar {
+    display: none;
+    grid-column-end: span 12;
+  }
+  header[role="banner"] .links > div {
+    a:not(:first-of-type) {
+      margin-left: 0.5rem;
+    }
+    a:not(:last-of-type):after {
+      content: " \00BB ";
+      position: absolute;
+      margin-left: 0.5rem;
+    }
+  }
+}

@@ -1,0 +1,40 @@
+.docs {
+  main {
+    article,
+    aside.search {
+      padding: 1rem;
+      line-height: 1.6;
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        margin: 2rem 0 1rem 0;
+        font-family: var(--Montserrat);
+        font-weight: 400;
+        line-height: 1.5;
+        a {
+          padding-top: 2rem;
+        }
+      }
+      h1 {
+        margin: 2rem 0 3rem 0;
+        text-align: center;
+      }
+      p {
+        &:first-of-type {
+          font-size: 1.125rem;
+        }
+      }
+    }
+  }
+  &.listing {
+    article {
+      > article {
+        margin: 2rem;
+        padding: 0;
+      }
+    }
+  }
+}

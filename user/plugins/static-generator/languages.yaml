@@ -1,0 +1,35 @@
+en:
+  PLUGIN_STATIC_GENERATOR:
+    ADMIN:
+      GENERIC:
+        STORED: stored
+        ITEMS: items
+        IN: in
+      TITLE: Static Generator Options
+      SEARCH_FILE: Search File
+      STORAGE:
+        INDEX: Index Location
+        CONTENT: Content Location
+        OPTIONS:
+          PERSIST: Persist
+          TRANSIENT: Transient
+          NATIVE: Native
+      EMPTY: Found no lower-level Pages
+      CONTENT_MAX_LENGTH: Content Max Length
+      ADMIN: Admin
+      JS: Admin JS
+      INDEX:
+        HINT: Index Search Data
+        WAITING: Waiting for Indexer ...
+        ONGOING: Indexing Search Data ...
+        SUCCESS: Finished indexing Search Data
+        ERROR: Failed to index Search Data
+      DESCRIPTION:
+        SEARCH_FILE: File to use for searching.
+        STORAGE:
+          INDEX: Where to store generated index.
+          CONTENT: Where to store generated content.
+          ADDENDUM: Native for /user/plugins/static-generator/data, Persist for /user/data/persist, Transient for /cache/transient.
+        CONTENT_MAX_LENGTH: Maximum characters in Page when generating content. If the Page contains more, it will not be stored.
+        ADMIN: Enable plugin in Admin.
+        JS: Use plugin's JavaScript in Admin.

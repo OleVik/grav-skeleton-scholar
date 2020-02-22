@@ -1,0 +1,77 @@
+name: Static Generator
+version: 1.0.1
+description: Static generation of Page(s) and Index.
+icon: bolt
+author:
+  name: Ole Vik
+  email: git@olevik.net
+homepage: https://github.com/OleVik/grav-plugin-static-generator
+keywords: grav, plugin, static, index, search, data, json, html
+bugs: https://github.com/OleVik/grav-plugin-static-generator/issues
+docs: https://github.com/OleVik/grav-plugin-static-generator/blob/develop/README.md
+license: MIT
+
+form:
+  validation: strict
+  fields:
+    enabled:
+      type: toggle
+      label: PLUGIN_ADMIN.PLUGIN_STATUS
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+    index:
+      type: select
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.INDEX
+      description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.INDEX
+      highlight: native
+      default: native
+      options:
+        native: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.NATIVE
+        persist: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.PERSIST
+        transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
+      validate:
+        required: true
+    content:
+      type: select
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.CONTENT
+      description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.CONTENT
+      highlight: native
+      default: native
+      options:
+        native: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.NATIVE
+        persist: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.PERSIST
+        transient: PLUGIN_STATIC_GENERATOR.ADMIN.STORAGE.OPTIONS.TRANSIENT
+      validate:
+        required: true
+    addendum:
+      type: spacer
+      text: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.STORAGE.ADDENDUM
+    content_max_length:
+      type: number
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.CONTENT_MAX_LENGTH
+      description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.CONTENT_MAX_LENGTH
+      validate:
+        min: 0
+        step: 10000
+        max: 10000000
+    admin:
+      type: toggle
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.ADMIN
+      description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.ADMIN
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+    js:
+      type: toggle
+      label: PLUGIN_STATIC_GENERATOR.ADMIN.JS
+      description: PLUGIN_STATIC_GENERATOR.ADMIN.DESCRIPTION.JS
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool

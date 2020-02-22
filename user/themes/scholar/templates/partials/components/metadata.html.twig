@@ -1,0 +1,12 @@
+{% apply spaceless %}
+
+{% if page.taxonomy %}
+
+{% import "macros/metadata.html.twig" as metadata %}
+<dl class="metadata">
+{{ metadata.iterate(page.taxonomy, theme, base_url_absolute) }}
+</dl>
+
+{% endif %}
+
+{% endapply %}

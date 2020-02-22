@@ -1,0 +1,15 @@
+<div id="{{ id }}" class="swiper-container">
+    <div class="swiper-wrapper">
+        {{ content }}
+    </div>
+    {% if 'pagination' in params|keys %}
+    <div class="{{ params.pagination.el|default('swiper-pagination')|replace({'.': ''}) }}"></div>
+    {% endif %}
+    {% if 'navigation' in params|keys %}
+    <div class="{{ params.navigation.prevEl|default('swiper-button-prev')|replace({'.': ''}) }}"></div>
+    <div class="{{ params.navigation.nextEl|default('swiper-button-next')|replace({'.': ''}) }}"></div>
+    {% endif %}
+    {% if 'scrollbar' in params|keys %}
+    <div class="{{ params.scrollbar.el|default('swiper-scrollbar')|replace({'.': ''}) }}"></div>
+    {% endif %}
+</div>

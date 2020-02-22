@@ -1,0 +1,52 @@
+.book,
+.book.listing {
+  main {
+    article {
+      grid-column-end: span 12;
+      header {
+        h1 {
+          order: 2;
+        }
+        h2 {
+          order: 2;
+        }
+        h3 {
+          order: 3;
+        }
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+          a {
+            padding: 1rem 0;
+          }
+        }
+        .metadata {
+          order: 10;
+          width: 100%;
+          padding: 2rem 4rem 1rem;
+          a {
+            display: initial;
+            border-bottom: 1px solid transparent;
+          }
+        }
+      }
+      section {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        div {
+          flex: 1 0 100%;
+          margin: 0.5%;
+          padding: 1.5%;
+        }
+      }
+    }
+    img {
+      display: block;
+      margin: 0 auto;
+    }
+  }
+}

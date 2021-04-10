@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Scholar Theme, Router
  *
@@ -52,7 +53,6 @@ class Router
         $this->printRoute = $this->grav['config']->get('theme.routes.print')
             ?? $this->grav['config']->get('themes.scholar.routes.print')
             ?? '/print';
-
         $path = $this->grav['uri']->path();
         if (\in_array(
             '/' . basename($path),
@@ -62,14 +62,16 @@ class Router
                 $this->dataRoute,
                 $this->printRoute
             ]
-        )
-        ) {
+        )) {
             $page = $this->dispatch($path);
-            $page->parent(
-                $this->grav['pages']->find(
-                    str_replace('/' . basename($path), '', $path)
-                )
+            $parent = $this->grav['pages']->find(
+                str_replace('/' . basename($path), '', $path)
             );
+            if ($parent == null) {
+                $parent = $this->grav['pages']->find('/');
+                $parent->template('default');
+            }
+            $page->parent($parent);
         } else {
             return;
         }
@@ -194,13 +196,14 @@ class Router
         }
         if (isset($Parent->header()->print['items'])) {
             $collection = $Parent->collection('print')->published();
-            if ($collection
+            if (
+                $collection
                 && isset($Parent->header()->print['process'])
                 && $Parent->header()->print['process'] === true
             ) {
-                $this->handleProcessedContent($page, $template);
+                $this->handleProcessedContent($Page, $template);
             } elseif ($collection) {
-                $page = $this->handleRawContent($page, $collection, $template);
+                $page = $this->handleRawContent($Page, $collection, $template);
             }
         } else {
             $page = $Parent;
@@ -261,8 +264,8 @@ class Router
         $content = '';
         foreach ($collection as $item) {
             if (strlen($item['title']) > 0) {
-                $content .= '<h' . $item['depth'] .'>' .
-                $item['title'] . '</h' . $item['depth'] . '>';
+                $content .= '<h' . $item['depth'] . '>' .
+                    $item['title'] . '</h' . $item['depth'] . '>';
             }
             $content .= $item['content'];
         }
@@ -272,7 +275,7 @@ class Router
             $template = $Page->parent()->template();
         }
         $content = $this->grav['twig']->processTemplate(
-            $template . '.html.twig', 
+            $template . '.html.twig',
             [
                 'page' => $Page
             ]

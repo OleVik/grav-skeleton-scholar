@@ -6,7 +6,7 @@ Scholar is an academic-focused theme, for publishing papers, articles, books, do
 
 - Extensible Components, Layouts and template-partials, Styles, API
 - Responsive Layouts, multiple Styles
-  - Print-friendly styles
+  - Print-friendly
 - Performant, light on resources
 - Accessible, tested against WCAG AA, Section 508, and best practices
   - Navigable by keyboard and screen readers
@@ -44,6 +44,10 @@ A demonstration is available at [OleVik.me/staging/grav-skeleton-scholar](https:
 
 ## Installation
 
+### Version 3.0.0 and higher
+
+This major-version update targets compatibility with Grav Core 1.7, and also updates and changes some internals.
+
 ### Grav Package Manager
 
 The simplest way to install this theme is via the [Grav Package Manager (GPM)](http://learn.getgrav.org/advanced/grav-gpm) through your system's Terminal -- also called the command line. From the root of your Grav install type:
@@ -60,7 +64,7 @@ You should now have all the theme files under
 
     /your/site/grav/user/themes/scholar
 
-This theme started as a clone of Paul Hibbitt's [Learn2 with Git Sync](https://github.com/hibbitts-design/grav-theme-learn2-git-sync)-theme, which is a customized version of the [Learn2](https://github.com/getgrav/grav-theme-learn2)-theme. As this theme decouples and supercedes much of the logic in either, it is rebranded as Scholar.
+This theme started as a clone of Paul Hibbitt's [Learn2 with Git Sync](https://github.com/hibbitts-design/grav-theme-learn2-git-sync)-theme, which is a customized version of the [Learn2](https://github.com/getgrav/grav-theme-learn2)-theme. As this theme decouples and supercedes most of the logic in either, it is rebranded as Scholar. It also goes much further in what a documentation-theme can be and do.
 
 ## [Advanced Usage](https://github.com/OleVik/grav-theme-scholar/blob/master/ADVANCED.md)
 
@@ -70,14 +74,5 @@ This theme started as a clone of Paul Hibbitt's [Learn2 with Git Sync](https://g
 
 ## TODO
 
-- [ ] Smaller type for related Pages
-  - [ ] Drop for Blog (or make dependant on Related?)
-  - [ ] Visible on mobile
-- [ ] Enable header across the board
-  - [ ] Optional through toolbar.enabled
-- [ ] Margin- and sidenotes across the board
-  - [ ] Theme.css adaptation
-- [ ] Generalize chaper.html.twig and listing.html.twig
-  - [ ] Chapter: Hide all if content
-  - [ ] Listing: Show all always
-- [ ] Extension: Filter content with FlexSearch
+- [ ] Evaluate metadata text-wrapping
+- [ ] Search: Replace with engine-agnostic approach, decoupling into a plugin

@@ -1,5 +1,6 @@
 ---
 title: Login
+cache_control: private, no-cache, must-revalidate
 
 login_redirect_here: false
 
@@ -12,16 +13,16 @@ forms:
         username:
           type: text
           id: username
-          placeholder: Username
+          placeholder: PLUGIN_LOGIN.USERNAME_EMAIL
           label: PLUGIN_LOGIN.USERNAME_EMAIL
           autofocus: true
 
         password:
           type: password
           id: password
-          placeholder: Password
+          placeholder: PLUGIN_LOGIN.PASSWORD
           label: PLUGIN_LOGIN.PASSWORD
-  
+
   login-twofa:
     action:
     method: post
@@ -35,8 +36,7 @@ forms:
           type: text
           id: twofa-code
           autofocus: true
-          placeholder: PLUGIN_LOGIN.2FA_CODE_INPUT 
+          placeholder: PLUGIN_LOGIN.2FA_CODE_INPUT
 ---
 
 # User Login
-

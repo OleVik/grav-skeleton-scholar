@@ -1,4 +1,5 @@
 <?php
+
 /**
  * StaticGenerator Plugin, Clear Data
  *
@@ -18,7 +19,6 @@ use Grav\Common\Grav;
 use Grav\Common\Utils;
 use Grav\Console\ConsoleCommand;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Grav\Plugin\StaticGenerator\Timer;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
@@ -58,11 +58,12 @@ class ClearStaticDataCommand extends ConsoleCommand
     /**
      * Clear Data Index
      *
+     * @throws \Symfony\Component\Filesystem\Exception\IOExceptionInterface
+     *
      * @return void
      */
     protected function serve()
     {
-        include __DIR__ . '/../vendor/autoload.php';
         $timer = new Timer();
         $config = Grav::instance()['config']->get('plugins.static-generator');
         $locator = Grav::instance()['locator'];
@@ -73,13 +74,7 @@ class ClearStaticDataCommand extends ConsoleCommand
         $this->output->writeln('<info>Clearing data</info>');
         try {
             $Filesystem = new Filesystem();
-            $targets = array(
-                'persist' => $locator->findResource('user://') . '/data/persist',
-                'transient' => $locator->findResource('cache://') . '/transient'
-            );
-            if (array_key_exists($target, $targets)) {
-                $location = $targets[$target];
-            } elseif (Utils::contains($target, '://')) {
+            if (Utils::contains($target, '://')) {
                 $scheme = parse_url($target, PHP_URL_SCHEME);
                 $location = $locator->findResource($scheme . '://') . str_replace($scheme . '://', '/', $target);
             } else {
@@ -91,6 +86,8 @@ class ClearStaticDataCommand extends ConsoleCommand
             }
             $Filesystem->remove($location);
             $this->output->writeln('<white>Deleted ' . $location . '</white>');
+        } catch (IOExceptionInterface $e) {
+            throw new IOExceptionInterface($e);
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

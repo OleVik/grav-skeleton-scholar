@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Static Generator Plugin, Data Index Builder
  *
@@ -96,7 +97,6 @@ class GenerateStaticIndexCommand extends ConsoleCommand
      */
     protected function serve()
     {
-        include __DIR__ . '/../vendor/autoload.php';
         $timer = new Timer();
         $config = Grav::instance()['config']->get('plugins.static-generator');
         $locator = Grav::instance()['locator'];
@@ -113,13 +113,8 @@ class GenerateStaticIndexCommand extends ConsoleCommand
         $maxLength = $config['content_max_length'];
         $this->output->writeln('<info>Generating data index</info>');
         try {
-            $targets = array(
-                'persist' => $locator->findResource('user://') . '/data/persist',
-                'transient' => $locator->findResource('cache://') . '/transient'
-            );
-            if (array_key_exists($target, $targets)) {
-                $location = $targets[$target];
-            } elseif (Utils::contains($target, '://')) {
+            parent::initializePages();
+            if (Utils::contains($target, '://')) {
                 $scheme = parse_url($target, PHP_URL_SCHEME);
                 $location = $locator->findResource($scheme . '://') . str_replace($scheme . '://', '/', $target);
             } else {
@@ -130,9 +125,8 @@ class GenerateStaticIndexCommand extends ConsoleCommand
                 return;
             }
             $Data = new CommandLineData($content, $maxLength);
-            $Data->setup($route, $this->output);
+            $Data->bootstrap($route, $this->output);
             $Data->index($route);
-            $Data->progress->finish();
             if ($echo) {
                 echo json_encode($Data->data, JSON_PRETTY_PRINT);
             } else {
@@ -153,14 +147,14 @@ class GenerateStaticIndexCommand extends ConsoleCommand
                 } elseif ($wrap && $content) {
                     $Storage->doSet($file, 'const GravDataIndex = ' . json_encode($Data->data) . ';', 0);
                 } else {
-                    $Storage->doSet($file, json_encode($Data->data));
+                    $Storage->doSet($file, json_encode($Data->data), 0);
                 }
                 $this->output->writeln('');
                 $this->output->writeln(
                     '<info>Saved <white>' . count($Data->data)
-                    . ' items</white> to <cyan>'
-                    . $location . '/' . $file . '</cyan> in <magenta>'
-                    . Timer::format($timer->getTime()) . '</magenta>.</info>'
+                        . ' items</white> to <cyan>'
+                        . $location . '/' . $file . '</cyan> in <magenta>'
+                        . Timer::format($timer->getTime()) . '</magenta>.</info>'
                 );
             }
         } catch (\Exception $e) {

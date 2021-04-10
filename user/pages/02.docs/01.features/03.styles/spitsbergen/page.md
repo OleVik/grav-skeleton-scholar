@@ -4,7 +4,7 @@ theme:
   style: spitsbergen
 ---
 
-Named for the coal mine in [Spitsbergen](Spitsbergen), in Svalbard.
+Named for the coal mine in [Spitsbergen](https://en.wikipedia.org/wiki/Store_Norske_Spitsbergen_Kulkompani), in Svalbard.
 
 ## The Spitsbergen Style
 

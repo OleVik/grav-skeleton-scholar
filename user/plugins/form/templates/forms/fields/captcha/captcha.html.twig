@@ -10,16 +10,18 @@
 
 {% block input %}
   {% if not site_key %}
-      <script>console && console.error('site_key was not defined for form "{{ form.name }}" (Grav Form Plugin)')</script>
+      <script type="application/javascript">console && console.error('site_key was not defined for form "{{ form.name }}" (Grav Form Plugin)')</script>
   {% elseif config.plugins.form.recaptcha.version == 3 %}
-      {#{% do assets.addJs('https://www.google.com/recaptcha/api.js?render='~site_key) %}#}
-      <script src='https://www.google.com/recaptcha/api.js?render={{ site_key }}&theme={{ theme }}'></script>
-      <script>
-          (document.querySelectorAll('form') || []).forEach(function(form, index) {
-              var submit = function(event) {
+      {% do assets.addJs('https://www.google.com/recaptcha/api.js?render='~site_key~'&theme=' ~ theme) %}
+      {#<script src='https://www.google.com/recaptcha/api.js?render={{ site_key }}&theme={{ theme }}'></script>#}
+      <script type="application/javascript">
+          window.gRecaptchaInstances = window.gRecaptchaInstances || {};
+          window.gRecaptchaInstances['{{ form.id }}'] = {
+              element: document.querySelector('form#{{ form.id }}'),
+              submit: function (event) {
                   event.preventDefault();
                   grecaptcha.ready(function () {
-                      grecaptcha.execute('{{ site_key }}', { action: '{{ action }}' }).then(function(token) {
+                      grecaptcha.execute('{{ site_key }}', {action: '{{ action }}'}).then(function (token) {
                           var tokenElement = document.createElement('input');
                           tokenElement.setAttribute('type', 'hidden');
                           tokenElement.setAttribute('name', 'data[token]');
@@ -30,19 +32,21 @@
                           actionElement.setAttribute('name', 'data[action]');
                           actionElement.setAttribute('value', '{{ action }}');
 
+                          const form = window.gRecaptchaInstances['{{ form.id }}'].element;
+                          const submit = window.gRecaptchaInstances['{{ form.id }}'].submit;
                           form.insertBefore(tokenElement, form.firstChild);
                           form.insertBefore(actionElement, form.firstChild);
                           form.removeEventListener('submit', submit);
                           form.submit();
                       });
                   });
-              };
+              }
+          };
 
-              form.addEventListener('submit', submit);
-          });
+          window.gRecaptchaInstances['{{ form.id }}'].element.addEventListener('submit', window.gRecaptchaInstances['{{ form.id }}'].submit);
       </script>
   {% elseif config.plugins.form.recaptcha.version == '2-invisible' %}
-      <script>
+      <script type="application/javascript">
           function captchaOnloadCallback_{{ formName }}() {
               var form = document.querySelector('form#{{ form.id }}');
               var submits = form.querySelectorAll('[type="submit"]') || [];
@@ -75,7 +79,7 @@
       <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback_{{ formName }}&hl={{ grav.language.language }}&theme={{ theme }}"
               async defer></script>
   {% else %}
-    <script>
+    <script type="application/javascript">
         var captchaOnloadCallback_{{ formName }} = function captchaOnloadCallback_{{ formName }}() {
             grecaptcha.render('g-recaptcha-{{ formName }}', {
                 'sitekey': "{{ site_key }}",

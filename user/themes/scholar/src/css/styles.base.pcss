@@ -79,8 +79,10 @@ table {
     > footer {
       background: var(--foreground);
       border: solid 1px var(--border-color);
-      a:any-link {
-        border-bottom: 1px solid var(--generic-border);
+      :not(header) {
+        a:any-link {
+          border-bottom: 1px solid var(--generic-border);
+        }
       }
       a:hover,
       a:focus,
@@ -432,8 +434,8 @@ header[role="banner"] {
   form[role="search"] {
     input[type="search"] {
       color: var(--text);
-      background-color: transparent;
-      transition-delay: 99999s;
+      background: transparent;
+      transition-delay: 0ms;
       box-shadow: none;
       &:focus {
         &::placeholder {
@@ -444,11 +446,6 @@ header[role="banner"] {
         opacity: 0;
         color: var(--text);
       }
-    }
-    input:-webkit-autofill,
-    input:-webkit-autofill:hover,
-    input:-webkit-autofill:focus {
-      -webkit-transition-delay: 99999s;
     }
   }
 }
@@ -501,4 +498,10 @@ footer[role="contentinfo"] {
       filter: contrast(1.5);
     }
   }
+}
+
+/* Notes */
+.marginnote,
+.sidenote {
+  text-align: justify;
 }

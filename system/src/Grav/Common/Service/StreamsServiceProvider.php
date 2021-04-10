@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Service
  *
- * @copyright  Copyright (C) 2015 - 2019 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -17,12 +17,20 @@ use RocketTheme\Toolbox\StreamWrapper\ReadOnlyStream;
 use RocketTheme\Toolbox\StreamWrapper\Stream;
 use RocketTheme\Toolbox\StreamWrapper\StreamBuilder;
 
+/**
+ * Class StreamsServiceProvider
+ * @package Grav\Common\Service
+ */
 class StreamsServiceProvider implements ServiceProviderInterface
 {
+    /**
+     * @param Container $container
+     * @return void
+     */
     public function register(Container $container)
     {
-        $container['locator'] = function(Container $container) {
-            $locator = new UniformResourceLocator(GRAV_ROOT);
+        $container['locator'] = function (Container $container) {
+            $locator = new UniformResourceLocator(GRAV_WEBROOT);
 
             /** @var Setup $setup */
             $setup = $container['setup'];
@@ -31,7 +39,7 @@ class StreamsServiceProvider implements ServiceProviderInterface
             return $locator;
         };
 
-        $container['streams'] = function(Container $container) {
+        $container['streams'] = function (Container $container) {
             /** @var Setup $setup */
             $setup = $container['setup'];
 

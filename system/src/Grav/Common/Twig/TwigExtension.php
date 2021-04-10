@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Twig
  *
- * @copyright  Copyright (C) 2015 - 2019 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -11,13 +11,17 @@ namespace Grav\Common\Twig;
 
 use Cron\CronExpression;
 use Grav\Common\Config\Config;
+use Grav\Common\Data\Data;
 use Grav\Common\Debugger;
 use Grav\Common\Grav;
+use Grav\Common\Inflector;
 use Grav\Common\Language\Language;
 use Grav\Common\Page\Collection;
+use Grav\Common\Page\Interfaces\PageInterface;
 use Grav\Common\Page\Media;
 use Grav\Common\Scheduler\Cron;
 use Grav\Common\Security;
+use Grav\Common\Twig\TokenParser\TwigTokenParserCache;
 use Grav\Common\Twig\TokenParser\TwigTokenParserRender;
 use Grav\Common\Twig\TokenParser\TwigTokenParserScript;
 use Grav\Common\Twig\TokenParser\TwigTokenParserStyle;
@@ -29,16 +33,46 @@ use Grav\Common\User\Interfaces\UserInterface;
 use Grav\Common\Utils;
 use Grav\Common\Yaml;
 use Grav\Common\Helpers\Base32;
+use Grav\Framework\Flex\Interfaces\FlexObjectInterface;
+use Grav\Framework\Psr7\Response;
+use Iterator;
+use JsonSerializable;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
+use Traversable;
+use Twig\Environment;
+use Twig\Extension\AbstractExtension;
+use Twig\Extension\GlobalsInterface;
+use Twig\Loader\FilesystemLoader;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
+use function array_slice;
+use function count;
+use function func_get_args;
+use function func_num_args;
+use function get_class;
+use function gettype;
+use function in_array;
+use function is_array;
+use function is_bool;
+use function is_float;
+use function is_int;
+use function is_numeric;
+use function is_object;
+use function is_scalar;
+use function is_string;
+use function ord;
+use function strlen;
 
-class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
+/**
+ * Class TwigExtension
+ * @package Grav\Common\Twig
+ */
+class TwigExtension extends AbstractExtension implements GlobalsInterface
 {
     /** @var Grav */
     protected $grav;
-
-    /** @var Debugger */
+    /** @var Debugger|null */
     protected $debugger;
-
     /** @var Config */
     protected $config;
 
@@ -72,60 +106,60 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('*ize', [$this, 'inflectorFilter']),
-            new \Twig_SimpleFilter('absolute_url', [$this, 'absoluteUrlFilter']),
-            new \Twig_SimpleFilter('contains', [$this, 'containsFilter']),
-            new \Twig_SimpleFilter('chunk_split', [$this, 'chunkSplitFilter']),
-            new \Twig_SimpleFilter('nicenumber', [$this, 'niceNumberFunc']),
-            new \Twig_SimpleFilter('nicefilesize', [$this, 'niceFilesizeFunc']),
-            new \Twig_SimpleFilter('nicetime', [$this, 'nicetimeFunc']),
-            new \Twig_SimpleFilter('defined', [$this, 'definedDefaultFilter']),
-            new \Twig_SimpleFilter('ends_with', [$this, 'endsWithFilter']),
-            new \Twig_SimpleFilter('fieldName', [$this, 'fieldNameFilter']),
-            new \Twig_SimpleFilter('ksort', [$this, 'ksortFilter']),
-            new \Twig_SimpleFilter('ltrim', [$this, 'ltrimFilter']),
-            new \Twig_SimpleFilter('markdown', [$this, 'markdownFunction'], ['needs_context' => true, 'is_safe' => ['html']]),
-            new \Twig_SimpleFilter('md5', [$this, 'md5Filter']),
-            new \Twig_SimpleFilter('base32_encode', [$this, 'base32EncodeFilter']),
-            new \Twig_SimpleFilter('base32_decode', [$this, 'base32DecodeFilter']),
-            new \Twig_SimpleFilter('base64_encode', [$this, 'base64EncodeFilter']),
-            new \Twig_SimpleFilter('base64_decode', [$this, 'base64DecodeFilter']),
-            new \Twig_SimpleFilter('randomize', [$this, 'randomizeFilter']),
-            new \Twig_SimpleFilter('modulus', [$this, 'modulusFilter']),
-            new \Twig_SimpleFilter('rtrim', [$this, 'rtrimFilter']),
-            new \Twig_SimpleFilter('pad', [$this, 'padFilter']),
-            new \Twig_SimpleFilter('regex_replace', [$this, 'regexReplace']),
-            new \Twig_SimpleFilter('safe_email', [$this, 'safeEmailFilter']),
-            new \Twig_SimpleFilter('safe_truncate', ['\Grav\Common\Utils', 'safeTruncate']),
-            new \Twig_SimpleFilter('safe_truncate_html', ['\Grav\Common\Utils', 'safeTruncateHTML']),
-            new \Twig_SimpleFilter('sort_by_key', [$this, 'sortByKeyFilter']),
-            new \Twig_SimpleFilter('starts_with', [$this, 'startsWithFilter']),
-            new \Twig_SimpleFilter('truncate', ['\Grav\Common\Utils', 'truncate']),
-            new \Twig_SimpleFilter('truncate_html', ['\Grav\Common\Utils', 'truncateHTML']),
-            new \Twig_SimpleFilter('json_decode', [$this, 'jsonDecodeFilter']),
-            new \Twig_SimpleFilter('array_unique', 'array_unique'),
-            new \Twig_SimpleFilter('basename', 'basename'),
-            new \Twig_SimpleFilter('dirname', 'dirname'),
-            new \Twig_SimpleFilter('print_r', 'print_r'),
-            new \Twig_SimpleFilter('yaml_encode', [$this, 'yamlEncodeFilter']),
-            new \Twig_SimpleFilter('yaml_decode', [$this, 'yamlDecodeFilter']),
-            new \Twig_SimpleFilter('nicecron', [$this, 'niceCronFilter']),
+            new TwigFilter('*ize', [$this, 'inflectorFilter']),
+            new TwigFilter('absolute_url', [$this, 'absoluteUrlFilter']),
+            new TwigFilter('contains', [$this, 'containsFilter']),
+            new TwigFilter('chunk_split', [$this, 'chunkSplitFilter']),
+            new TwigFilter('nicenumber', [$this, 'niceNumberFunc']),
+            new TwigFilter('nicefilesize', [$this, 'niceFilesizeFunc']),
+            new TwigFilter('nicetime', [$this, 'nicetimeFunc']),
+            new TwigFilter('defined', [$this, 'definedDefaultFilter']),
+            new TwigFilter('ends_with', [$this, 'endsWithFilter']),
+            new TwigFilter('fieldName', [$this, 'fieldNameFilter']),
+            new TwigFilter('ksort', [$this, 'ksortFilter']),
+            new TwigFilter('ltrim', [$this, 'ltrimFilter']),
+            new TwigFilter('markdown', [$this, 'markdownFunction'], ['needs_context' => true, 'is_safe' => ['html']]),
+            new TwigFilter('md5', [$this, 'md5Filter']),
+            new TwigFilter('base32_encode', [$this, 'base32EncodeFilter']),
+            new TwigFilter('base32_decode', [$this, 'base32DecodeFilter']),
+            new TwigFilter('base64_encode', [$this, 'base64EncodeFilter']),
+            new TwigFilter('base64_decode', [$this, 'base64DecodeFilter']),
+            new TwigFilter('randomize', [$this, 'randomizeFilter']),
+            new TwigFilter('modulus', [$this, 'modulusFilter']),
+            new TwigFilter('rtrim', [$this, 'rtrimFilter']),
+            new TwigFilter('pad', [$this, 'padFilter']),
+            new TwigFilter('regex_replace', [$this, 'regexReplace']),
+            new TwigFilter('safe_email', [$this, 'safeEmailFilter'], ['is_safe' => ['html']]),
+            new TwigFilter('safe_truncate', [Utils::class, 'safeTruncate']),
+            new TwigFilter('safe_truncate_html', [Utils::class, 'safeTruncateHTML']),
+            new TwigFilter('sort_by_key', [$this, 'sortByKeyFilter']),
+            new TwigFilter('starts_with', [$this, 'startsWithFilter']),
+            new TwigFilter('truncate', [Utils::class, 'truncate']),
+            new TwigFilter('truncate_html', [Utils::class, 'truncateHTML']),
+            new TwigFilter('json_decode', [$this, 'jsonDecodeFilter']),
+            new TwigFilter('array_unique', 'array_unique'),
+            new TwigFilter('basename', 'basename'),
+            new TwigFilter('dirname', 'dirname'),
+            new TwigFilter('print_r', [$this, 'print_r']),
+            new TwigFilter('yaml_encode', [$this, 'yamlEncodeFilter']),
+            new TwigFilter('yaml_decode', [$this, 'yamlDecodeFilter']),
+            new TwigFilter('nicecron', [$this, 'niceCronFilter']),
 
             // Translations
-            new \Twig_SimpleFilter('t', [$this, 'translate'], ['needs_environment' => true]),
-            new \Twig_SimpleFilter('tl', [$this, 'translateLanguage']),
-            new \Twig_SimpleFilter('ta', [$this, 'translateArray']),
+            new TwigFilter('t', [$this, 'translate'], ['needs_environment' => true]),
+            new TwigFilter('tl', [$this, 'translateLanguage']),
+            new TwigFilter('ta', [$this, 'translateArray']),
 
             // Casting values
-            new \Twig_SimpleFilter('string', [$this, 'stringFilter']),
-            new \Twig_SimpleFilter('int', [$this, 'intFilter'], ['is_safe' => ['all']]),
-            new \Twig_SimpleFilter('bool', [$this, 'boolFilter']),
-            new \Twig_SimpleFilter('float', [$this, 'floatFilter'], ['is_safe' => ['all']]),
-            new \Twig_SimpleFilter('array', [$this, 'arrayFilter']),
+            new TwigFilter('string', [$this, 'stringFilter']),
+            new TwigFilter('int', [$this, 'intFilter'], ['is_safe' => ['all']]),
+            new TwigFilter('bool', [$this, 'boolFilter']),
+            new TwigFilter('float', [$this, 'floatFilter'], ['is_safe' => ['all']]),
+            new TwigFilter('array', [$this, 'arrayFilter']),
 
             // Object Types
-            new \Twig_SimpleFilter('get_type', [$this, 'getTypeFunc']),
-            new \Twig_SimpleFilter('of_type', [$this, 'ofTypeFunc'])
+            new TwigFilter('get_type', [$this, 'getTypeFunc']),
+            new TwigFilter('of_type', [$this, 'ofTypeFunc'])
         ];
     }
 
@@ -137,54 +171,58 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('array', [$this, 'arrayFilter']),
-            new \Twig_SimpleFunction('array_key_value', [$this, 'arrayKeyValueFunc']),
-            new \Twig_SimpleFunction('array_key_exists', 'array_key_exists'),
-            new \Twig_SimpleFunction('array_unique', 'array_unique'),
-            new \Twig_SimpleFunction('array_intersect', [$this, 'arrayIntersectFunc']),
-            new \Twig_SimpleFunction('authorize', [$this, 'authorize']),
-            new \Twig_SimpleFunction('debug', [$this, 'dump'], ['needs_context' => true, 'needs_environment' => true]),
-            new \Twig_SimpleFunction('dump', [$this, 'dump'], ['needs_context' => true, 'needs_environment' => true]),
-            new \Twig_SimpleFunction('vardump', [$this, 'vardumpFunc']),
-            new \Twig_SimpleFunction('print_r', 'print_r'),
-            new \Twig_SimpleFunction('http_response_code', 'http_response_code'),
-            new \Twig_SimpleFunction('evaluate', [$this, 'evaluateStringFunc'], ['needs_context' => true]),
-            new \Twig_SimpleFunction('evaluate_twig', [$this, 'evaluateTwigFunc'], ['needs_context' => true]),
-            new \Twig_SimpleFunction('gist', [$this, 'gistFunc']),
-            new \Twig_SimpleFunction('nonce_field', [$this, 'nonceFieldFunc']),
-            new \Twig_SimpleFunction('pathinfo', 'pathinfo'),
-            new \Twig_SimpleFunction('random_string', [$this, 'randomStringFunc']),
-            new \Twig_SimpleFunction('repeat', [$this, 'repeatFunc']),
-            new \Twig_SimpleFunction('regex_replace', [$this, 'regexReplace']),
-            new \Twig_SimpleFunction('regex_filter', [$this, 'regexFilter']),
-            new \Twig_SimpleFunction('string', [$this, 'stringFunc']),
-            new \Twig_SimpleFunction('url', [$this, 'urlFunc']),
-            new \Twig_SimpleFunction('json_decode', [$this, 'jsonDecodeFilter']),
-            new \Twig_SimpleFunction('get_cookie', [$this, 'getCookie']),
-            new \Twig_SimpleFunction('redirect_me', [$this, 'redirectFunc']),
-            new \Twig_SimpleFunction('range', [$this, 'rangeFunc']),
-            new \Twig_SimpleFunction('isajaxrequest', [$this, 'isAjaxFunc']),
-            new \Twig_SimpleFunction('exif', [$this, 'exifFunc']),
-            new \Twig_SimpleFunction('media_directory', [$this, 'mediaDirFunc']),
-            new \Twig_SimpleFunction('body_class', [$this, 'bodyClassFunc']),
-            new \Twig_SimpleFunction('theme_var', [$this, 'themeVarFunc']),
-            new \Twig_SimpleFunction('header_var', [$this, 'pageHeaderVarFunc']),
-            new \Twig_SimpleFunction('read_file', [$this, 'readFileFunc']),
-            new \Twig_SimpleFunction('nicenumber', [$this, 'niceNumberFunc']),
-            new \Twig_SimpleFunction('nicefilesize', [$this, 'niceFilesizeFunc']),
-            new \Twig_SimpleFunction('nicetime', [$this, 'nicetimeFunc']),
-            new \Twig_SimpleFunction('cron', [$this, 'cronFunc']),
-            new \Twig_SimpleFunction('xss', [$this, 'xssFunc']),
+            new TwigFunction('array', [$this, 'arrayFilter']),
+            new TwigFunction('array_key_value', [$this, 'arrayKeyValueFunc']),
+            new TwigFunction('array_key_exists', 'array_key_exists'),
+            new TwigFunction('array_unique', 'array_unique'),
+            new TwigFunction('array_intersect', [$this, 'arrayIntersectFunc']),
+            new TwigFunction('array_diff', 'array_diff'),
+            new TwigFunction('authorize', [$this, 'authorize']),
+            new TwigFunction('debug', [$this, 'dump'], ['needs_context' => true, 'needs_environment' => true]),
+            new TwigFunction('dump', [$this, 'dump'], ['needs_context' => true, 'needs_environment' => true]),
+            new TwigFunction('vardump', [$this, 'vardumpFunc']),
+            new TwigFunction('print_r', [$this, 'print_r']),
+            new TwigFunction('http_response_code', 'http_response_code'),
+            new TwigFunction('evaluate', [$this, 'evaluateStringFunc'], ['needs_context' => true]),
+            new TwigFunction('evaluate_twig', [$this, 'evaluateTwigFunc'], ['needs_context' => true]),
+            new TwigFunction('gist', [$this, 'gistFunc']),
+            new TwigFunction('nonce_field', [$this, 'nonceFieldFunc']),
+            new TwigFunction('pathinfo', 'pathinfo'),
+            new TwigFunction('random_string', [$this, 'randomStringFunc']),
+            new TwigFunction('repeat', [$this, 'repeatFunc']),
+            new TwigFunction('regex_replace', [$this, 'regexReplace']),
+            new TwigFunction('regex_filter', [$this, 'regexFilter']),
+            new TwigFunction('regex_match', [$this, 'regexMatch']),
+            new TwigFunction('regex_split', [$this, 'regexSplit']),
+            new TwigFunction('string', [$this, 'stringFilter']),
+            new TwigFunction('url', [$this, 'urlFunc']),
+            new TwigFunction('json_decode', [$this, 'jsonDecodeFilter']),
+            new TwigFunction('get_cookie', [$this, 'getCookie']),
+            new TwigFunction('redirect_me', [$this, 'redirectFunc']),
+            new TwigFunction('range', [$this, 'rangeFunc']),
+            new TwigFunction('isajaxrequest', [$this, 'isAjaxFunc']),
+            new TwigFunction('exif', [$this, 'exifFunc']),
+            new TwigFunction('media_directory', [$this, 'mediaDirFunc']),
+            new TwigFunction('body_class', [$this, 'bodyClassFunc'], ['needs_context' => true]),
+            new TwigFunction('theme_var', [$this, 'themeVarFunc'], ['needs_context' => true]),
+            new TwigFunction('header_var', [$this, 'pageHeaderVarFunc'], ['needs_context' => true]),
+            new TwigFunction('read_file', [$this, 'readFileFunc']),
+            new TwigFunction('nicenumber', [$this, 'niceNumberFunc']),
+            new TwigFunction('nicefilesize', [$this, 'niceFilesizeFunc']),
+            new TwigFunction('nicetime', [$this, 'nicetimeFunc']),
+            new TwigFunction('cron', [$this, 'cronFunc']),
+            new TwigFunction('svg_image', [$this, 'svgImageFunction']),
+            new TwigFunction('xss', [$this, 'xssFunc']),
 
 
             // Translations
-            new \Twig_SimpleFunction('t', [$this, 'translate'], ['needs_environment' => true]),
-            new \Twig_SimpleFunction('tl', [$this, 'translateLanguage']),
-            new \Twig_SimpleFunction('ta', [$this, 'translateArray']),
+            new TwigFunction('t', [$this, 'translate'], ['needs_environment' => true]),
+            new TwigFunction('tl', [$this, 'translateLanguage']),
+            new TwigFunction('ta', [$this, 'translateArray']),
 
             // Object Types
-            new \Twig_SimpleFunction('get_type', [$this, 'getTypeFunc']),
-            new \Twig_SimpleFunction('of_type', [$this, 'ofTypeFunc'])
+            new TwigFunction('get_type', [$this, 'getTypeFunc']),
+            new TwigFunction('of_type', [$this, 'ofTypeFunc'])
         ];
     }
 
@@ -201,14 +239,19 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             new TwigTokenParserStyle(),
             new TwigTokenParserMarkdown(),
             new TwigTokenParserSwitch(),
+            new TwigTokenParserCache(),
         ];
+    }
+
+    public function print_r($var)
+    {
+        return print_r($var, true);
     }
 
     /**
      * Filters field name by changing dot notation into array notation.
      *
      * @param  string $str
-     *
      * @return string
      */
     public function fieldNameFilter($str)
@@ -222,44 +265,51 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * Protects email address.
      *
      * @param  string $str
-     *
      * @return string
      */
     public function safeEmailFilter($str)
     {
-        $email   = '';
-        for ($i = 0, $len = strlen($str); $i < $len; $i++) {
-            $j = random_int(0, 1);
+        static $list = [
+            '"' => '&#34;',
+            "'" => '&#39;',
+            '&' => '&amp;',
+            '<' => '&lt;',
+            '>' => '&gt;',
+            '@' => '&#64;'
+        ];
 
-            $email .= $j === 0 ? '&#' . ord($str[$i]) . ';' : $str[$i];
+        $characters = mb_str_split($str, 1, 'UTF-8');
+
+        $encoded = '';
+        foreach ($characters as $chr) {
+            $encoded .= $list[$chr] ?? (random_int(0, 1) ? '&#' . mb_ord($chr) . ';' : $chr);
         }
 
-        return str_replace('@', '&#64;', $email);
+        return $encoded;
     }
 
     /**
      * Returns array in a random order.
      *
-     * @param  array $original
+     * @param  array|Traversable $original
      * @param  int   $offset Can be used to return only slice of the array.
-     *
      * @return array
      */
     public function randomizeFilter($original, $offset = 0)
     {
-        if (!\is_array($original)) {
-            return $original;
+        if ($original instanceof Traversable) {
+            $original = iterator_to_array($original, false);
         }
 
-        if ($original instanceof \Traversable) {
-            $original = iterator_to_array($original, false);
+        if (!is_array($original)) {
+            return $original;
         }
 
         $sorted = [];
         $random = array_slice($original, $offset);
         shuffle($random);
 
-        $sizeOf = \count($original);
+        $sizeOf = count($original);
         for ($x = 0; $x < $sizeOf; $x++) {
             if ($x < $offset) {
                 $sorted[] = $original[$x];
@@ -276,19 +326,18 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      *
      * @param  string|int   $number
      * @param  int          $divider
-     * @param  array        $items array of items to select from to return
-     *
+     * @param  array|null   $items array of items to select from to return
      * @return int
      */
     public function modulusFilter($number, $divider, $items = null)
     {
-        if (\is_string($number)) {
+        if (is_string($number)) {
             $number = strlen($number);
         }
 
         $remainder = $number % $divider;
 
-        if (\is_array($items)) {
+        if (is_array($items)) {
             return $items[$remainder] ?? $items[0];
         }
 
@@ -310,17 +359,17 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      *
      * @param string $action
      * @param string $data
-     * @param int    $count
-     *
+     * @param int|null $count
      * @return string
      */
     public function inflectorFilter($action, $data, $count = null)
     {
         $action .= 'ize';
 
+        /** @var Inflector $inflector */
         $inflector = $this->grav['inflector'];
 
-        if (\in_array(
+        if (in_array(
             $action,
             ['titleize', 'camelize', 'underscorize', 'hyphenize', 'humanize', 'ordinalize', 'monthize'],
             true
@@ -328,7 +377,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             return $inflector->{$action}($data);
         }
 
-        if (\in_array($action, ['pluralize', 'singularize'], true)) {
+        if (in_array($action, ['pluralize', 'singularize'], true)) {
             return $count ? $inflector->{$action}($data, $count) : $inflector->{$action}($data);
         }
 
@@ -339,7 +388,6 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * Return MD5 hash from the input.
      *
      * @param  string $str
-     *
      * @return string
      */
     public function md5Filter($str)
@@ -362,7 +410,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * Return Base32 decoded string
      *
      * @param string $str
-     * @return bool|string
+     * @return string
      */
     public function base32DecodeFilter($str)
     {
@@ -384,13 +432,12 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * Return Base64 decoded string
      *
      * @param string $str
-     * @return bool|string
+     * @return string|false
      */
     public function base64DecodeFilter($str)
     {
         return base64_decode($str);
     }
-
 
     /**
      * Sorts a collection by key
@@ -399,7 +446,6 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * @param  string   $filter
      * @param  int      $direction
      * @param  int      $sort_flags
-     *
      * @return array
      */
     public function sortByKeyFilter($input, $filter, $direction = SORT_ASC, $sort_flags = SORT_REGULAR)
@@ -410,8 +456,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     /**
      * Return ksorted collection.
      *
-     * @param  array $array
-     *
+     * @param  array|null $array
      * @return array
      */
     public function ksortFilter($array)
@@ -442,8 +487,8 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      *
      * @param string $haystack
      * @param string $needle
-     *
-     * @return bool
+     * @return string|bool
+     * @todo returning $haystack here doesn't make much sense
      */
     public function containsFilter($haystack, $needle)
     {
@@ -457,7 +502,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     /**
      * Gets a human readable output for cron syntax
      *
-     * @param $at
+     * @param string $at
      * @return string
      */
     public function niceCronFilter($at)
@@ -482,14 +527,13 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      *
      * @param string $date
      * @param bool $long_strings
-     *
      * @param bool $show_tense
-     * @return bool
+     * @return string
      */
     public function nicetimeFunc($date, $long_strings = true, $show_tense = true)
     {
         if (empty($date)) {
-            return $this->grav['language']->translate('GRAV.NICETIME.NO_DATE_PROVIDED', null, true);
+            return $this->grav['language']->translate('GRAV.NICETIME.NO_DATE_PROVIDED');
         }
 
         if ($long_strings) {
@@ -529,21 +573,19 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
         // check validity of date
         if (empty($unix_date)) {
-            return $this->grav['language']->translate('GRAV.NICETIME.BAD_DATE', null, true);
+            return $this->grav['language']->translate('GRAV.NICETIME.BAD_DATE');
         }
 
         // is it future date or past date
         if ($now > $unix_date) {
             $difference = $now - $unix_date;
-            $tense      = $this->grav['language']->translate('GRAV.NICETIME.AGO', null, true);
-
+            $tense      = $this->grav['language']->translate('GRAV.NICETIME.AGO');
         } elseif ($now == $unix_date) {
             $difference = $now - $unix_date;
-            $tense      = $this->grav['language']->translate('GRAV.NICETIME.JUST_NOW', null, false);
-
+            $tense      = $this->grav['language']->translate('GRAV.NICETIME.JUST_NOW');
         } else {
             $difference = $unix_date - $now;
-            $tense      = $this->grav['language']->translate('GRAV.NICETIME.FROM_NOW', null, true);
+            $tense      = $this->grav['language']->translate('GRAV.NICETIME.FROM_NOW');
         }
 
         for ($j = 0; $difference >= $lengths[$j] && $j < count($lengths) - 1; $j++) {
@@ -556,15 +598,17 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             $periods[$j] .= '_PLURAL';
         }
 
-        if ($this->grav['language']->getTranslation($this->grav['language']->getLanguage(),
-            $periods[$j] . '_MORE_THAN_TWO')
+        if ($this->grav['language']->getTranslation(
+            $this->grav['language']->getLanguage(),
+            $periods[$j] . '_MORE_THAN_TWO'
+        )
         ) {
             if ($difference > 2) {
                 $periods[$j] .= '_MORE_THAN_TWO';
             }
         }
 
-        $periods[$j] = $this->grav['language']->translate('GRAV.'.$periods[$j], null, true);
+        $periods[$j] = $this->grav['language']->translate('GRAV.'.$periods[$j]);
 
         if ($now == $unix_date) {
             return $tense;
@@ -584,12 +628,12 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      */
     public function xssFunc($data)
     {
-        if (!\is_array($data)) {
+        if (!is_array($data)) {
             return Security::detectXss($data);
         }
 
         $results = Security::detectXssFromArray($data);
-        $results_parts = array_map(function($value, $key) {
+        $results_parts = array_map(static function ($value, $key) {
             return $key.': \''.$value . '\'';
         }, array_values($results), array_keys($results));
 
@@ -598,8 +642,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     /**
      * @param string $string
-     *
-     * @return mixed
+     * @return string
      */
     public function absoluteUrlFilter($string)
     {
@@ -607,15 +650,13 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
         $string = preg_replace('/((?:href|src) *= *[\'"](?!(http|ftp)))/i', "$1$url", $string);
 
         return $string;
-
     }
 
     /**
-     * @param string $string
-     *
      * @param array $context
+     * @param string $string
      * @param bool $block  Block or Line processing
-     * @return mixed|string
+     * @return string
      */
     public function markdownFunction($context, $string, $block = true)
     {
@@ -626,7 +667,6 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     /**
      * @param string $haystack
      * @param string $needle
-     *
      * @return bool
      */
     public function startsWithFilter($haystack, $needle)
@@ -637,7 +677,6 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     /**
      * @param string $haystack
      * @param string $needle
-     *
      * @return bool
      */
     public function endsWithFilter($haystack, $needle)
@@ -648,47 +687,54 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     /**
      * @param mixed $value
      * @param null $default
-     *
-     * @return null
+     * @return mixed|null
      */
     public function definedDefaultFilter($value, $default = null)
     {
-        return null !== $value ? $value : $default;
-        }
+        return $value ?? $default;
+    }
 
     /**
      * @param string $value
-     * @param null $chars
-     *
+     * @param string|null $chars
      * @return string
      */
     public function rtrimFilter($value, $chars = null)
     {
-        return rtrim($value, $chars);
+        return null !== $chars ? rtrim($value, $chars) : rtrim($value);
     }
 
     /**
      * @param string $value
-     * @param null $chars
-     *
+     * @param string|null $chars
      * @return string
      */
     public function ltrimFilter($value, $chars = null)
     {
-        return ltrim($value, $chars);
+        return  null !== $chars ? ltrim($value, $chars) : ltrim($value);
     }
 
     /**
-     * Casts input to string.
+     * Returns a string from a value. If the value is array, return it json encoded
      *
-     * @param mixed $input
+     * @param mixed $value
      * @return string
      */
-    public function stringFilter($input)
+    public function stringFilter($value)
     {
-        return (string) $input;
-    }
+        // Format the array as a string
+        if (is_array($value)) {
+            return json_encode($value);
+        }
 
+        // Boolean becomes '1' or '0'
+        if (is_bool($value)) {
+            $value = (int)$value;
+        }
+
+        // Cast the other values to string.
+        return (string)$value;
+    }
 
     /**
      * Casts input to int.
@@ -731,13 +777,28 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      */
     public function arrayFilter($input)
     {
-        return (array) $input;
+        if (is_array($input)) {
+            return $input;
+        }
+
+        if (is_object($input)) {
+            if (method_exists($input, 'toArray')) {
+                return $input->toArray();
+            }
+
+            if ($input instanceof Iterator) {
+                return iterator_to_array($input);
+            }
+        }
+
+        return (array)$input;
     }
 
     /**
+     * @param Environment $twig
      * @return string
      */
-    public function translate(\Twig_Environment $twig)
+    public function translate(Environment $twig)
     {
         // shift off the environment
         $args = func_get_args();
@@ -813,13 +874,13 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      *
      * @param  string $input  Resource to be located.
      * @param  bool   $domain True to include domain name.
-     *
-     * @return string|null      Returns url to the resource or null if resource was not found.
+     * @param  bool   $failGracefully If true, return URL even if the file does not exist.
+     * @return string|false      Returns url to the resource or null if resource was not found.
      */
-    public function urlFunc($input, $domain = false)
+    public function urlFunc($input, $domain = false, $failGracefully = false)
     {
-        return Utils::url($input, $domain);
-        }
+        return Utils::url($input, $domain, $failGracefully);
+    }
 
     /**
      * This function will evaluate Twig $twig through the $environment, and return its results.
@@ -828,10 +889,12 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * @param string $twig
      * @return mixed
      */
-    public function evaluateTwigFunc($context, $twig ) {
+    public function evaluateTwigFunc($context, $twig)
+    {
 
-        $loader = new \Twig_Loader_Filesystem('.');
-        $env = new \Twig_Environment($loader);
+        $loader = new FilesystemLoader('.');
+        $env = new Environment($loader);
+        $env->addExtension($this);
 
         $template = $env->createTemplate($twig);
 
@@ -845,20 +908,19 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * @param string $string
      * @return mixed
      */
-    public function evaluateStringFunc($context, $string )
+    public function evaluateStringFunc($context, $string)
     {
         return $this->evaluateTwigFunc($context, "{{ $string }}");
     }
 
-
     /**
-     * Based on Twig_Extension_Debug / twig_var_dump
+     * Based on Twig\Extension\Debug / twig_var_dump
      * (c) 2011 Fabien Potencier
      *
-     * @param \Twig_Environment $env
-     * @param string $context
+     * @param Environment $env
+     * @param array $context
      */
-    public function dump(\Twig_Environment $env, $context)
+    public function dump(Environment $env, $context)
     {
         if (!$env->isDebug() || !$this->debugger) {
             return;
@@ -872,7 +934,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
                     if (method_exists($value, 'toArray')) {
                         $data[$key] = $value->toArray();
                     } else {
-                        $data[$key] = "Object (" . get_class($value) . ")";
+                        $data[$key] = 'Object (' . get_class($value) . ')';
                     }
                 } else {
                     $data[$key] = $value;
@@ -881,7 +943,8 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             $this->debugger->addMessage($data, 'debug');
         } else {
             for ($i = 2; $i < $count; $i++) {
-                $this->debugger->addMessage(func_get_arg($i), 'debug');
+                $var = func_get_arg($i);
+                $this->debugger->addMessage($var, 'debug');
             }
         }
     }
@@ -890,8 +953,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * Output a Gist
      *
      * @param  string $id
-     * @param  string|bool $file
-     *
+     * @param  string|false $file
      * @return string
      */
     public function gistFunc($id, $file = false)
@@ -907,7 +969,6 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * Generate a random string
      *
      * @param int $count
-     *
      * @return string
      */
     public function randomStringFunc($count = 5)
@@ -922,7 +983,6 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * @param int    $pad_length
      * @param string $pad_string
      * @param int    $pad_type
-     *
      * @return string
      */
     public static function padFilter($input, $pad_length, $pad_string = ' ', $pad_type = STR_PAD_RIGHT)
@@ -936,8 +996,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      *
      * @param string $key           key of item
      * @param string $val           value of item
-     * @param array  $current_array optional array to add to
-     *
+     * @param array|null $current_array optional array to add to
      * @return array
      */
     public function arrayKeyValueFunc($key, $val, $current_array = null)
@@ -954,33 +1013,17 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     /**
      * Wrapper for array_intersect() method
      *
-     * @param array $array1
-     * @param array $array2
-     * @return array
+     * @param array|Collection $array1
+     * @param array|Collection $array2
+     * @return array|Collection
      */
     public function arrayIntersectFunc($array1, $array2)
     {
         if ($array1 instanceof Collection && $array2 instanceof Collection) {
-            return $array1->intersect($array2);
+            return $array1->intersect($array2)->toArray();
         }
 
         return array_intersect($array1, $array2);
-    }
-
-    /**
-     * Returns a string from a value. If the value is array, return it json encoded
-     *
-     * @param array|string $value
-     *
-     * @return string
-     */
-    public function stringFunc($value)
-    {
-        if (is_array($value)) { //format the array as a string
-            return json_encode($value);
-        }
-
-        return $value;
     }
 
     /**
@@ -1006,21 +1049,42 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      */
     public function authorize($action)
     {
-        /** @var UserInterface|null $user */
-        $user = $this->grav['user'] ?? null;
+        // Admin can use Flex users even if the site does not; make sure we use the right version of the user.
+        $admin = $this->grav['admin'] ?? null;
+        if ($admin) {
+            $user = $admin->user;
+        } else {
+            /** @var UserInterface|null $user */
+            $user = $this->grav['user'] ?? null;
+        }
 
-        if (!$user || !$user->authenticated || (isset($user->authorized) && !$user->authorized)) {
+        if (!$user) {
             return false;
         }
 
-        $action = (array) $action;
-        foreach ($action as $key => $perms) {
-            $prefix = is_int($key) ? '' : $key . '.';
-            $perms = $prefix ? (array) $perms : [$perms => true];
-            foreach ($perms as $action2 => $authenticated) {
-                if ($user->authorize($prefix . $action2)) {
-                    return $authenticated;
-                }
+        if (is_array($action)) {
+            if (Utils::isAssoc($action)) {
+                // Handle nested access structure.
+                $actions = Utils::arrayFlattenDotNotation($action);
+            } else {
+                // Handle simple access list.
+                $actions = array_combine($action, array_fill(0, count($action), true));
+            }
+        } else {
+            // Handle single action.
+            $actions = [(string)$action => true];
+        }
+
+        $count = count($actions);
+        foreach ($actions as $act => $authenticated) {
+            // Ignore 'admin.super' if it's not the only value to be checked.
+            if ($act === 'admin.super' && $count > 1 && $user instanceof FlexObjectInterface) {
+                continue;
+            }
+
+            $auth = $user->authorize($act) ?? false;
+            if (is_bool($auth) && $auth === Utils::isPositive($authenticated)) {
+                return true;
             }
         }
 
@@ -1034,7 +1098,6 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      *
      * @param string $action         the action
      * @param string $nonceParamName a custom nonce param name
-     *
      * @return string the nonce input field
      */
     public function nonceFieldFunc($action, $nonceParamName = 'nonce')
@@ -1062,8 +1125,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * Used to retrieve a cookie value
      *
      * @param string $key     The cookie name to retrieve
-     *
-     * @return mixed
+     * @return string
      */
     public function getCookie($key)
     {
@@ -1073,11 +1135,10 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     /**
      * Twig wrapper for PHP's preg_replace method
      *
-     * @param mixed $subject the content to perform the replacement on
-     * @param mixed $pattern the regex pattern to use for matches
-     * @param mixed $replace the replacement value either as a string or an array of replacements
+     * @param string|string[] $subject the content to perform the replacement on
+     * @param string|string[] $pattern the regex pattern to use for matches
+     * @param string|string[] $replace the replacement value either as a string or an array of replacements
      * @param int   $limit   the maximum possible replacements for each pattern in each subject
-     *
      * @return string|string[]|null the resulting content
      */
     public function regexReplace($subject, $pattern, $replace, $limit = -1)
@@ -1099,15 +1160,49 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     }
 
     /**
+     * Twig wrapper for PHP's preg_match method
+     *
+     * @param string $subject the content to perform the match on
+     * @param string $pattern the regex pattern to use for match
+     * @param int $flags
+     * @param int $offset
+     * @return array|false returns the matches if there is at least one match in the subject for a given pattern or null if not.
+     */
+    public function regexMatch($subject, $pattern, $flags = 0, $offset = 0)
+    {
+        if (preg_match($pattern, $subject, $matches, $flags, $offset) === false) {
+            return false;
+        }
+
+        return $matches;
+    }
+
+    /**
+     * Twig wrapper for PHP's preg_split method
+     *
+     * @param string $subject the content to perform the split on
+     * @param string $pattern the regex pattern to use for split
+     * @param int $limit the maximum possible splits for the given pattern
+     * @param int $flags
+     * @return array|false the resulting array after performing the split operation
+     */
+    public function regexSplit($subject, $pattern, $limit = -1, $flags = 0)
+    {
+        return preg_split($pattern, $subject, $limit, $flags);
+    }
+
+    /**
      * redirect browser from twig
      *
      * @param string $url          the url to redirect to
      * @param int $statusCode      statusCode, default 303
+     * @return void
      */
     public function redirectFunc($url, $statusCode = 303)
     {
-        header('Location: ' . $url, true, $statusCode);
-        exit();
+        $response = new Response($statusCode, ['location' => $url]);
+
+        $this->grav->close($response);
     }
 
     /**
@@ -1116,7 +1211,6 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * @param int $start      Minimum number, default 0
      * @param int $end        Maximum number, default `getrandmax()`
      * @param int $step       Increment between elements in the sequence, default 1
-     *
      * @return array
      */
     public function rangeFunc($start = 0, $end = 100, $step = 1)
@@ -1157,7 +1251,6 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             $exif_reader = $this->grav['exif']->getReader();
 
             if ($image && file_exists($image) && $this->config->get('system.media.auto_metadata_exif') && $exif_reader) {
-
                 $exif_data = $exif_reader->read($image);
 
                 if ($exif_data) {
@@ -1221,6 +1314,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * Dump a variable to the browser
      *
      * @param mixed $var
+     * @return void
      */
     public function vardumpFunc($var)
     {
@@ -1246,8 +1340,8 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      */
     public function niceNumberFunc($n)
     {
-        if (!\is_float($n) && !\is_int($n)) {
-            if (!\is_string($n) || $n === '') {
+        if (!is_float($n) && !is_int($n)) {
+            if (!is_string($n) || $n === '') {
                 return false;
             }
 
@@ -1255,7 +1349,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             $list = array_filter(preg_split("/\D+/", str_replace(',', '', $n)));
             $n = reset($list);
 
-            if (!\is_numeric($n)) {
+            if (!is_numeric($n)) {
                 return false;
             }
 
@@ -1281,30 +1375,76 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     /**
      * Get a theme variable
+     * Will try to get the variable for the current page, if not found, it tries it's parent page on up to root.
+     * If still not found, will use the theme's configuration value,
+     * If still not found, will use the $default value passed in
      *
-     * @param string $var
-     * @param bool $default
-     * @return string
+     * @param array $context      Twig Context
+     * @param string $var variable to be found (using dot notation)
+     * @param null $default the default value to be used as last resort
+     * @param null $page an optional page to use for the current page
+     * @param bool $exists toggle to simply return the page where the variable is set, else null
+     * @return mixed
      */
-    public function themeVarFunc($var, $default = null)
+    public function themeVarFunc($context, $var, $default = null, $page = null, $exists = false)
     {
-        $header = $this->grav['page']->header();
-        $header_classes = $header->{$var} ?? null;
+        $page = $page ?? $context['page'] ?? Grav::instance()['page'] ?? null;
 
-        return $header_classes ?: $this->config->get('theme.' . $var, $default);
+        // Try to find var in the page headers
+        if ($page instanceof PageInterface && $page->exists()) {
+            // Loop over pages and look for header vars
+            while ($page && !$page->root()) {
+                $header = new Data((array)$page->header());
+                $value = $header->get($var);
+                if (isset($value)) {
+                    if ($exists) {
+                        return $page;
+                    }
+
+                    return $value;
+                }
+                $page = $page->parent();
+            }
+        }
+
+        if ($exists) {
+            return false;
+        }
+
+        return Grav::instance()['config']->get('theme.' . $var, $default);
+    }
+
+    /**
+     * Look for a page header variable in an array of pages working its way through until a value is found
+     *
+     * @param array $context
+     * @param string $var the variable to look for in the page header
+     * @param string|string[]|null $pages array of pages to check (current page upwards if not null)
+     * @return mixed
+     * @deprecated 1.7 Use themeVarFunc() instead
+     */
+    public function pageHeaderVarFunc($context, $var, $pages = null)
+    {
+        if (is_array($pages)) {
+            $page = array_shift($pages);
+        } else {
+            $page = null;
+        }
+        return $this->themeVarFunc($context, $var, null, $page);
     }
 
     /**
      * takes an array of classes, and if they are not set on body_classes
      * look to see if they are set in theme config
      *
+     * @param array $context
      * @param string|string[] $classes
      * @return string
      */
-    public function bodyClassFunc($classes)
+    public function bodyClassFunc($context, $classes)
     {
 
-        $header = $this->grav['page']->header();
+        $header = $context['page']->header();
         $body_classes = $header->body_classes ?? '';
 
         foreach ((array)$classes as $class) {
@@ -1320,49 +1460,74 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     }
 
     /**
-     * Look for a page header variable in an array of pages working its way through until a value is found
+     * Returns the content of an SVG image and adds extra classes as needed
      *
-     * @param string $var
-     * @param string|string[]|null $pages
-     * @return mixed
+     * @param string $path
+     * @param string|null $classes
+     * @return string|string[]|null
      */
-    public function pageHeaderVarFunc($var, $pages = null)
+    public static function svgImageFunction($path, $classes = null, $strip_style = false)
     {
-        if ($pages === null) {
-            $pages = $this->grav['page'];
-        }
+        $path = Utils::fullPath($path);
 
-        // Make sure pages are an array
-        if (!\is_array($pages)) {
-            $pages = [$pages];
-        }
+        $classes = $classes ?: '';
 
-        // Loop over pages and look for header vars
-        foreach ($pages as $page) {
-            if (\is_string($page)) {
-                $page = $this->grav['pages']->find($page);
+        if (file_exists($path) && !is_dir($path)) {
+            $svg = file_get_contents($path);
+            $classes = " inline-block $classes";
+            $matched = false;
+
+            //Remove xml tag if it exists
+            $svg = preg_replace('/^<\?xml.*\?>/','', $svg);
+
+            //Strip style if needed
+            if ($strip_style) {
+                $svg = preg_replace('/<style.*<\/style>/s', '', $svg);
             }
 
-            if ($page) {
-                $header = $page->header();
-                if (isset($header->{$var})) {
-                    return $header->{$var};
+            //Look for existing class
+            $svg = preg_replace_callback('/^<svg[^>]*(class=\")([^"]*)(\")[^>]*>/', function($matches) use ($classes, &$matched) {
+                if (isset($matches[2])) {
+                    $new_classes = $matches[2] . $classes;
+                    $matched = true;
+                    return str_replace($matches[1], "class=\"$new_classes\"", $matches[0]);
                 }
+                return $matches[0];
+            }, $svg
+            );
+
+            // no matches found just add the class
+            if (!$matched) {
+                $classes = trim($classes);
+                $svg = str_replace('<svg ', "<svg class=\"$classes\" ", $svg);
             }
+
+            return $svg;
         }
 
         return null;
     }
 
+
     /**
      * Dump/Encode data into YAML format
      *
-     * @param array $data
+     * @param array|object $data
      * @param int $inline integer number of levels of inline syntax
      * @return string
      */
     public function yamlEncodeFilter($data, $inline = 10)
     {
+        if (!is_array($data)) {
+            if ($data instanceof JsonSerializable) {
+                $data = $data->jsonSerialize();
+            } elseif (method_exists($data, 'toArray')) {
+                $data = $data->toArray();
+            } else {
+                $data = json_decode(json_encode($data), true);
+            }
+        }
+
         return Yaml::dump($data, $inline);
     }
 
@@ -1396,50 +1561,39 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * @param string|null $className
      * @return bool
      */
-    public function ofTypeFunc($var, $typeTest=null, $className=null)
+    public function ofTypeFunc($var, $typeTest = null, $className = null)
     {
 
-        switch ($typeTest)
-        {
+        switch ($typeTest) {
             default:
                 return false;
-                break;
 
             case 'array':
                 return is_array($var);
-                break;
 
             case 'bool':
                 return is_bool($var);
-                break;
 
             case 'class':
                 return is_object($var) === true && get_class($var) === $className;
-                break;
 
             case 'float':
                 return is_float($var);
-                break;
 
             case 'int':
                 return is_int($var);
-                break;
 
             case 'numeric':
                 return is_numeric($var);
-                break;
 
             case 'object':
                 return is_object($var);
-                break;
 
             case 'scalar':
                 return is_scalar($var);
-                break;
 
             case 'string':
                 return is_string($var);
-                break;
         }
     }
 }

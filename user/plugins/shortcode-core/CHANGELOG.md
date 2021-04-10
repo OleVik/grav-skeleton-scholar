@@ -1,3 +1,67 @@
+# v5.0.5
+## 03/12/2021
+
+1. [](#bugfix)
+    * `SafeEmailShortcode` fixed to be compatible with PHP 7.4
+    * Addresses shortcodes getting repeated in modular subpages [#101](https://github.com/getgrav/grav-plugin-shortcode-core/pull/101)
+
+# v5.0.4
+## 01/26/2021
+
+1. [](#bugfix)
+   * NextGen Editor: Fixed regexp regression preventing multiple shortcodes to be parsed in certain circumstances
+
+# v5.0.3
+## 01/15/2021
+
+1. [](#improved)
+   * NextGen Editor: Update to support latest version
+
+# v5.0.2
+## 12/18/2020
+
+1. [](#improved)
+    * NexGen Editor: Added optional `shorthand` to force attributes to full declaration
+1. [](#bugfix)
+    * NextGen Editor: Fixed regexp preventing attributes with `/` in the value from being captured
+
+# v5.0.1
+## 12/02/2020
+
+1. [](#improved)
+    * Content editing in settings popup
+
+# v5.0.0
+## 11/04/2020
+
+1. [](#new)
+    * Added built-in support for **Nextgen Editor** with powerful GUI capabilities for all core shortcodes
+    * Support for 3rd party shortcode plugins to add their own **Nextgen Editor** integrations.
+1. [](#improved)
+    * Support for comma-listed language tags in `[lang]` shortcode: `[lang=dk,se,no,fi]`
+    * Support for justified text in align shortcode [#94](https://github.com/getgrav/grav-plugin-shortcode-core/issues/94)
+    * Support for asset collections and arrays [#85](https://github.com/getgrav/grav-plugin-shortcode-core/issues/85)
+    * Support of `duotone` FontAwesome icons [#78](https://github.com/getgrav/grav-plugin-shortcode-core/issues/78)
+1. [](#bugfix)
+    * Support HTML in Header shortcode
+    
+# v4.2.3
+## 04/27/2020
+
+1. [](#improved)
+    * Configuration option to exclude default shortcodes [#86](https://github.com/getgrav/grav-plugin-shortcode-core/issues/86)
+    * Add support for `style` attribute in `[span]` shortcode [#88](https://github.com/getgrav/grav-plugin-shortcode-core/issues/88)  
+    * Fix typos [#91](https://github.com/getgrav/grav-plugin-shortcode-core/issues/91) 
+
+# v4.2.2
+## 03/04/2020
+
+1. [](#improved)
+    * Added second `$options` parameter to `ShortcodeCore->registerAllShortcodes()`, key `ignore` can be used to ignore class names / files from being loaded
+1. [](#bugfix)
+    * Fix shortcodes which do not override `init()` method, added deprecation notice instead [#82](https://github.com/getgrav/grav-plugin-shortcode-core/issues/82)
+    * Fixed error message showing up when updating older versions (<4.2.0) of the plugin [#84](https://github.com/getgrav/grav-plugin-shortcode-core/issues/84)
+
 # v4.2.1
 ## 02/14/2020
 

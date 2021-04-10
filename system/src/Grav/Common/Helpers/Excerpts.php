@@ -3,16 +3,24 @@
 /**
  * @package    Grav\Common\Helpers
  *
- * @copyright  Copyright (C) 2015 - 2019 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
 namespace Grav\Common\Helpers;
 
+use DOMDocument;
+use DOMElement;
 use Grav\Common\Page\Interfaces\PageInterface;
 use Grav\Common\Page\Markdown\Excerpts as ExcerptsObject;
+use Grav\Common\Page\Medium\Link;
 use Grav\Common\Page\Medium\Medium;
+use function is_array;
 
+/**
+ * Class Excerpts
+ * @package Grav\Common\Helpers
+ */
 class Excerpts
 {
     /**
@@ -32,11 +40,31 @@ class Excerpts
         $excerpt = static::processLinkExcerpt($excerpt, $page, 'image');
 
         $excerpt['element']['attributes']['src'] = $excerpt['element']['attributes']['href'];
-        unset ($excerpt['element']['attributes']['href']);
+        unset($excerpt['element']['attributes']['href']);
 
         $excerpt = static::processImageExcerpt($excerpt, $page);
 
         $excerpt['element']['attributes']['data-src'] = $original_src;
+
+        $html = static::getHtmlFromExcerpt($excerpt);
+
+        return $html;
+    }
+
+    /**
+     * Process Grav page link URL from HTML tag
+     *
+     * @param string $html              HTML tag e.g. `<a href="../foo">Page Link</a>`
+     * @param PageInterface|null $page  Page, defaults to the current page object
+     * @return string                   Returns final HTML string
+     */
+    public static function processLinkHtml($html, PageInterface $page = null)
+    {
+        $excerpt = static::getExcerptFromHtml($html, 'a');
+
+        $original_href = $excerpt['element']['attributes']['href'];
+        $excerpt = static::processLinkExcerpt($excerpt, $page, 'link');
+        $excerpt['element']['attributes']['data-href'] = $original_href;
 
         $html = static::getHtmlFromExcerpt($excerpt);
 
@@ -52,22 +80,35 @@ class Excerpts
      */
     public static function getExcerptFromHtml($html, $tag)
     {
-        $doc = new \DOMDocument();
-        $doc->loadHTML($html);
-        $images = $doc->getElementsByTagName($tag);
-        $excerpt = null;
+        $doc = new DOMDocument('1.0', 'UTF-8');
+        $internalErrors = libxml_use_internal_errors(true);
+        $doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+        libxml_use_internal_errors($internalErrors);
 
-        foreach ($images as $image) {
+        $elements = $doc->getElementsByTagName($tag);
+        $excerpt = null;
+        $inner = [];
+
+        /** @var DOMElement $element */
+        foreach ($elements as $element) {
             $attributes = [];
-            foreach ($image->attributes as $name => $value) {
+            foreach ($element->attributes as $name => $value) {
                 $attributes[$name] = $value->value;
             }
             $excerpt = [
                 'element' => [
-                    'name'       => $image->tagName,
+                    'name'       => $element->tagName,
                     'attributes' => $attributes
                 ]
             ];
+
+            foreach ($element->childNodes as $node) {
+                    $inner[] = $doc->saveHTML($node);
+            }
+
+            $excerpt = array_merge_recursive($excerpt, ['element' => ['text' => implode('', $inner)]]);
+
+
         }
 
         return $excerpt;
@@ -95,7 +136,7 @@ class Excerpts
 
         if (isset($element['text'])) {
             $html .= '>';
-            $html .= $element['text'];
+            $html .= is_array($element['text']) ? static::getHtmlFromExcerpt(['element' => $element['text']]) : $element['text'];
             $html .= '</'.$element['name'].'>';
         } else {
             $html .= ' />';
@@ -139,7 +180,7 @@ class Excerpts
      * @param Medium $medium
      * @param string|array $url
      * @param PageInterface|null $page  Page, defaults to the current page object
-     * @return Medium
+     * @return Medium|Link
      */
     public static function processMediaActions($medium, $url, PageInterface $page = null)
     {

@@ -7,6 +7,7 @@ namespace Gregwar\Image;
  */
 class ImageColor
 {
+    /** @var int[] */
     private static $colors = array(
         'black'       => 0x000000,
         'silver'      => 0xc0c0c0,
@@ -28,6 +29,11 @@ class ImageColor
         'transparent' => 0x7fffffff,
     );
 
+    /**
+     * @param resource $image
+     * @param string|int $color
+     * @return int|false
+     */
     public static function gdAllocate($image, $color)
     {
         $colorRGBA = self::parse($color);
@@ -42,13 +48,18 @@ class ImageColor
 
         $c = imagecolorallocatealpha($image, $r, $g, $b, $a);
 
-        if ($color == 'transparent') {
+        if ($color === 'transparent') {
             imagecolortransparent($image, $c);
         }
 
         return $c;
     }
 
+    /**
+     * @param string|int $color
+     *
+     * @return int
+     */
     public static function parse($color)
     {
         // Direct color representation (ex: 0xff0000)
@@ -68,11 +79,11 @@ class ImageColor
             if (preg_match('/^(#|0x|)([0-9a-f]{3,6})/i', $color_string, $matches)) {
                 $col = $matches[2];
 
-                if (strlen($col) == 6) {
+                if (strlen($col) === 6) {
                     return hexdec($col);
                 }
 
-                if (strlen($col) == 3) {
+                if (strlen($col) === 3) {
                     $r = '';
                     for ($i = 0; $i < 3; ++$i) {
                         $r .= $col[$i].$col[$i];

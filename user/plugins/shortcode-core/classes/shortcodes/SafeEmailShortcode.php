@@ -16,6 +16,7 @@ class SafeEmailShortcode extends Shortcode
             // Get shortcode content and parameters
             $str = $sc->getContent();
             $icon = $sc->getParameter('icon', false);
+            $icon_base = "fa fa-";
             $autolink = $sc->getParameter('autolink', false);
 
             // Encode email
@@ -34,7 +35,14 @@ class SafeEmailShortcode extends Shortcode
 
             // Handle icon option
             if ($icon) {
-                $output = '<i class="fa fa-' . $icon . '"></i> ' . $output;
+                if ($this->config->get('plugins.shortcode-core.fontawesome.v5', false)) {
+                    if (preg_match("/^(?P<weight>fa[srlbd]) fa-(?<icon>.+)/", $icon, $icon_parts)) {
+                        $icon_base = $icon_parts["weight"] . " fa-";
+                        $icon = $icon_parts["icon"];
+                    }
+                }
+
+                $output = '<i class="'. $icon_base . $icon . '"></i> ' . $output;
             }
 
             return $output;

@@ -3,102 +3,69 @@
 /**
  * @package    Grav\Common\Page
  *
- * @copyright  Copyright (C) 2015 - 2019 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
 namespace Grav\Common\Page\Medium;
 
+use BadFunctionCallException;
 use Grav\Common\Data\Blueprint;
-use Grav\Common\Grav;
+use Grav\Common\Media\Interfaces\ImageManipulateInterface;
+use Grav\Common\Media\Interfaces\ImageMediaInterface;
+use Grav\Common\Media\Interfaces\MediaLinkInterface;
+use Grav\Common\Media\Traits\ImageLoadingTrait;
+use Grav\Common\Media\Traits\ImageMediaTrait;
 use Grav\Common\Utils;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
+use function func_get_args;
+use function in_array;
 
-class ImageMedium extends Medium
+/**
+ * Class ImageMedium
+ * @package Grav\Common\Page\Medium
+ */
+class ImageMedium extends Medium implements ImageMediaInterface, ImageManipulateInterface
 {
-    /**
-     * @var array
-     */
-    protected $thumbnailTypes = ['page', 'media', 'default'];
+    use ImageMediaTrait;
+    use ImageLoadingTrait;
 
     /**
-     * @var ImageFile
+     * @var mixed|string
      */
-    protected $image;
-
-    /**
-     * @var string
-     */
-    protected $format = 'guess';
-
-    /**
-     * @var int
-     */
-    protected $quality;
-
-    /**
-     * @var int
-     */
-    protected $default_quality;
-
-    /**
-     * @var bool
-     */
-    protected $debug_watermarked = false;
-
-    /**
-     * @var array
-     */
-    public static $magic_actions = [
-        'resize', 'forceResize', 'cropResize', 'crop', 'zoomCrop',
-        'negate', 'brightness', 'contrast', 'grayscale', 'emboss',
-        'smooth', 'sharp', 'edge', 'colorize', 'sepia', 'enableProgressive',
-        'rotate', 'flip', 'fixOrientation', 'gaussianBlur'
-    ];
-
-    /**
-     * @var array
-     */
-    public static $magic_resize_actions = [
-        'resize' => [0, 1],
-        'forceResize' => [0, 1],
-        'cropResize' => [0, 1],
-        'crop' => [0, 1, 2, 3],
-        'zoomCrop' => [0, 1]
-    ];
-
-    /**
-     * @var string
-     */
-    protected $sizes = '100vw';
+    private $saved_image_path;
 
     /**
      * Construct.
      *
      * @param array $items
-     * @param Blueprint $blueprint
+     * @param Blueprint|null $blueprint
      */
     public function __construct($items = [], Blueprint $blueprint = null)
     {
         parent::__construct($items, $blueprint);
 
-        $config = Grav::instance()['config'];
+        $config = $this->getGrav()['config'];
+
+        $this->thumbnailTypes = ['page', 'media', 'default'];
+        $this->default_quality = $config->get('system.images.default_image_quality', 85);
+        $this->def('debug', $config->get('system.images.debug'));
 
         $path = $this->get('filepath');
         if (!$path || !file_exists($path) || !filesize($path)) {
             return;
         }
 
-        $image_info = getimagesize($path);
+        $this->set('thumbnails.media', $path);
 
-        $this->def('width', $image_info[0]);
-        $this->def('height', $image_info[1]);
-        $this->def('mime', $image_info['mime']);
-        $this->def('debug', $config->get('system.images.debug'));
-
-        $this->set('thumbnails.media', $this->get('filepath'));
-
-        $this->default_quality = $config->get('system.images.default_image_quality', 85);
+        if (!($this->offsetExists('width') && $this->offsetExists('height') && $this->offsetExists('mime'))) {
+            $image_info = getimagesize($path);
+            if ($image_info) {
+                $this->def('width', $image_info[0]);
+                $this->def('height', $image_info[1]);
+                $this->def('mime', $image_info['mime']);
+            }
+        }
 
         $this->reset();
 
@@ -107,16 +74,65 @@ class ImageMedium extends Medium
         }
     }
 
+    /**
+     * @return array
+     */
+    public function getMeta(): array
+    {
+        return [
+            'width' => $this->width,
+            'height' => $this->height,
+        ] + parent::getMeta();
+    }
+
+    /**
+     * Also unset the image on destruct.
+     */
     public function __destruct()
     {
         unset($this->image);
     }
 
+    /**
+     * Also clone image.
+     */
     public function __clone()
     {
-        $this->image = $this->image ? clone $this->image : null;
+        if ($this->image) {
+            $this->image = clone $this->image;
+        }
 
         parent::__clone();
+    }
+
+    /**
+     * Reset image.
+     *
+     * @return $this
+     */
+    public function reset()
+    {
+        parent::reset();
+
+        if ($this->image) {
+            $this->image();
+            $this->medium_querystring = [];
+            $this->filter();
+            $this->clearAlternatives();
+        }
+
+        $this->format = 'guess';
+        $this->quality = $this->default_quality;
+
+        $this->debug_watermarked = false;
+
+        $config = $this->getGrav()['config'];
+        // Set CLS configuration
+        $this->auto_sizes = $config->get('system.images.cls.auto_sizes', false);
+        $this->aspect_ratio = $config->get('system.images.cls.aspect_ratio', false);
+        $this->retina_scale = $config->get('system.images.cls.retina_scale', 1);
+
+        return $this;
     }
 
     /**
@@ -133,14 +149,6 @@ class ImageMedium extends Medium
         $this->reset();
 
         return $this;
-    }
-
-    /**
-     * Clear out the alternatives
-     */
-    public function clearAlternatives()
-    {
-        $this->alternatives = [];
     }
 
     /**
@@ -168,15 +176,17 @@ class ImageMedium extends Medium
      */
     public function url($reset = true)
     {
-        /** @var UniformResourceLocator $locator */
-        $locator = Grav::instance()['locator'];
-        $image_path = $locator->findResource('cache://images', true) ?: $locator->findResource('cache://images', true, true);
-        $saved_image_path = $this->saveImage();
+        $grav = $this->getGrav();
 
-        $output = preg_replace('|^' . preg_quote(GRAV_ROOT, '|') . '|', '', $saved_image_path);
+        /** @var UniformResourceLocator $locator */
+        $locator = $grav['locator'];
+        $image_path = (string)($locator->findResource('cache://images', true) ?: $locator->findResource('cache://images', true, true));
+        $saved_image_path = $this->saved_image_path = $this->saveImage();
+
+        $output = preg_replace('|^' . preg_quote(GRAV_ROOT, '|') . '|', '', $saved_image_path) ?: $saved_image_path;
 
         if ($locator->isStream($output)) {
-            $output = $locator->findResource($output, false);
+            $output = (string)($locator->findResource($output, false) ?: $locator->findResource($output, false, true));
         }
 
         if (Utils::startsWith($output, $image_path)) {
@@ -188,23 +198,8 @@ class ImageMedium extends Medium
             $this->reset();
         }
 
-        return trim(Grav::instance()['base_url'] . '/' . $this->urlQuerystring($output), '\\');
+        return trim($grav['base_url'] . '/' . $this->urlQuerystring($output), '\\');
     }
-
-    /**
-     * Simply processes with no extra methods.  Useful for triggering events.
-     *
-     * @return $this
-     */
-    public function cache()
-    {
-        if (!$this->image) {
-            $this->image();
-        }
-
-        return $this;
-    }
-
 
     /**
      * Return srcset string for this Medium and its alternatives.
@@ -232,106 +227,6 @@ class ImageMedium extends Medium
     }
 
     /**
-     * Allows the ability to override the image's pretty name stored in cache
-     *
-     * @param string $name
-     */
-    public function setImagePrettyName($name)
-    {
-        $this->set('prettyname', $name);
-        if ($this->image) {
-            $this->image->setPrettyName($name);
-        }
-    }
-
-    public function getImagePrettyName()
-    {
-        if ($this->get('prettyname')) {
-            return $this->get('prettyname');
-        }
-
-        $basename = $this->get('basename');
-        if (preg_match('/[a-z0-9]{40}-(.*)/', $basename, $matches)) {
-            $basename = $matches[1];
-        }
-        return $basename;
-    }
-
-    /**
-     * Generate alternative image widths, using either an array of integers, or
-     * a min width, a max width, and a step parameter to fill out the necessary
-     * widths. Existing image alternatives won't be overwritten.
-     *
-     * @param  int|int[] $min_width
-     * @param  int       $max_width
-     * @param  int       $step
-     * @return $this
-     */
-    public function derivatives($min_width, $max_width = 2500, $step = 200)
-    {
-        if (!empty($this->alternatives)) {
-            $max = max(array_keys($this->alternatives));
-            $base = $this->alternatives[$max];
-        } else {
-            $base = $this;
-        }
-
-        $widths = [];
-
-        if (func_num_args() === 1) {
-            foreach ((array) func_get_arg(0) as $width) {
-                if ($width < $base->get('width')) {
-                    $widths[] = $width;
-                }
-            }
-        } else {
-            $max_width = min($max_width, $base->get('width'));
-
-            for ($width = $min_width; $width < $max_width; $width = $width + $step) {
-                $widths[] = $width;
-            }
-        }
-
-        foreach ($widths as $width) {
-            // Only generate image alternatives that don't already exist
-            if (array_key_exists((int) $width, $this->alternatives)) {
-                continue;
-            }
-
-            $derivative = MediumFactory::fromFile($base->get('filepath'));
-
-            // It's possible that MediumFactory::fromFile returns null if the
-            // original image file no longer exists and this class instance was
-            // retrieved from the page cache
-            if (null !== $derivative) {
-                $index = 2;
-                $alt_widths = array_keys($this->alternatives);
-                sort($alt_widths);
-
-                foreach ($alt_widths as $i => $key) {
-                    if ($width > $key) {
-                        $index += max($i, 1);
-                    }
-                }
-
-                $basename = preg_replace('/(@\d+x){0,1}$/', "@{$width}w", $base->get('basename'), 1);
-                $derivative->setImagePrettyName($basename);
-
-                $ratio = $base->get('width') / $width;
-                $height = $derivative->get('height') / $ratio;
-
-                $derivative->resize($width, $height);
-                $derivative->set('width', $width);
-                $derivative->set('height', $height);
-
-                $this->addAlternative($ratio, $derivative);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * Parsedown element for source display mode
      *
      * @param  array $attributes
@@ -348,31 +243,24 @@ class ImageMedium extends Medium
             $attributes['sizes'] = $this->sizes();
         }
 
-        return ['name' => 'img', 'attributes' => $attributes];
-    }
+        if ($this->saved_image_path && $this->auto_sizes) {
+            if (!array_key_exists('height', $this->attributes) && !array_key_exists('width', $this->attributes)) {
+                $info = getimagesize($this->saved_image_path);
+                $width = intval($info[0]);
+                $height = intval($info[1]);
 
-    /**
-     * Reset image.
-     *
-     * @return $this
-     */
-    public function reset()
-    {
-        parent::reset();
+                $scaling_factor = $this->retina_scale > 0 ? $this->retina_scale : 1;
+                $attributes['width'] = intval($width / $scaling_factor);
+                $attributes['height'] = intval($height / $scaling_factor);
 
-        if ($this->image) {
-            $this->image();
-            $this->medium_querystring = [];
-            $this->filter();
-            $this->clearAlternatives();
+                if ($this->aspect_ratio) {
+                    $style = ($attributes['style'] ?? ' ') . "--aspect-ratio: $width/$height;";
+                    $attributes['style'] = trim($style);
+                }
+            }
         }
 
-        $this->format = 'guess';
-        $this->quality = $this->default_quality;
-
-        $this->debug_watermarked = false;
-
-        return $this;
+        return ['name' => 'img', 'attributes' => $attributes];
     }
 
     /**
@@ -380,7 +268,7 @@ class ImageMedium extends Medium
      *
      * @param  bool $reset
      * @param  array  $attributes
-     * @return Link
+     * @return MediaLinkInterface
      */
     public function link($reset = true, array $attributes = [])
     {
@@ -399,7 +287,7 @@ class ImageMedium extends Medium
      * @param  int  $width
      * @param  int  $height
      * @param  bool $reset
-     * @return Link
+     * @return MediaLinkInterface
      */
     public function lightbox($width = null, $height = null, $reset = true)
     {
@@ -414,104 +302,37 @@ class ImageMedium extends Medium
         return parent::lightbox($width, $height, $reset);
     }
 
-    /**
-     * Sets or gets the quality of the image
-     *
-     * @param  int $quality 0-100 quality
-     * @return int|$this
-     */
-    public function quality($quality = null)
+    public function autoSizes($enabled = 'true')
     {
-        if ($quality) {
-            if (!$this->image) {
-                $this->image();
-            }
+        $enabled = $enabled === 'true' ?: false;
+        $this->auto_sizes = $enabled;
 
-            $this->quality = $quality;
-
-            return $this;
-        }
-
-        return $this->quality;
+        return $this;
     }
 
-    /**
-     * Sets image output format.
-     *
-     * @param string $format
-     * @return $this
-     */
-    public function format($format)
+    public function aspectRatio($enabled = 'true')
     {
-        if (!$this->image) {
-            $this->image();
-        }
+        $enabled = $enabled === 'true' ?: false;
+        $this->aspect_ratio = $enabled;
 
-        $this->format = $format;
+        return $this;
+    }
+
+    public function retinaScale($scale = 1)
+    {
+        $this->retina_scale = intval($scale);
 
         return $this;
     }
 
     /**
-     * Set or get sizes parameter for srcset media action
+     * Handle this commonly used variant
      *
-     * @param  string $sizes
-     * @return string
-     */
-    public function sizes($sizes = null)
-    {
-
-        if ($sizes) {
-            $this->sizes = $sizes;
-
-            return $this;
-        }
-
-        return empty($this->sizes) ? '100vw' : $this->sizes;
-    }
-
-    /**
-     * Allows to set the width attribute from Markdown or Twig
-     * Examples: ![Example](myimg.png?width=200&height=400)
-     *           ![Example](myimg.png?resize=100,200&width=100&height=200)
-     *           ![Example](myimg.png?width=auto&height=auto)
-     *           ![Example](myimg.png?width&height)
-     *           {{ page.media['myimg.png'].width().height().html }}
-     *           {{ page.media['myimg.png'].resize(100,200).width(100).height(200).html }}
-     *
-     * @param mixed $value A value or 'auto' or empty to use the width of the image
      * @return $this
      */
-    public function width($value = 'auto')
+    public function cropZoom()
     {
-        if (!$value || $value === 'auto') {
-            $this->attributes['width'] = $this->get('width');
-        } else {
-            $this->attributes['width'] = $value;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Allows to set the height attribute from Markdown or Twig
-     * Examples: ![Example](myimg.png?width=200&height=400)
-     *           ![Example](myimg.png?resize=100,200&width=100&height=200)
-     *           ![Example](myimg.png?width=auto&height=auto)
-     *           ![Example](myimg.png?width&height)
-     *           {{ page.media['myimg.png'].width().height().html }}
-     *           {{ page.media['myimg.png'].resize(100,200).width(100).height(200).html }}
-     *
-     * @param mixed $value A value or 'auto' or empty to use the height of the image
-     * @return $this
-     */
-    public function height($value = 'auto')
-    {
-        if (!$value || $value === 'auto') {
-            $this->attributes['height'] = $this->get('height');
-        } else {
-            $this->attributes['height'] = $value;
-        }
+        $this->__call('zoomCrop', func_get_args());
 
         return $this;
     }
@@ -525,11 +346,7 @@ class ImageMedium extends Medium
      */
     public function __call($method, $args)
     {
-        if ($method === 'cropZoom') {
-            $method = 'zoomCrop';
-        }
-
-        if (!\in_array($method, self::$magic_actions, true)) {
+        if (!in_array($method, static::$magic_actions, true)) {
             return parent::__call($method, $args);
         }
 
@@ -539,125 +356,28 @@ class ImageMedium extends Medium
         }
 
         try {
-            call_user_func_array([$this->image, $method], $args);
+            $this->image->{$method}(...$args);
 
+            /** @var ImageMediaInterface $medium */
             foreach ($this->alternatives as $medium) {
-                if (!$medium->image) {
-                    $medium->image();
-                }
-
                 $args_copy = $args;
 
                 // regular image: resize 400x400 -> 200x200
                 // --> @2x: resize 800x800->400x400
-                if (isset(self::$magic_resize_actions[$method])) {
-                    foreach (self::$magic_resize_actions[$method] as $param) {
+                if (isset(static::$magic_resize_actions[$method])) {
+                    foreach (static::$magic_resize_actions[$method] as $param) {
                         if (isset($args_copy[$param])) {
                             $args_copy[$param] *= $medium->get('ratio');
                         }
                     }
                 }
 
-                call_user_func_array([$medium, $method], $args_copy);
+                // Do the same call for alternative media.
+                $medium->__call($method, $args_copy);
             }
-        } catch (\BadFunctionCallException $e) {
+        } catch (BadFunctionCallException $e) {
         }
 
         return $this;
     }
-
-    /**
-     * Gets medium image, resets image manipulation operations.
-     *
-     * @return $this
-     */
-    protected function image()
-    {
-        $locator = Grav::instance()['locator'];
-
-        $file = $this->get('filepath');
-
-        // Use existing cache folder or if it doesn't exist, create it.
-        $cacheDir = $locator->findResource('cache://images', true) ?: $locator->findResource('cache://images', true, true);
-
-        // Make sure we free previous image.
-        unset($this->image);
-
-        $this->image = ImageFile::open($file)
-            ->setCacheDir($cacheDir)
-            ->setActualCacheDir($cacheDir)
-            ->setPrettyName($this->getImagePrettyName());
-
-        return $this;
-    }
-
-    /**
-     * Save the image with cache.
-     *
-     * @return string
-     */
-    protected function saveImage()
-    {
-        if (!$this->image) {
-            return parent::path(false);
-        }
-
-        $this->filter();
-
-        if (isset($this->result)) {
-            return $this->result;
-        }
-
-        if (!$this->debug_watermarked && $this->get('debug')) {
-            $ratio = $this->get('ratio');
-            if (!$ratio) {
-                $ratio = 1;
-            }
-
-            $locator = Grav::instance()['locator'];
-            $overlay = $locator->findResource("system://assets/responsive-overlays/{$ratio}x.png") ?: $locator->findResource('system://assets/responsive-overlays/unknown.png');
-            $this->image->merge(ImageFile::open($overlay));
-        }
-
-        return $this->image->cacheFile($this->format, $this->quality, false, [$this->get('width'), $this->get('height'), $this->get('modified')]);
-    }
-
-    /**
-     * Filter image by using user defined filter parameters.
-     *
-     * @param string $filter Filter to be used.
-     */
-    public function filter($filter = 'image.filters.default')
-    {
-        $filters = (array) $this->get($filter, []);
-        foreach ($filters as $params) {
-            $params = (array) $params;
-            $method = array_shift($params);
-            $this->__call($method, $params);
-        }
-    }
-
-    /**
-     * Return the image higher quality version
-     *
-     * @return ImageMedium the alternative version with higher quality
-     */
-    public function higherQualityAlternative()
-    {
-        if ($this->alternatives) {
-            $max = reset($this->alternatives);
-            foreach($this->alternatives as $alternative)
-            {
-                if($alternative->quality() > $max->quality())
-                {
-                    $max = $alternative;
-                }
-            }
-
-            return $max;
-        }
-
-        return $this;
-    }
-
 }

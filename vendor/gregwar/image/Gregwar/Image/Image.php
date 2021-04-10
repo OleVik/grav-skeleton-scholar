@@ -2,9 +2,17 @@
 
 namespace Gregwar\Image;
 
+use Gregwar\Cache\Cache;
 use Gregwar\Cache\CacheInterface;
 use Gregwar\Image\Adapter\AdapterInterface;
+use Gregwar\Image\Adapter\GD;
+use Gregwar\Image\Adapter\Imagick;
 use Gregwar\Image\Exceptions\GenerationError;
+use Gregwar\Image\Source\Create;
+use Gregwar\Image\Source\Data;
+use Gregwar\Image\Source\File;
+use Gregwar\Image\Source\Resource;
+use Gregwar\Image\Source\Source;
 
 /**
  * Images handling class.
@@ -23,7 +31,7 @@ use Gregwar\Image\Exceptions\GenerationError;
  * @method Image crop($x, $y, $width, $height)
  * @method Image enableProgressive()
  * @method Image force($width = null, $height = null, $background = 0xffffff)
- * @method Image zoomCrop($width, $height, $background = 0xffffff, $xPos, $yPos)
+ * @method Image zoomCrop($width, $height, $background = 'transparent', $xPosLetter = 'center', $yPosLetter = 'center')
  * @method Image fillBackground($background = 0xffffff)
  * @method Image negate()
  * @method Image brightness($brightness)
@@ -51,44 +59,53 @@ class Image
 {
     /**
      * Directory to use for file caching.
+     * @var string
      */
     protected $cacheDir = 'cache/images';
 
     /**
-     * Directory cache mode.
+     * Directory cache mode. Not used.
+     * @var null
      */
-    protected $cacheMode = null;
+    protected $cacheMode;
 
     /**
      * Internal adapter.
      *
-     * @var AdapterInterface
+     * @var AdapterInterface|null
      */
-    protected $adapter = null;
+    protected $adapter;
 
     /**
      * Pretty name for the image.
+     * @var string
      */
     protected $prettyName = '';
-    protected $prettyPrefix;
+
+    /** @var bool */
+    protected $prettyPrefix = false;
 
     /**
      * Transformations hash.
+     * @var string|null
      */
-    protected $hash = null;
+    protected $hash;
 
     /**
      * The image source.
+     * @var Source|null
      */
-    protected $source = null;
+    protected $source;
 
     /**
      * Force image caching, even if there is no operation applied.
+     * @var bool
      */
     protected $forceCache = true;
 
     /**
      * Supported types.
+     * @var array
      */
     public static $types = array(
         'jpg'   => 'jpeg',
@@ -100,30 +117,32 @@ class Image
 
     /**
      * Fallback image.
+     * @var string
      */
     protected $fallback;
 
     /**
      * Use fallback image.
+     * @var bool
      */
     protected $useFallbackImage = true;
 
     /**
      * Cache system.
      *
-     * @var \Gregwar\Cache\CacheInterface
+     * @var CacheInterface
      */
     protected $cache;
 
     /**
      * Get the cache system.
      *
-     * @return \Gregwar\Cache\CacheInterface
+     * @return CacheInterface
      */
     public function getCacheSystem()
     {
         if (is_null($this->cache)) {
-            $this->cache = new \Gregwar\Cache\Cache();
+            $this->cache = new Cache();
             $this->cache->setCacheDirectory($this->cacheDir);
         }
 
@@ -133,7 +152,9 @@ class Image
     /**
      * Set the cache system.
      *
-     * @param \Gregwar\Cache\CacheInterface $cache
+     * @param CacheInterface $cache
+     *
+     * @return void
      */
     public function setCacheSystem(CacheInterface $cache)
     {
@@ -142,6 +163,10 @@ class Image
 
     /**
      * Change the caching directory.
+     *
+     * @param string $cacheDir
+     *
+     * @return $this
      */
     public function setCacheDir($cacheDir)
     {
@@ -152,6 +177,8 @@ class Image
 
     /**
      * @param int $dirMode
+     *
+     * @return void
      */
     public function setCacheDirMode($dirMode)
     {
@@ -160,6 +187,10 @@ class Image
 
     /**
      * Enable or disable to force cache even if the file is unchanged.
+     *
+     * @param bool $forceCache
+     *
+     * @return $this
      */
     public function setForceCache($forceCache = true)
     {
@@ -170,6 +201,10 @@ class Image
 
     /**
      * The actual cache dir.
+     *
+     * @param string|null $actualCacheDir
+     *
+     * @return $this
      */
     public function setActualCacheDir($actualCacheDir)
     {
@@ -180,6 +215,9 @@ class Image
 
     /**
      * Sets the pretty name of the image.
+     *
+     * @param string $name
+     * @param bool $prefix
      */
     public function setPrettyName($name, $prefix = true)
     {
@@ -195,6 +233,10 @@ class Image
 
     /**
      * Urlizes the prettyName.
+     *
+     * @param string $name
+     *
+     * @return string
      */
     protected function urlize($name)
     {
@@ -214,38 +256,58 @@ class Image
 
     /**
      * Operations array.
+     * @var array
      */
     protected $operations = array();
 
+    /**
+     * Image constructor.
+     *
+     * @param string|null $originalFile
+     * @param int|null $width
+     * @param int|null $height
+     */
     public function __construct($originalFile = null, $width = null, $height = null)
     {
         $this->setFallback(null);
 
         if ($originalFile) {
-            $this->source = new Source\File($originalFile);
+            $this->source = new File($originalFile);
         } else {
-            $this->source = new Source\Create($width, $height);
+            $this->source = new Create($width, $height);
         }
     }
 
     /**
      * Sets the image data.
+     *
+     * @param string $data
+     *
+     * @return void
      */
     public function setData($data)
     {
-        $this->source = new Source\Data($data);
+        $this->source = new Data($data);
     }
 
     /**
      * Sets the resource.
+     *
+     * @param resource $resource
+     *
+     * @return void
      */
     public function setResource($resource)
     {
-        $this->source = new Source\Resource($resource);
+        $this->source = new Resource($resource);
     }
 
     /**
      * Use the fallback image or not.
+     *
+     * @param bool $useFallbackImage
+     *
+     * @return $this
      */
     public function useFallback($useFallbackImage = true)
     {
@@ -256,6 +318,10 @@ class Image
 
     /**
      * Sets the fallback image to use.
+     *
+     * @param string|null $fallback
+     *
+     * @return $this
      */
     public function setFallback($fallback = null)
     {
@@ -269,7 +335,9 @@ class Image
     }
 
     /**
-     * Gets the fallack image path.
+     * Gets the fallback image path.
+     *
+     * @return string
      */
     public function getFallback()
     {
@@ -278,6 +346,8 @@ class Image
 
     /**
      * Gets the fallback into the cache dir.
+     *
+     * @return string
      */
     public function getCacheFallback()
     {
@@ -301,9 +371,13 @@ class Image
         return $this->adapter;
     }
 
+    /**
+     * @param AdapterInterface|string $adapter
+     * @throws \Exception
+     */
     public function setAdapter($adapter)
     {
-        if ($adapter instanceof Adapter\Adapter) {
+        if ($adapter instanceof AdapterInterface) {
             $this->adapter = $adapter;
         } else {
             if (is_string($adapter)) {
@@ -311,15 +385,14 @@ class Image
 
                 switch ($adapter) {
                 case 'gd':
-                    $this->adapter = new Adapter\GD();
+                    $this->adapter = new GD();
                     break;
                 case 'imagemagick':
                 case 'imagick':
-                    $this->adapter = new Adapter\Imagick();
+                    $this->adapter = new Imagick();
                     break;
                 default:
-                    throw new \Exception('Unknown adapter: '.$adapter);
-                    break;
+                    throw new \Exception('Unknown adapter: ' . $adapter);
                 }
             } else {
                 throw new \Exception('Unable to load the given adapter (not string or Adapter)');
@@ -332,32 +405,35 @@ class Image
     /**
      * Get the file path.
      *
-     * @return mixed a string with the filen name, null if the image
-     *               does not depends on a file
+     * @return string|null a string with the filename, null if the image does not depends on a file
      */
     public function getFilePath()
     {
-        if ($this->source instanceof Source\File) {
+        if ($this->source instanceof File) {
             return $this->source->getFile();
-        } else {
-            return;
         }
+
+        return null;
     }
 
     /**
      * Defines the file only after instantiation.
      *
      * @param string $originalFile the file path
+     *
+     * @return $this
      */
     public function fromFile($originalFile)
     {
-        $this->source = new Source\File($originalFile);
+        $this->source = new File($originalFile);
 
         return $this;
     }
 
     /**
      * Tells if the image is correct.
+     *
+     * @return bool
      */
     public function correct()
     {
@@ -366,6 +442,8 @@ class Image
 
     /**
      * Guess the file type.
+     *
+     * @return string
      */
     public function guessType()
     {
@@ -374,6 +452,11 @@ class Image
 
     /**
      * Adds an operation.
+     *
+     * @param string $method
+     * @param mixed $args
+     *
+     * @return void
      */
     protected function addOperation($method, $args)
     {
@@ -382,6 +465,11 @@ class Image
 
     /**
      * Generic function.
+     *
+     * @param string $methodName
+     * @param array $args
+     *
+     * @return $this
      */
     public function __call($methodName, $args)
     {
@@ -405,6 +493,8 @@ class Image
 
     /**
      * Serialization of operations.
+     *
+     * @return string
      */
     public function serializeOperations()
     {
@@ -419,6 +509,7 @@ class Image
                     $arg = $arg->getHash();
                 }
             }
+            unset($arg);
 
             $datas[] = array($method, $args);
         }
@@ -428,6 +519,11 @@ class Image
 
     /**
      * Generates the hash.
+     *
+     * @param string $type
+     * @param int $quality
+     *
+     * @return void
      */
     public function generateHash($type = 'guess', $quality = 80)
     {
@@ -445,6 +541,11 @@ class Image
 
     /**
      * Gets the hash.
+     *
+     * @param string $type
+     * @param int $quality
+     *
+     * @return string
      */
     public function getHash($type = 'guess', $quality = 80)
     {
@@ -462,14 +563,17 @@ class Image
      *
      * @param string $type    the image type
      * @param int    $quality the quality (for JPEG)
+     * @param bool   $actual
+     *
+     * @return string
      */
     public function cacheFile($type = 'jpg', $quality = 80, $actual = false)
     {
-        if ($type == 'guess') {
+        if ($type === 'guess') {
             $type = $this->guessType();
         }
 
-        if (!count($this->operations) && $type == $this->guessType() && !$this->forceCache) {
+        if (!count($this->operations) && $type === $this->guessType() && !$this->forceCache) {
             return $this->getFilename($this->getFilePath());
         }
 
@@ -519,14 +623,14 @@ class Image
         }
 
         // Nulling the resource
-        $this->getAdapter()->setSource(new Source\File($file));
+        $this->getAdapter()->setSource(new File($file));
         $this->getAdapter()->deinit();
 
         if ($actual) {
             return $file;
-        } else {
-            return $this->getFilename($file);
         }
+
+        return $this->getFilename($file);
     }
 
     /**
@@ -534,6 +638,8 @@ class Image
      *
      * @param string $type    the image type
      * @param int    $quality the quality (for JPEG)
+     *
+     * @return string|false
      */
     public function cacheData($type = 'jpg', $quality = 80)
     {
@@ -542,6 +648,10 @@ class Image
 
     /**
      * Hook to helps to extends and enhance this class.
+     *
+     * @param string $filename
+     *
+     * @return string
      */
     protected function getFilename($filename)
     {
@@ -550,6 +660,10 @@ class Image
 
     /**
      * Generates and output a jpeg cached file.
+     *
+     * @param int $quality
+     *
+     * @return string
      */
     public function jpeg($quality = 80)
     {
@@ -558,6 +672,8 @@ class Image
 
     /**
      * Generates and output a gif cached file.
+     *
+     * @return string
      */
     public function gif()
     {
@@ -566,6 +682,8 @@ class Image
 
     /**
      * Generates and output a png cached file.
+     *
+     * @return string
      */
     public function png()
     {
@@ -573,15 +691,23 @@ class Image
     }
 
     /**
-     * Generates and output a png cached file.
+     * Generates and output a webp cached file.
+     *
+     * @param int $quality
+     *
+     * @return string
      */
-    public function webp()
+    public function webp($quality = 80)
     {
-        return $this->cacheFile('webp');
+        return $this->cacheFile('webp', $quality);
     }
 
     /**
      * Generates and output an image using the same type as input.
+     *
+     * @param int $quality
+     *
+     * @return string
      */
     public function guess($quality = 80)
     {
@@ -616,6 +742,8 @@ class Image
 
     /**
      * Applies the operations.
+     *
+     * @return void
      */
     public function applyOperations()
     {
@@ -627,6 +755,8 @@ class Image
 
     /**
      * Initialize the adapter.
+     *
+     * @return void
      */
     public function init()
     {
@@ -635,6 +765,12 @@ class Image
 
     /**
      * Save the file to a given output.
+     *
+     * @param string $file
+     * @param string|int $type
+     * @param int $quality
+     * @return string|false
+     * @throws \Exception
      */
     public function save($file, $type = 'guess', $quality = 80)
     {
@@ -651,7 +787,7 @@ class Image
             $type = 'jpeg';
         }
 
-        if ($type == 'guess') {
+        if ($type === 'guess') {
             $type = $this->guessType();
         }
 
@@ -667,23 +803,23 @@ class Image
 
             $success = false;
 
-            if (null == $file) {
+            if (null === $file) {
                 ob_start();
             }
 
-            if ($type == 'jpeg') {
+            if ($type === 'jpeg') {
                 $success = $this->getAdapter()->saveJpeg($file, $quality);
             }
 
-            if ($type == 'gif') {
+            if ($type === 'gif') {
                 $success = $this->getAdapter()->saveGif($file);
             }
 
-            if ($type == 'png') {
+            if ($type === 'png') {
                 $success = $this->getAdapter()->savePng($file);
             }
 
-            if ($type == 'webp') {
+            if ($type === 'webp') {
                 $success = $this->getAdapter()->saveWebP($file, $quality);
             }
 
@@ -703,6 +839,11 @@ class Image
 
     /**
      * Get the contents of the image.
+     *
+     * @param string|int $type
+     * @param int $quality
+     * @return string|false
+     * @throws \Exception
      */
     public function get($type = 'guess', $quality = 80)
     {
@@ -713,6 +854,8 @@ class Image
 
     /**
      * Image width.
+     *
+     * @return int
      */
     public function width()
     {
@@ -721,6 +864,8 @@ class Image
 
     /**
      * Image height.
+     *
+     * @return int
      */
     public function height()
     {
@@ -729,6 +874,8 @@ class Image
 
     /**
      * Tostring defaults to jpeg.
+     *
+     * @return string
      */
     public function __toString()
     {
@@ -737,6 +884,12 @@ class Image
 
     /**
      * Returning basic html code for this image.
+     *
+     * @param string $title
+     * @param string $type
+     * @param int $quality
+     *
+     * @return string
      */
     public function html($title = '', $type = 'jpg', $quality = 80)
     {
@@ -744,12 +897,17 @@ class Image
     }
 
     /**
-     * Returns the Base64 inlinable representation.
+     * Returns the Base64 inlineable representation.
+     *
+     * @param string $type
+     * @param int $quality
+     *
+     * @return string
      */
     public function inline($type = 'jpg', $quality = 80)
     {
         $mime = $type;
-        if ($mime == 'jpg') {
+        if ($mime === 'jpg') {
             $mime = 'jpeg';
         }
 
@@ -757,7 +915,11 @@ class Image
     }
 
     /**
-     * Creates an instance, usefull for one-line chaining.
+     * Creates an instance, useful for one-line chaining.
+     *
+     * @param string $file
+     *
+     * @return static
      */
     public static function open($file = '')
     {
@@ -766,6 +928,11 @@ class Image
 
     /**
      * Creates an instance of a new resource.
+     *
+     * @param int $width
+     * @param int $height
+     *
+     * @return static
      */
     public static function create($width, $height)
     {
@@ -774,6 +941,10 @@ class Image
 
     /**
      * Creates an instance of image from its data.
+     *
+     * @param string $data
+     *
+     * @return static
      */
     public static function fromData($data)
     {
@@ -785,6 +956,10 @@ class Image
 
     /**
      * Creates an instance of image from resource.
+     *
+     * @param resource $resource
+     *
+     * @return static
      */
     public static function fromResource($resource)
     {

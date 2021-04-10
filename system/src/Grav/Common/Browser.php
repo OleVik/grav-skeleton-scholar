@@ -3,17 +3,21 @@
 /**
  * @package    Grav\Common
  *
- * @copyright  Copyright (C) 2015 - 2019 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
 namespace Grav\Common;
+
+use InvalidArgumentException;
+use function donatj\UserAgent\parse_user_agent;
 
 /**
  * Internally uses the PhpUserAgent package https://github.com/donatj/PhpUserAgent
  */
 class Browser
 {
+    /** @var string[] */
     protected $useragent = [];
 
     /**
@@ -23,7 +27,7 @@ class Browser
     {
         try {
             $this->useragent = parse_user_agent();
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->useragent = parse_user_agent("Mozilla/5.0 (compatible; Unknown;)");
         }
     }
@@ -108,7 +112,7 @@ class Browser
     /**
      * Get the current major version identifier
      *
-     * @return string the browser major version identifier
+     * @return int the browser major version identifier
      */
     public function getVersion()
     {
@@ -135,7 +139,7 @@ class Browser
 
         return true;
     }
-    
+
     /**
      * Determine if “Do Not Track” is set by browser
      * @see https://www.w3.org/TR/tracking-dnt/

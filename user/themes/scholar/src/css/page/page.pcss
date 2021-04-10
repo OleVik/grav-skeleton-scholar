@@ -9,8 +9,9 @@
   height: 100%;
   height: 100vh;
   &:not(.listing) {
-    main {
-      width: 80%;
+    main,
+    .main {
+      width: 100%;
       max-width: 120rem;
     }
   }
@@ -54,7 +55,8 @@
       }
     }
   }
-  main {
+  main,
+  .main {
     grid-column-end: span 12;
     max-width: 1920px;
     section {
@@ -62,7 +64,6 @@
     }
   }
   article {
-    overflow: auto;
     width: 80%;
     margin: 2rem auto;
     padding: 2rem 4rem;
@@ -106,6 +107,14 @@
       position: relative;
       margin: 0;
       padding: 2rem 4rem 1rem;
+    }
+  }
+  aside.next-previous {
+    width: 80%;
+    margin: 0 auto 0;
+    article {
+      width: 100%;
+      margin: 0;
     }
   }
 }
@@ -225,7 +234,38 @@
   }
 }
 .page.article.tufte {
+  padding-left: 0;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    clear: both;
+    text-align: left;
+  }
   main {
     width: 100%;
+    article {
+      section {
+        p {
+          width: 65%;
+        }
+        .marginnote,
+        .sidenote {
+          width: 50% !important;
+          margin-right: -55%;
+          padding: 0;
+        }
+      }
+    }
+  }
+  .active,
+  a:active,
+  a:focus,
+  a:hover,
+  a:link,
+  a:visited {
+    background: 0;
   }
 }

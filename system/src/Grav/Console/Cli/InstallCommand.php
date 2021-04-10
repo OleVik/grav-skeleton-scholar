@@ -3,32 +3,37 @@
 /**
  * @package    Grav\Console\Cli
  *
- * @copyright  Copyright (C) 2015 - 2019 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
 namespace Grav\Console\Cli;
 
-use Grav\Console\ConsoleCommand;
+use Grav\Console\GravCommand;
+use Grav\Framework\File\Formatter\JsonFormatter;
+use Grav\Framework\File\JsonFile;
 use RocketTheme\Toolbox\File\YamlFile;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use function is_array;
 
-class InstallCommand extends ConsoleCommand
+/**
+ * Class InstallCommand
+ * @package Grav\Console\Cli
+ */
+class InstallCommand extends GravCommand
 {
     /** @var array */
     protected $config;
-
-    /** @var array */
-    protected $local_config;
-
     /** @var string */
     protected $destination;
-
     /** @var string */
     protected $user_path;
 
-    protected function configure()
+    /**
+     * @return void
+     */
+    protected function configure(): void
     {
         $this
             ->setName('install')
@@ -37,6 +42,18 @@ class InstallCommand extends ConsoleCommand
                 's',
                 InputOption::VALUE_NONE,
                 'Symlink the required bits'
+            )
+            ->addOption(
+                'plugin',
+                'p',
+                InputOption::VALUE_REQUIRED,
+                'Install plugin (symlink)'
+            )
+            ->addOption(
+                'theme',
+                't',
+                InputOption::VALUE_REQUIRED,
+                'Install theme (symlink)'
             )
             ->addArgument(
                 'destination',
@@ -47,16 +64,22 @@ class InstallCommand extends ConsoleCommand
             ->setHelp('The <info>install</info> command installs the dependencies needed by Grav. Optionally can create symbolic links');
     }
 
-    protected function serve()
+    /**
+     * @return int
+     */
+    protected function serve(): int
     {
+        $input = $this->getInput();
+        $io = $this->getIO();
+
         $dependencies_file = '.dependencies';
-        $this->destination = $this->input->getArgument('destination') ?: ROOT_DIR;
+        $this->destination = $input->getArgument('destination') ?: GRAV_ROOT;
 
         // fix trailing slash
         $this->destination = rtrim($this->destination, DS) . DS;
         $this->user_path = $this->destination . USER_PATH;
         if ($local_config_file = $this->loadLocalConfig()) {
-            $this->output->writeln('Read local config from <cyan>' . $local_config_file . '</cyan>');
+            $io->writeln('Read local config from <cyan>' . $local_config_file . '</cyan>');
         }
 
         // Look for dependencies file in ROOT and USER dir
@@ -65,112 +88,215 @@ class InstallCommand extends ConsoleCommand
         } elseif (file_exists($this->destination . $dependencies_file)) {
             $file = YamlFile::instance($this->destination . $dependencies_file);
         } else {
-            $this->output->writeln('<red>ERROR</red> Missing .dependencies file in <cyan>user/</cyan> folder');
-            if ($this->input->getArgument('destination')) {
-                $this->output->writeln('<yellow>HINT</yellow> <info>Are you trying to install a plugin or a theme? Make sure you use <cyan>bin/gpm install <something></cyan>, not <cyan>bin/grav install</cyan>. This command is only used to install Grav skeletons.');
+            $io->writeln('<red>ERROR</red> Missing .dependencies file in <cyan>user/</cyan> folder');
+            if ($input->getArgument('destination')) {
+                $io->writeln('<yellow>HINT</yellow> <info>Are you trying to install a plugin or a theme? Make sure you use <cyan>bin/gpm install <something></cyan>, not <cyan>bin/grav install</cyan>. This command is only used to install Grav skeletons.');
             } else {
-                $this->output->writeln('<yellow>HINT</yellow> <info>Are you trying to install Grav? Grav is already installed. You need to run this command only if you download a skeleton from GitHub directly.');
+                $io->writeln('<yellow>HINT</yellow> <info>Are you trying to install Grav? Grav is already installed. You need to run this command only if you download a skeleton from GitHub directly.');
             }
 
-            return;
+            return 1;
         }
 
         $this->config = $file->content();
         $file->free();
 
-        // If yaml config, process
-        if ($this->config) {
-            if (!$this->input->getOption('symlink')) {
-                // Updates composer first
-                $this->output->writeln("\nInstalling vendor dependencies");
-                $this->output->writeln($this->composerUpdate(GRAV_ROOT, 'install'));
+        // If no config, fail.
+        if (!$this->config) {
+            $io->writeln('<red>ERROR</red> invalid YAML in ' . $dependencies_file);
 
-                $this->gitclone();
-            } else {
-                $this->symlink();
-            }
-        } else {
-            $this->output->writeln('<red>ERROR</red> invalid YAML in ' . $dependencies_file);
+            return 1;
         }
 
+        $plugin = $input->getOption('plugin');
+        $theme = $input->getOption('theme');
+        $name = $plugin ?? $theme;
+        $symlink = $name || $input->getOption('symlink');
 
+        if (!$symlink) {
+            // Updates composer first
+            $io->writeln("\nInstalling vendor dependencies");
+            $io->writeln($this->composerUpdate(GRAV_ROOT, 'install'));
+
+            $error = $this->gitclone();
+        } else {
+            $type = $name ? ($plugin ? 'plugin' : 'theme') : null;
+
+            $error = $this->symlink($name, $type);
+        }
+
+        return $error;
     }
 
     /**
      * Clones from Git
+     *
+     * @return int
      */
-    private function gitclone()
+    private function gitclone(): int
     {
-        $this->output->writeln('');
-        $this->output->writeln('<green>Cloning Bits</green>');
-        $this->output->writeln('============');
-        $this->output->writeln('');
+        $io = $this->getIO();
 
+        $io->newLine();
+        $io->writeln('<green>Cloning Bits</green>');
+        $io->writeln('============');
+        $io->newLine();
+
+        $error = 0;
+        $this->destination = rtrim($this->destination, DS);
         foreach ($this->config['git'] as $repo => $data) {
-            $this->destination = rtrim($this->destination, DS);
             $path = $this->destination . DS . $data['path'];
             if (!file_exists($path)) {
                 exec('cd "' . $this->destination . '" && git clone -b ' . $data['branch'] . ' --depth 1 ' . $data['url'] . ' ' . $data['path'], $output, $return);
 
                 if (!$return) {
-                    $this->output->writeln('<green>SUCCESS</green> cloned <magenta>' . $data['url'] . '</magenta> -> <cyan>' . $path . '</cyan>');
+                    $io->writeln('<green>SUCCESS</green> cloned <magenta>' . $data['url'] . '</magenta> -> <cyan>' . $path . '</cyan>');
                 } else {
-                    $this->output->writeln('<red>ERROR</red> cloning <magenta>' . $data['url']);
-
+                    $io->writeln('<red>ERROR</red> cloning <magenta>' . $data['url']);
+                    $error = 1;
                 }
 
-                $this->output->writeln('');
+                $io->newLine();
             } else {
-                $this->output->writeln('<red>' . $path . ' already exists, skipping...</red>');
-                $this->output->writeln('');
+                $io->writeln('<yellow>' . $path . ' already exists, skipping...</yellow>');
+                $io->newLine();
             }
-
         }
+
+        return $error;
     }
 
     /**
      * Symlinks
+     *
+     * @param string|null $name
+     * @param string|null $type
+     * @return int
      */
-    private function symlink()
+    private function symlink(string $name = null, string $type = null): int
     {
-        $this->output->writeln('');
-        $this->output->writeln('<green>Symlinking Bits</green>');
-        $this->output->writeln('===============');
-        $this->output->writeln('');
+        $io = $this->getIO();
+
+        $io->newLine();
+        $io->writeln('<green>Symlinking Bits</green>');
+        $io->writeln('===============');
+        $io->newLine();
 
         if (!$this->local_config) {
-            $this->output->writeln('<red>No local configuration available, aborting...</red>');
-            $this->output->writeln('');
-            return;
+            $io->writeln('<red>No local configuration available, aborting...</red>');
+            $io->newLine();
+
+            return 1;
         }
 
-        exec('cd ' . $this->destination);
-        foreach ($this->config['links'] as $repo => $data) {
-            $repos = (array) $this->local_config[$data['scm'] . '_repos'];
-            $from = false;
-            $to = $this->destination . $data['path'];
+        $error = 0;
+        $this->destination = rtrim($this->destination, DS);
 
-            foreach ($repos as $repo) {
-                $path = $repo . $data['src'];
-                if (file_exists($path)) {
-                    $from = $path;
+        if ($name) {
+            $src = "grav-{$type}-{$name}";
+            $links = [
+                $name => [
+                    'scm' => 'github', // TODO: make configurable
+                    'src' => $src,
+                    'path' => "user/{$type}s/{$name}"
+                ]
+            ];
+        } else {
+            $links = $this->config['links'];
+        }
+
+        foreach ($links as $name => $data) {
+            $scm = $data['scm'] ?? null;
+            $src = $data['src'] ?? null;
+            $path = $data['path'] ?? null;
+            if (!isset($scm, $src, $path)) {
+                $io->writeln("<red>Dependency '$name' has broken configuration, skipping...</red>");
+                $io->newLine();
+                $error = 1;
+
+                continue;
+            }
+
+            $locations = (array) $this->local_config["{$scm}_repos"];
+            $to = $this->destination . DS . $path;
+
+            $from = null;
+            foreach ($locations as $location) {
+                $test = rtrim($location, '\\/') . DS . $src;
+                if (file_exists($test)) {
+                    $from = $test;
                     continue;
                 }
             }
 
-            if (!$from) {
-                $this->output->writeln('<red>source for ' . $data['src'] . ' does not exists, skipping...</red>');
-                $this->output->writeln('');
+            if (is_link($to) && !realpath($to)) {
+                $io->writeln('<yellow>Removed broken symlink '. $path .'</yellow>');
+                unlink($to);
+            }
+            if (null === $from) {
+                $io->writeln('<red>source for ' . $src . ' does not exists, skipping...</red>');
+                $io->newLine();
+                $error = 1;
+            } elseif (!file_exists($to)) {
+                $error = $this->addSymlinks($from, $to, ['name' => $name, 'src' => $src, 'path' => $path]);
+                $io->newLine();
             } else {
-                if (!file_exists($to)) {
-                    symlink($from, $to);
-                    $this->output->writeln('<green>SUCCESS</green> symlinked <magenta>' . $data['src'] . '</magenta> -> <cyan>' . $data['path'] . '</cyan>');
-                    $this->output->writeln('');
-                } else {
-                    $this->output->writeln('<red>destination: ' . $to . ' already exists, skipping...</red>');
-                    $this->output->writeln('');
-                }
+                $io->writeln('<yellow>destination: ' . $path . ' already exists, skipping...</yellow>');
+                $io->newLine();
             }
         }
+
+        return $error;
+    }
+
+    private function addSymlinks(string $from, string $to, array $options): int
+    {
+        $io = $this->getIO();
+
+        $hebe = $this->readHebe($from);
+        if (null === $hebe) {
+            symlink($from, $to);
+
+            $io->writeln('<green>SUCCESS</green> symlinked <magenta>' . $options['src'] . '</magenta> -> <cyan>' . $options['path'] . '</cyan>');
+        } else {
+            $to = GRAV_ROOT;
+            $name = $options['name'];
+            $io->writeln("Processing <magenta>{$name}</magenta>");
+            foreach ($hebe as $section => $symlinks) {
+                foreach ($symlinks as $symlink) {
+                    $src = trim($symlink['source'], '/');
+                    $dst = trim($symlink['destination'], '/');
+                    $s = "{$from}/{$src}";
+                    $d = "{$to}/{$dst}";
+
+                    if (is_link($d) && !realpath($d)) {
+                        unlink($d);
+                        $io->writeln('    <yellow>Removed broken symlink '. $dst .'</yellow>');
+                    }
+                    if (!file_exists($d)) {
+                        symlink($s, $d);
+                        $io->writeln('    symlinked <magenta>' . $src . '</magenta> -> <cyan>' . $dst . '</cyan>');
+                    }
+                }
+            }
+            $io->writeln('<green>SUCCESS</green>');
+        }
+
+        return 0;
+    }
+
+    private function readHebe(string $folder): ?array
+    {
+        $filename = "{$folder}/hebe.json";
+        if (!is_file($filename)) {
+            return null;
+        }
+
+        $formatter = new JsonFormatter();
+        $file = new JsonFile($filename, $formatter);
+        $hebe = $file->load();
+        $paths = $hebe['platforms']['grav']['nodes'] ?? null;
+
+        return is_array($paths) ? $paths : null;
     }
 }

@@ -9,6 +9,8 @@ class Source
 {
     /**
      * Guess the type of the image.
+     *
+     * @return string
      */
     public function guessType()
     {
@@ -17,6 +19,8 @@ class Source
 
     /**
      * Is this image correct ?
+     *
+     * @return bool
      */
     public function correct()
     {
@@ -26,9 +30,11 @@ class Source
     /**
      * Returns information about images, these informations should
      * change only if the original image changed.
+     *
+     * @return array|string|null
      */
     public function getInfos()
     {
-        return;
+        return null;
     }
 }

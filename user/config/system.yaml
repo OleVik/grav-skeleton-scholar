@@ -1,7 +1,7 @@
 absolute_urls: false
 
 home:
-  alias: '/home'
+  alias: "/home"
 
 pages:
   theme: scholar
@@ -16,7 +16,7 @@ cache:
   check:
     method: file
   driver: auto
-  prefix: 'g'
+  prefix: "g"
 
 twig:
   cache: true
@@ -32,7 +32,7 @@ assets:
   js_minify: true
 
 errors:
-  display: false
+  display: true
   log: true
 debugger:
   enabled: false
@@ -41,4 +41,11 @@ debugger:
   shutdown:
     close_connection: true
 gpm:
+  releases: stable
+  method: "auto"
   verify_peer: true
+
+strict_mode:
+  yaml_compat: true
+  twig_compat: true
+  blueprint_compat: true

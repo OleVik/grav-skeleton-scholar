@@ -64,18 +64,23 @@ class ShortcodeManager
      * add CSS and JS assets to the Manager so that they can be saved to cache
      * for subsequent cached pages
      *
-     * @param mixed $action the type of asset, JS or CSS, or an array of stuff
+     * @param mixed $actionOrAsset the type of asset (JS or CSS) or, if the second parameter is omitted,
+     *      a collection or an array of asset.
      * @param string $asset the asset path in question
      */
-    public function addAssets($action, $asset)
+    public function addAssets($actionOrAsset, $asset = null)
     {
-        if (is_array($action)) {
-            $this->assets['add'] [] = $action;
+        if ($asset == null) {
+            if (is_array($actionOrAsset)) {
+                $this->assets[''] = array_merge($this->assets[''] ?? array(), $actionOrAsset);
+            } else {
+                $this->assets[''] [] = $actionOrAsset;
+            }
         } else {
-            if (isset($this->assets[$action]) && in_array($asset, $this->assets[$action], true)) {
+            if (isset($this->assets[$actionOrAsset]) && in_array($asset, $this->assets[$actionOrAsset], true)) {
                 return;
             }
-            $this->assets[$action] [] = $asset;
+            $this->assets[$actionOrAsset] [] = $asset;
         }
     }
 
@@ -198,13 +203,15 @@ class ShortcodeManager
 
     /**
      * register all files as shortcodes in a particular directory
-     * @param  string $directory directory where the shortcodes are located
+     * @param string $directory directory where the shortcodes are located
+     * @param array $options Extra options
      */
-    public function registerAllShortcodes($directory)
+    public function registerAllShortcodes($directory, array $options = [])
     {
         try {
+            $ignore = $options['ignore'] ?? [];
             foreach (new \DirectoryIterator($directory) as $file) {
-                if ($file->isDot()) {
+                if ($file->isDot() || \in_array($file->getBasename('.php'), $ignore, true)) {
                     continue;
                 }
                 $this->registerShortcode($file->getFilename(), $directory);

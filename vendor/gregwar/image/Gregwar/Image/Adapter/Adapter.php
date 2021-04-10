@@ -16,6 +16,7 @@ abstract class Adapter implements AdapterInterface
 
     /**
      * The image resource handler.
+     * @var resource|false
      */
     protected $resource;
 
@@ -43,6 +44,9 @@ abstract class Adapter implements AdapterInterface
 
     /**
      * Does this adapter supports the given type ?
+     *
+     * @param string
+     * @return bool
      */
     protected function supports($type)
     {
@@ -51,6 +55,8 @@ abstract class Adapter implements AdapterInterface
 
     /**
      * Converts the image to true color.
+     *
+     * @return void
      */
     protected function convertToTrueColor()
     {

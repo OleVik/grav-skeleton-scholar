@@ -6,6 +6,7 @@ The theme includes some core, and some modular, Page Types. These are templates 
 
 - Default: A generic type
 - Index: A type for displaying a collection of Pages
+- Listing: A more generic type for displaying a collection of Pages
 - Article: A template for an article, a paper, a document, or a similar type of standalone piece of writing
 - Page: A generic type which extends the topmost parent's template
 - Print: A helper-type for adopting the rendering for printing
@@ -38,9 +39,6 @@ Each Component exists in the `/components`-folder, and contains needed templates
 ├──partials/
 │   └──tufte
 │        note.html.twig
-└──shortcodes/
-      CiteShortcode.php
-      NoteShortcode.php
 ```
 
 Wherein `schema.yaml` holds basic data used for Linked Data and ARIA-attributes:
@@ -52,3 +50,7 @@ tufte:
 ```
 
 `tufte.html.twig` defines how a `tufte.md`-file is rendered, `/components/tufte/assets` holds the necessary style in `tufte.min.css`, `/components/tufte/partials` holds template-pieces specific to this template, and `/components/tufte/shortcodes` the shortcodes that can be used in `tufte.md`.
+
+## Notes
+
+Several types of notes are supported: Endnotes through Markdown Extra, as well as margin- and side-notes through the `[marginnote]`- and `[sidenote]`-shortcodes. Side-notes are numbered whilst margin-notes are not, and they rely on relatively uninform CSS styles. Each of them can be used within paragraphs or by themselves, and will render to the right of the normal text.

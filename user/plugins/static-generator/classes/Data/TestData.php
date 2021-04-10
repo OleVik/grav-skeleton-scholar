@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Static Generator Plugin, CLI Data Tester
  *
@@ -11,16 +12,16 @@
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @link       https://github.com/OleVik/grav-plugin-static-generator
  */
+
 namespace Grav\Plugin\StaticGenerator\Data;
 
-use Grav\Common\Grav;
 use Grav\Plugin\StaticGenerator\Data\AbstractData;
 
 /**
  * CLI Data Tester
  *
  * @category API
- * @package  Grav\Plugin\StaticGeneratorPlugin\Data\TestData
+ * @package  Grav\Plugin\StaticGenerator\Data\TestData
  * @author   Ole Vik <git@olevik.net>
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-plugin-static-generator
@@ -30,16 +31,12 @@ class TestData extends AbstractData
     /**
      * Initialize
      *
-     * @param string $route  Route to page.
-     * @param string $handle Instance of Symfony\Component\Console\Output.
+     * @param string $route Route to page.
      *
      * @return void
      */
-    public function setup($route, $handle)
+    public function bootstrap($route)
     {
-        parent::setup();
-        $this->grav['pages']->init();
-        $this->grav['twig']->init();
         if ($route == '/') {
             $this->pages = $this->grav['page']->evaluate(['@root.descendants']);
         } else {
@@ -62,13 +59,13 @@ class TestData extends AbstractData
         $depth++;
         $mode = '@page.self';
         if ($route == '/') {
-            $mode = '@root.children';
+            $mode = '@root.descendants';
         }
         if ($depth > 1) {
             $mode = '@page.children';
         }
         $pages = $this->grav['page']->evaluate([$mode => $route]);
-        $pages = $pages->published()->order($this->orderBy, $this->orderDir);
+        $pages = $pages->order($this->orderBy, $this->orderDir);
         foreach ($pages as $page) {
             $route = $page->rawRoute();
             $item = array(
@@ -101,26 +98,13 @@ class TestData extends AbstractData
             if (!empty($page->media()->all())) {
                 $item['media'] = array_keys($page->media()->all());
             }
+            try {
+                $pageContent = $this->content($page) ?? 0;
+            } catch (\Exception $error) {
+                throw new \Exception($error);
+            }
             echo '[' . $this->progress . '/' . $this->count . '] ' .
-                $item['title'] . ' (' . strlen($pageContent) . ")\n";
-            if (!$this->content) {
-                $item['taxonomy']['categories'] = implode(' ', $item['taxonomy']['categories']);
-                $item['taxonomy']['tags'] = implode(' ', $item['taxonomy']['tags']);
-                $item['media'] = implode(' ', $item['media']);
-            } else {
-                try {
-                    $pageContent = $this->content($page);
-                    if (!empty($pageContent) && strlen($pageContent) <= $this->maxLength) {
-                        $item['content'] = $pageContent;
-                    }
-                } catch (Exception $error) {
-                    throw new Exception($error);
-                }
-            }
-
-            if (count($page->children()) > 0) {
-                $this->index($route, $mode, $depth);
-            }
+                $item['title'] . ' (' . strlen($pageContent) . " characters)\n";
             $this->data[] = (object) $item;
             $this->progress();
         }

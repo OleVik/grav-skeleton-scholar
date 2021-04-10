@@ -1,5 +1,6 @@
 ---
 title: Forgot password
+cache_control: private, no-cache, must-revalidate
 
 login_redirect_here: false
 

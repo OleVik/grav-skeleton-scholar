@@ -1,3 +1,56 @@
+# v3.1.2
+## 04/06/2021
+
+1. [](#new)
+    * Added new `onEmailMessage` event to make object available for editing [#150](https://github.com/getgrav/grav-plugin-email/pull/150)
+
+# v3.1.1
+## 01/31/2021
+
+1. [](#improved)
+    * Latest vendor updates including SwiftMailer `6.2.5`
+    * Updated CLI commands
+    * Minor code cleanup 
+
+# v3.1.0
+## 12/02/2020
+
+1. [](#improved)
+    * Added support for `auth_mode` in SMTP engine [#101](https://github.com/getgrav/grav-plugin-email/pull/101)
+    * Obfuscate the password shown in the CLI `test-email` command [#140](https://github.com/getgrav/grav-plugin-email/pull/140)
+
+# v3.0.10
+## 11/09/2020
+
+1. [](#improved)
+    * Tweaked default `base.html.twig` template to better support dark-mode clients
+    * Latest vendor updates
+1. [](#bugfix)
+    * Add missing support for `template:` in body array
+    * Added check to process markdown with `text/html` content type only
+
+# v3.0.9
+## 06/08/2020
+
+1. [](#improved)
+    * Disable password autocomplete in password field
+    * Don't save empty string in password field [#134](https://github.com/getgrav/grav-plugin-email/issues/134)
+
+# v3.0.8
+## 04/27/2020
+
+1. [](#improved)
+    * Updated vendor library files
+    * Use Grav's Parsedown class
+
+# v3.0.7
+## 03/05/2020
+
+1. [](#improved)
+    * Updated email validator library
+1. [](#bugfix)
+    * Fixed `Invalid resource theme://` on CLI command `test-email` on Grav 1.6.21 and later versions [#128](https://github.com/getgrav/grav-plugin-email/issues/128)
+
 # v3.0.6
 ## 02/11/2020
 

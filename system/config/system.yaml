@@ -10,23 +10,31 @@ custom_base_url: ''                              # Set the base_url manually, e.
 username_regex: '^[a-z0-9_-]{3,16}$'             # Only lowercase chars, digits, dashes, underscores. 3 - 16 chars
 pwd_regex: '(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}' # At least one number, one uppercase and lowercase letter, and be at least 8+ chars
 intl_enabled: true                               # Special logic for PHP International Extension (mod_intl)
+http_x_forwarded:                                # Configuration options for the various HTTP_X_FORWARD headers
+  protocol: true
+  host: false
+  port: true
+  ip: true
 
 languages:
   supported: []                                  # List of languages supported. eg: [en, fr, de]
   default_lang:                                  # Default is the first supported language. Must be one of the supported languages
   include_default_lang: true                     # Include the default lang prefix in all URLs
-  pages_fallback_only: false                     # Only fallback to find page content through supported languages
-  translations: true                             # Enable translations by default
+  include_default_lang_file_extension: true      # If true, include language code for the default language in file extension: default.en.md
+  translations: true                             # If false, translation keys are used instead of translated strings
   translations_fallback: true                    # Fallback through supported translations if active lang doesn't exist
   session_store_active: false                    # Store active language in session
   http_accept_language: false                    # Attempt to set the language based on http_accept_language header in the browser
   override_locale: false                         # Override the default or system locale with language specific one
+  content_fallback: {}                           # Custom language fallbacks. eg: {fr: ['fr', 'en']}
+  pages_fallback_only: false                     # DEPRECATED: Use `content_fallback` instead
 
 home:
   alias: '/home'                                 # Default path for home, ie /
   hide_in_urls: false                            # Hide the home route in URLs
 
 pages:
+  type: regular                                  # EXPERIMENTAL: Page type: regular or flex
   theme: quark                                   # Default theme (defaults to "quark" theme)
   order:
     by: default                                  # Order pages by "default", "alpha" or "date"
@@ -54,16 +62,22 @@ pages:
     special_chars:                               # List of special characters to automatically convert to entities
       '>': 'gt'
       '<': 'lt'
+    valid_link_attributes:                       # Valid attributes to pass through via markdown links
+      - rel
+      - target
+      - id
+      - class
+      - classes
   types: [html,htm,xml,txt,json,rss,atom]        # list of valid page types
   append_url_extension: ''                       # Append page's extension in Page urls (e.g. '.html' results in /path/page.html)
   expires: 604800                                # Page expires time in seconds (604800 seconds = 7 days)
   cache_control:                                 # Can be blank for no setting, or a valid `cache-control` text value
   last_modified: false                           # Set the last modified date header based on file modification timestamp
-  etag: false                                    # Set the etag header tag
+  etag: true                                     # Set the etag header tag
   vary_accept_encoding: false                    # Add `Vary: Accept-Encoding` header
-  redirect_default_route: false                  # Automatically redirect to a page's default route
-  redirect_default_code: 302                     # Default code to use for redirects
-  redirect_trailing_slash: true                  # Handle automatically or 302 redirect a trailing / URL
+  redirect_default_code: 302                     # Default code to use for redirects: 301|302|303
+  redirect_trailing_slash: 1                     # Always redirect trailing slash with redirect code 0|1|301|302 (0: no redirect, 1: use default code)
+  redirect_default_route: 0                      # Always redirect to page's default route using code 0|1|301|302, also removes .htm and .html extensions
   ignore_files: [.DS_Store]                      # Files to ignore in Pages
   ignore_folders: [.git, .idea]                  # Folders to ignore in Pages
   ignore_hidden: true                            # Ignore all Hidden files and folders
@@ -89,12 +103,14 @@ cache:
   allow_webserver_gzip: false                    # If true, `content-encoding: identity` but connection isn't closed before `onShutDown()` event
   redis:
     socket: false                                # Path to redis unix socket (e.g. /var/run/redis/redis.sock), false = use server and port to connect
+    password:                                    # Optional password
+    database:                                    # Optional database ID
 
 twig:
   cache: true                                    # Set to true to enable Twig caching
   debug: true                                    # Enable Twig debug
   auto_reload: true                              # Refresh cache on changes
-  autoescape: false                              # Autoescape Twig vars (DEPRECATED, always enabled in strict mode)
+  autoescape: true                               # Autoescape Twig vars (DEPRECATED, always enabled in strict mode)
   undefined_functions: true                      # Allow undefined functions
   undefined_filters: true                        # Allow undefined filters
   umask_fix: false                               # By default Twig creates cached files as 755, fix switches this to 775
@@ -111,6 +127,7 @@ assets:                                          # Configuration for Assets Mana
   js_pipeline_before_excludes: true              # Render the pipeline before any excluded files
   js_minify: true                                # Minify the JS during pipelining
   enable_asset_timestamp: false                  # Enable asset timestamps
+  enable_asset_sri: false                        # Enable asset SRI
   collections:
     jquery: system://assets/jquery/jquery-2.x.min.js
 
@@ -125,6 +142,8 @@ log:
 
 debugger:
   enabled: false                                 # Enable Grav debugger and following settings
+  provider: clockwork                            # Debugger provider: debugbar | clockwork
+  censored: false                                # Censor potentially sensitive information (POST parameters, cookies, files, configuration and most array/object data in log messages)
   shutdown:
     close_connection: true                       # Close the connection before calling onShutdown(). false for debugging
 
@@ -133,8 +152,14 @@ images:
   cache_all: false                               # Cache all image by default
   cache_perms: '0755'                            # MUST BE IN QUOTES!! Default cache folder perms. Usually '0755' or '0775'
   debug: false                                   # Show an overlay over images indicating the pixel depth of the image when working with retina for example
-  auto_fix_orientation: false                    # Automatically fix the image orientation based on the Exif data
+  auto_fix_orientation: true                     # Automatically fix the image orientation based on the Exif data
   seofriendly: false                             # SEO-friendly processed image names
+  cls:                                           # Cumulative Layout Shift: See https://web.dev/optimize-cls/
+    auto_sizes: false                            # Automatically add height/width to image
+    aspect_ratio: false                          # Reserve space with aspect ratio style
+    retina_scale: 1                              # scale to adjust auto-sizes for better handling of HiDPI resolutions
+  defaults:
+    loading: auto                                # Let browser pick [auto|lazy|eager]
 
 media:
   enable_media_timestamp: false                  # Enable media timestamps
@@ -150,8 +175,10 @@ session:
   uniqueness: path                               # Should sessions be `path` based or `security.salt` based
   secure: false                                  # Set session secure. If true, indicates that communication for this cookie must be over an encrypted transmission. Enable this only on sites that run exclusively on HTTPS
   httponly: true                                 # Set session HTTP only. If true, indicates that cookies should be used only over HTTP, and JavaScript modification is not allowed.
+  samesite: Lax                                  # Set session SameSite. Possible values are Lax, Strict and None. See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
   split: true                                    # Sessions should be independent between site and plugins (such as admin)
-  path:
+  domain:                                        # Domain used by sessions.
+  path:                                          # Path used by sessions.
 
 gpm:
   releases: stable                               # Set to either 'stable' or 'testing'
@@ -161,9 +188,22 @@ gpm:
   official_gpm_only: true                        # By default GPM direct-install will only allow URLs via the official GPM proxy to ensure security
 
 accounts:
-  type: data                                     # Account type: data or flex
-  storage: file                                  # Flex storage type: file or folder
+  type: regular                                  # EXPERIMENTAL: Account type: regular or flex
+  storage: file                                  # EXPERIMENTAL: Flex storage type: file or folder
+
+flex:
+  cache:
+    index:
+      enabled: true                             # Set to true to enable Flex index caching. Is used to cache timestamps in files
+      lifetime: 60                              # Lifetime of cached index in seconds (0 = infinite)
+    object:
+      enabled: true                             # Set to true to enable Flex object caching. Is used to cache object data
+      lifetime: 600                             # Lifetime of cached objects in seconds (0 = infinite)
+    render:
+      enabled: true                             # Set to true to enable Flex render caching. Is used to cache rendered output
+      lifetime: 600                             # Lifetime of cached HTML in seconds (0 = infinite)
 
 strict_mode:
-  yaml_compat: true                              # Grav 1.5+: Enables YAML backwards compatibility
-  twig_compat: true                              # Grav 1.5+: Enables deprecated Twig autoescape setting (autoescape: false)
+  yaml_compat: false                            # Set to true to enable YAML backwards compatibility
+  twig_compat: false                            # Set to true to enable deprecated Twig settings (autoescape: false)
+  blueprint_compat: false                       # Set to true to enable backward compatible strict support for blueprints

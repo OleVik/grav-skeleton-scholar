@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Static Generator Plugin, CLI Data Builder
  *
@@ -11,6 +12,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @link       https://github.com/OleVik/grav-plugin-static-generator
  */
+
 namespace Grav\Plugin\StaticGenerator\Data;
 
 use Grav\Common\Grav;
@@ -21,7 +23,7 @@ use Grav\Plugin\StaticGenerator\Data\AbstractData;
  * CLI Data Builder
  *
  * @category API
- * @package  Grav\Plugin\StaticGeneratorPlugin\Data\CommandLineData
+ * @package  Grav\Plugin\StaticGenerator\Data\CommandLineData
  * @author   Ole Vik <git@olevik.net>
  * @license  http://www.opensource.org/licenses/mit-license.html MIT License
  * @link     https://github.com/OleVik/grav-plugin-static-generator
@@ -32,15 +34,13 @@ class CommandLineData extends AbstractData
      * Initialize
      *
      * @param string $route  Route to page.
-     * @param string $handle Instance of Symfony\Component\Console\Output.
+     * @param \Symfony\Component\Console\Output $handle Console-wrapper.
      *
      * @return void
      */
-    public function setup($route, $handle)
+    public function bootstrap($route, $handle)
     {
         parent::setup();
-        $this->grav['pages']->init();
-        $this->grav['twig']->init();
         if ($route == '/') {
             $this->pages = $this->grav['page']->evaluate(['@root.descendants']);
         } else {
@@ -80,7 +80,7 @@ class CommandLineData extends AbstractData
             $mode = '@page.children';
         }
         $pages = $this->grav['page']->evaluate([$mode => $route]);
-        $pages = $pages->published()->order($this->orderBy, $this->orderDir);
+        $pages = $pages->order($this->orderBy, $this->orderDir);
         foreach ($pages as $page) {
             $route = $page->rawRoute();
             $item = array(
@@ -116,7 +116,9 @@ class CommandLineData extends AbstractData
             if (!$this->content) {
                 $item['taxonomy']['categories'] = implode(' ', $item['taxonomy']['categories']);
                 $item['taxonomy']['tags'] = implode(' ', $item['taxonomy']['tags']);
-                $item['media'] = implode(' ', $item['media']);
+                if (isset($item['media']) && is_array($item['media'])) {
+                    $item['media'] = implode(' ', $item['media']);
+                }
             } else {
                 try {
                     $pageContent = $this->content($page);

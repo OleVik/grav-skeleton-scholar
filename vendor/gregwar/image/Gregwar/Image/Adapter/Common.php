@@ -2,6 +2,11 @@
 
 namespace Gregwar\Image\Adapter;
 
+use Gregwar\Image\Source\Create;
+use Gregwar\Image\Source\Data;
+use Gregwar\Image\Source\File;
+use Gregwar\Image\Source\Resource;
+
 abstract class Common extends Adapter
 {
     /**
@@ -9,8 +14,11 @@ abstract class Common extends Adapter
      */
     public function zoomCrop($width, $height, $background = 'transparent', $xPosLetter = 'center', $yPosLetter = 'center')
     {
+        $originalWidth = $this->width();
+        $originalHeight = $this->height();
+
         // Calculate the different ratios
-        $originalRatio = $this->width() / $this->height();
+        $originalRatio = $originalWidth / $originalHeight;
         $newRatio = $width / $height;
 
         // Compare ratios
@@ -37,8 +45,18 @@ abstract class Common extends Adapter
             case 'right':
                 $xPos = (int) $newWidth - $width;
                 break;
-            default:
+            case 'center':
                 $xPos = (int) ($newWidth - $width) / 2;
+                break;
+            default:
+                $factorW = $newWidth / $originalWidth;
+                $xPos = $xPosLetter * $factorW;
+
+                // If the desired cropping position goes beyond the width then
+                // set the crop to be within the correct bounds.
+                if ($xPos + $width > $newWidth) {
+                    $xPos = (int) $newWidth - $width;
+                }
         }
 
         // Define y position
@@ -51,8 +69,18 @@ abstract class Common extends Adapter
             case 'bottom':
                 $yPos = (int) $newHeight - $height;
                 break;
-            default:
+            case 'center':
                 $yPos = (int) ($newHeight - $height) / 2;
+                break;
+            default:
+                $factorH = $newHeight / $originalHeight;
+                $yPos = $yPosLetter * $factorH;
+
+                // If the desired cropping position goes beyond the height then
+                // set the crop to be within the correct bounds.
+                if ($yPos + $height > $newHeight) {
+                    $yPos = (int) $newHeight - $height;
+                }
         }
 
         // Crop image to reach desired size
@@ -65,9 +93,9 @@ abstract class Common extends Adapter
      * Resizes the image forcing the destination to have exactly the
      * given width and the height.
      *
-     * @param int $w  the width
-     * @param int $h  the height
-     * @param int $bg the background
+     * @param int|null $width  the width
+     * @param int|null $height  the height
+     * @param string|int $background the background
      */
     public function forceResize($width = null, $height = null, $background = 'transparent')
     {
@@ -91,16 +119,22 @@ abstract class Common extends Adapter
     }
 
     /**
-     * Fix orientation using Exif informations.
+     * Read exif rotation from file and apply it.
+     *
+     * @return $this
      */
     public function fixOrientation()
     {
-        if (!in_array(exif_imagetype($this->source->getInfos()), array(IMAGETYPE_JPEG, IMAGETYPE_TIFF_II, IMAGETYPE_TIFF_MM))) {
-            return $this;
-        }
-
         if (!extension_loaded('exif')) {
             throw new \RuntimeException('You need to EXIF PHP Extension to use this function');
+        }
+
+        if (!in_array(exif_imagetype($this->source->getInfos()), array(
+            IMAGETYPE_JPEG,
+            IMAGETYPE_TIFF_II,
+            IMAGETYPE_TIFF_MM,
+        ))) {
+            return $this;
         }
 
         $exif = @exif_read_data($this->source->getInfos());
@@ -109,7 +143,19 @@ abstract class Common extends Adapter
             return $this;
         }
 
-        switch ($exif['Orientation']) {
+        return $this->applyExifOrientation($exif['Orientation']);
+    }
+
+    /**
+     * Apply orientation using Exif orientation value.
+     *
+     * @param int $exif_orienation
+     *
+     * @return $this
+     */
+    public function applyExifOrientation($exif_orienation)
+    {
+        switch ($exif_orienation) {
             case 1:
                 break;
 
@@ -148,55 +194,105 @@ abstract class Common extends Adapter
     }
 
     /**
-     * Opens the image.
+     * Opens gif image.
+     *
+     * @param string
+     *
+     * @return void
      */
     abstract protected function openGif($file);
 
+    /**
+     * Opens jpeg image.
+     *
+     * @param string
+     *
+     * @return void
+     */
     abstract protected function openJpeg($file);
 
+    /**
+     * Opens png image.
+     *
+     * @param string
+     *
+     * @return void
+     */
     abstract protected function openPng($file);
 
     /**
+     * Opens webp image.
+     *
+     * @param string
+     *
+     * @return void
+     */
+    abstract protected function openWebp($file);
+
+    /**
      * Creates an image.
+     *
+     * @param int $width
+     * @param int $height
+     *
+     * @return void
      */
     abstract protected function createImage($width, $height);
 
     /**
      * Creating an image using $data.
+     *
+     * @param string $data
+     *
+     * @return void
      */
     abstract protected function createImageFromData($data);
 
     /**
      * Loading image from $resource.
+     *
+     * @param resource
+     *
+     * @return void
      */
     protected function loadResource($resource)
     {
         $this->resource = $resource;
     }
 
+    /**
+     * @param string $file
+     * @param string $type
+     *
+     * @return void
+     */
     protected function loadFile($file, $type)
     {
         if (!$this->supports($type)) {
             throw new \RuntimeException('Type '.$type.' is not supported by GD');
         }
 
-        if ($type == 'jpeg') {
+        if ($type === 'jpeg') {
             $this->openJpeg($file);
         }
 
-        if ($type == 'gif') {
+        if ($type === 'gif') {
             $this->openGif($file);
         }
 
-        if ($type == 'png') {
+        if ($type === 'png') {
             $this->openPng($file);
+        }
+
+        if ($type === 'webp') {
+            $this->openWebp($file);
         }
 
         if (false === $this->resource) {
             throw new \UnexpectedValueException('Unable to open file ('.$file.')');
-        } else {
-            $this->convertToTrueColor();
         }
+
+        $this->convertToTrueColor();
     }
 
     /**
@@ -206,13 +302,13 @@ abstract class Common extends Adapter
     {
         $source = $this->source;
 
-        if ($source instanceof \Gregwar\Image\Source\File) {
+        if ($source instanceof File) {
             $this->loadFile($source->getFile(), $source->guessType());
-        } elseif ($source instanceof \Gregwar\Image\Source\Create) {
+        } elseif ($source instanceof Create) {
             $this->createImage($source->getWidth(), $source->getHeight());
-        } elseif ($source instanceof \Gregwar\Image\Source\Data) {
+        } elseif ($source instanceof Data) {
             $this->createImageFromData($source->getData());
-        } elseif ($source instanceof \Gregwar\Image\Source\Resource) {
+        } elseif ($source instanceof Resource) {
             $this->loadResource($source->getResource());
         } else {
             throw new \Exception('Unsupported image source type '.get_class($source));
@@ -246,23 +342,23 @@ abstract class Common extends Adapter
         }
 
         if (!$rescale && (!$force || $crop)) {
-            if ($width != null && $current_width > $width) {
+            if ($width !== null && $current_width > $width) {
                 $scale = $current_width / $width;
             }
 
-            if ($height != null && $current_height > $height) {
+            if ($height !== null && $current_height > $height) {
                 if ($current_height / $height > $scale) {
                     $scale = $current_height / $height;
                 }
             }
         } else {
-            if ($width != null) {
+            if ($width !== null) {
                 $scale = $current_width / $width;
                 $new_width = $width;
             }
 
-            if ($height != null) {
-                if ($width != null && $rescale) {
+            if ($height !== null) {
+                if ($width !== null && $rescale) {
                     $scale = max($scale, $current_height / $height);
                 } else {
                     $scale = $current_height / $height;
@@ -271,19 +367,19 @@ abstract class Common extends Adapter
             }
         }
 
-        if (!$force || $width == null || $rescale) {
+        if (!$force || $width === null || $rescale) {
             $new_width = round($current_width / $scale);
         }
 
-        if (!$force || $height == null || $rescale) {
+        if (!$force || $height === null || $rescale) {
             $new_height = round($current_height / $scale);
         }
 
-        if ($width == null || $crop) {
+        if ($width === null || $crop) {
             $width = $new_width;
         }
 
-        if ($height == null || $crop) {
+        if ($height === null || $crop) {
             $height = $new_height;
         }
 
@@ -293,7 +389,9 @@ abstract class Common extends Adapter
     /**
      * Trim background color arround the image.
      *
-     * @param int $bg the background
+     * @param string|int $background the background
+     *
+     * @return void
      */
     protected function _trimColor($background = 'transparent')
     {
@@ -308,7 +406,7 @@ abstract class Common extends Adapter
         //top
         for (; $b_top < $height; ++$b_top) {
             for ($x = 0; $x < $width; ++$x) {
-                if ($this->getColor($x, $b_top) != $background) {
+                if ($this->getColor($x, $b_top) !== $background) {
                     break 2;
                 }
             }
@@ -317,7 +415,7 @@ abstract class Common extends Adapter
         // bottom
         for (; $b_btm >= 0; --$b_btm) {
             for ($x = 0; $x < $width; ++$x) {
-                if ($this->getColor($x, $b_btm) != $background) {
+                if ($this->getColor($x, $b_btm) !== $background) {
                     break 2;
                 }
             }
@@ -326,7 +424,7 @@ abstract class Common extends Adapter
         // left
         for (; $b_lft < $width; ++$b_lft) {
             for ($y = $b_top; $y <= $b_btm; ++$y) {
-                if ($this->getColor($b_lft, $y) != $background) {
+                if ($this->getColor($b_lft, $y) !== $background) {
                     break 2;
                 }
             }
@@ -335,7 +433,7 @@ abstract class Common extends Adapter
         // right
         for (; $b_rt >= 0; --$b_rt) {
             for ($y = $b_top; $y <= $b_btm; ++$y) {
-                if ($this->getColor($b_rt, $y) != $background) {
+                if ($this->getColor($b_rt, $y) !== $background) {
                     break 2;
                 }
             }
@@ -350,11 +448,24 @@ abstract class Common extends Adapter
     /**
      * Resizes the image to an image having size of $target_width, $target_height, using
      * $new_width and $new_height and padding with $bg color.
+     *
+     * @param string|int $bg
+     * @param int $target_width
+     * @param int $target_height
+     * @param int $new_width
+     * @param int $new_height
+     *
+     * @return $this
      */
     abstract protected function doResize($bg, $target_width, $target_height, $new_width, $new_height);
 
     /**
      * Gets the color of the $x, $y pixel.
+     *
+     * @param int $x
+     * @param int $y
+     *
+     * @return int
      */
     abstract protected function getColor($x, $y);
 
@@ -369,6 +480,10 @@ abstract class Common extends Adapter
     /**
      * This does nothing, but can be used to tag a ressource for instance (having a final image hash
      * for the cache different depending on the tag)
+     *
+     * @param mixed $tag
+     *
+     * @return void
      */
     public function tag($tag)
     {

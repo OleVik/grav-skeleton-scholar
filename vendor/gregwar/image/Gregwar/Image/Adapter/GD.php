@@ -11,16 +11,28 @@ class GD extends Common
         'jpeg'  => \IMG_JPG,
         'gif'   => \IMG_GIF,
         'png'   => \IMG_PNG,
+        'webp'  => \IMG_WEBP
     );
 
+    /**
+     * @param resource $resource
+     */
     protected function loadResource($resource)
     {
         parent::loadResource($resource);
+
         imagesavealpha($this->resource, true);
     }
 
     /**
      * Gets the width and the height for writing some text.
+     *
+     * @param string $font
+     * @param string $text
+     * @param int|float $size
+     * @param int|float $angle
+     *
+     * @return array
      */
     public static function TTFBox($font, $text, $size, $angle = 0)
     {
@@ -68,6 +80,12 @@ class GD extends Common
     /**
      * Do the image resize.
      *
+     * @param int|string $bg
+     * @param int $target_width
+     * @param int $target_height
+     * @param int $new_width
+     * @param int $new_height
+     *
      * @return $this
      */
     protected function doResize($bg, $target_width, $target_height, $new_width, $new_height)
@@ -76,7 +94,7 @@ class GD extends Common
         $height = $this->height();
         $n = imagecreatetruecolor($target_width, $target_height);
 
-        if ($bg != 'transparent') {
+        if ($bg !== 'transparent') {
             imagefill($n, 0, 0, ImageColor::gdAllocate($this->resource, $bg));
         } else {
             imagealphablending($n, false);
@@ -270,11 +288,11 @@ class GD extends Common
 
         imagealphablending($this->resource, true);
 
-        if (null == $width) {
+        if (null === $width) {
             $width = $other->width();
         }
 
-        if (null == $height) {
+        if (null === $height) {
             $height = $other->height();
         }
 
@@ -313,14 +331,14 @@ class GD extends Common
     {
         imagealphablending($this->resource, true);
 
-        if ($align != 'left') {
+        if ($align !== 'left') {
             $sim_size = self::TTFBox($font, $text, $size, $angle);
 
-            if ($align == 'center') {
+            if ($align === 'center') {
                 $x -= $sim_size['width'] / 2;
             }
 
-            if ($align == 'right') {
+            if ($align === 'right') {
                 $x -= $sim_size['width'];
             }
         }
@@ -498,11 +516,23 @@ class GD extends Common
         return imagesy($this->resource);
     }
 
+    /**
+     * @param int $width
+     * @param int $height
+     *
+     * @return void
+     */
     protected function createImage($width, $height)
     {
         $this->resource = imagecreatetruecolor($width, $height);
     }
 
+
+    /**
+     * @param string $data
+     *
+     * @return void
+     */
     protected function createImageFromData($data)
     {
         $this->resource = @imagecreatefromstring($data);
@@ -510,6 +540,8 @@ class GD extends Common
 
     /**
      * Converts the image to true color.
+     *
+     * @return void
      */
     protected function convertToTrueColor()
     {
@@ -593,6 +625,10 @@ class GD extends Common
 
     /**
      * Try to open the file using jpeg.
+     *
+     * @param string $file
+     *
+     * @return void
      */
     protected function openJpeg($file)
     {
@@ -605,6 +641,10 @@ class GD extends Common
 
     /**
      * Try to open the file using gif.
+     *
+     * @param string $file
+     *
+     * @return void
      */
     protected function openGif($file)
     {
@@ -617,6 +657,10 @@ class GD extends Common
 
     /**
      * Try to open the file using PNG.
+     *
+     * @param string $file
+     *
+     * @return void
      */
     protected function openPng($file)
     {
@@ -628,13 +672,39 @@ class GD extends Common
     }
 
     /**
+     * Try to open the file using WEBP.
+     *
+     * @param string $file
+     *
+     * @return void
+     */
+    protected function openWebp($file)
+    {
+        if (file_exists($file) && filesize($file)) {
+            $this->resource = @imagecreatefromwebp($file);
+        } else {
+            $this->resource = false;
+        }
+    }
+
+    /**
      * Does this adapter supports type ?
+     *
+     * @param string $type
+     *
+     * @return bool
      */
     protected function supports($type)
     {
         return imagetypes() & self::$gdTypes[$type];
     }
 
+    /**
+     * @param int $x
+     * @param int $y
+     *
+     * @return int|false
+     */
     protected function getColor($x, $y)
     {
         return imagecolorat($this->resource, $x, $y);

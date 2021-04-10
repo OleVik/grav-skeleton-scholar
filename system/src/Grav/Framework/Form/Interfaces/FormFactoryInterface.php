@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * @package    Grav\Framework\Form
  *
- * @copyright  Copyright (C) 2015 - 2018 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -14,6 +14,10 @@ namespace Grav\Framework\Form\Interfaces;
 use Grav\Common\Page\Interfaces\PageInterface;
 use Grav\Common\Page\Page;
 
+/**
+ * Interface FormFactoryInterface
+ * @package Grav\Framework\Form\Interfaces
+ */
 interface FormFactoryInterface
 {
     /**

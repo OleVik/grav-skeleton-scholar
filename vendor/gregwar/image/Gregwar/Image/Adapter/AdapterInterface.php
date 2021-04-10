@@ -26,7 +26,7 @@ interface AdapterInterface
     /**
      * get the raw resource.
      *
-     * @return resource
+     * @return resource|null
      */
     public function getResource();
 
@@ -60,12 +60,15 @@ interface AdapterInterface
 
     /**
      * Unload the resource
+     *
+     * @return void
      */
     public function deinit();
 
     /**
      * Save the image as a gif.
      *
+     * @param string $file
      * @return $this
      */
     public function saveGif($file);
@@ -73,12 +76,16 @@ interface AdapterInterface
     /**
      * Save the image as a png.
      *
+     * @param string $file
      * @return $this
      */
     public function savePng($file);
 
     /**
      * Save the image as a Webp.
+     *
+     * @param string $file
+     * @param int $quality
      *
      * @return $this
      */
@@ -87,6 +94,9 @@ interface AdapterInterface
     /**
      * Save the image as a jpeg.
      *
+     * @param string $file
+     * @param int $quality
+     *
      * @return $this
      */
     public function saveJpeg($file, $quality);
@@ -94,9 +104,9 @@ interface AdapterInterface
     /**
      * Works as resize() excepts that the layout will be cropped.
      *
-     * @param int $width      the width
-     * @param int $height     the height
-     * @param int $background the background
+     * @param int|null $width      the width
+     * @param int|null $height     the height
+     * @param string|int $background the background
      *
      * @return $this
      */
@@ -105,9 +115,9 @@ interface AdapterInterface
     /**
      * Resize the image preserving scale. Can enlarge it.
      *
-     * @param int  $width      the width
-     * @param int  $height     the height
-     * @param int  $background the background
+     * @param int|null  $width      the width
+     * @param int|null  $height     the height
+     * @param string|int  $background the background
      * @param bool $crop
      *
      * @return $this
@@ -117,9 +127,9 @@ interface AdapterInterface
     /**
      * Resizes the image. It will never be enlarged.
      *
-     * @param int  $width      the width
-     * @param int  $height     the height
-     * @param int  $background the background
+     * @param int|null  $width      the width
+     * @param int|null  $height     the height
+     * @param string|int  $background the background
      * @param bool $force
      * @param bool $rescale
      * @param bool $crop
@@ -151,9 +161,9 @@ interface AdapterInterface
      * Resizes the image forcing the destination to have exactly the
      * given width and the height.
      *
-     * @param int $width      the width
-     * @param int $height     the height
-     * @param int $background the background
+     * @param int|null $width      the width
+     * @param int|null $height     the height
+     * @param string|int $background the background
      *
      * @return $this
      */
@@ -164,7 +174,7 @@ interface AdapterInterface
      *
      * @param int $width      Desired width
      * @param int $height     Desired height
-     * @param int $background
+     * @param string|int $background
      *
      * @return $this
      */
@@ -173,7 +183,7 @@ interface AdapterInterface
     /**
      * Fills the image background to $bg if the image is transparent.
      *
-     * @param int $background background color
+     * @param string|int $background background color
      *
      * @return $this
      */
@@ -265,8 +275,8 @@ interface AdapterInterface
      * @param Image $other
      * @param int   $x
      * @param int   $y
-     * @param int   $width
-     * @param int   $height
+     * @param int|null   $width
+     * @param int|null   $height
      *
      * @return $this
      */
@@ -276,7 +286,7 @@ interface AdapterInterface
      * Rotate the image.
      *
      * @param float $angle
-     * @param int   $background
+     * @param string|int   $background
      *
      * @return $this
      */

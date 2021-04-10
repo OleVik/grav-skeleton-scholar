@@ -17,7 +17,7 @@ class GarbageCollect
      * @param int    $days      the number of days to consider a file old
      * @param bool   $verbose   enable verbose output
      *
-     * @return true if all the files/directories of a directory was wiped
+     * @return bool if all the files/directories of a directory was wiped
      */
     public static function dropOldFiles($directory, $days = 30, $verbose = false)
     {
@@ -35,7 +35,7 @@ class GarbageCollect
         }
 
         while ($file = readdir($dir)) {
-            if ($file == '.' || $file == '..') {
+            if ($file === '.' || $file === '..') {
                 continue;
             }
 
@@ -66,6 +66,11 @@ class GarbageCollect
 
     /**
      * Drops a file or an empty directory.
+     *
+     * @param string $file
+     * @param false $verbose
+     *
+     * @return void
      */
     public static function drop($file, $verbose = false)
     {

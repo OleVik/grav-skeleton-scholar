@@ -1,9 +1,12 @@
 enabled: true
 style: metal
 toolbar:
+  enabled: true
   breadcrumbs: true
   search: true
   navigation: true
+related:
+  enabled: true
 css: true
 js: true
 itemize: true
@@ -16,6 +19,7 @@ components:
   - cv
   - docs
   - tufte
+  - what-links-here
 router: true
 routes:
   data: "/data"

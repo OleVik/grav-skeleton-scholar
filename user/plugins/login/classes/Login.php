@@ -33,7 +33,7 @@ use Grav\Plugin\Login\TwoFactorAuth\TwoFactorAuth;
  */
 class Login
 {
-    public const DEBUG = 1;
+    public const DEBUG = 0;
 
     /** @var Grav */
     protected $grav;
@@ -132,13 +132,17 @@ class Login
             $user = $event->getUser();
             $user->authenticated = true;
             $user->authorized = !$event->isDelayed();
-
+            if ($user->authorized) {
+                $event = new UserLoginEvent($event->toArray());
+                $this->grav->fireEvent('onUserLoginAuthorized', $event);
+            }
         } else {
             static::DEBUG && static::addDebugMessage('Login failed', $event);
 
             // Allow plugins to log errors or do other tasks on failure.
+            $eventName = $event->getOption('failureEvent') ?? 'onUserLoginFailure';
             $event = new UserLoginEvent($event->toArray());
-            $grav->fireEvent('onUserLoginFailure', $event);
+            $grav->fireEvent($eventName, $event);
 
             // Make sure that event didn't mess up with the user authorization.
             $user = $event->getUser();
@@ -252,7 +256,13 @@ class Login
             }
         }
 
+        // Validate fields from the form.
         $username = $this->validateField('username', $data['username']);
+        $password = $this->validateField('password1', $data['password'] ?? $data['password1'] ?? null);
+        foreach ($data as $key => &$value) {
+            $value = $this->validateField($key, $value, $key === 'password2' ? $password : '');
+        }
+        unset($value);
 
         /** @var UserCollectionInterface $users */
         $users = $this->grav['accounts'];
@@ -276,6 +286,53 @@ class Login
     }
 
     /**
+     * @param string $username
+     * @param string|null $ip
+     * @return int Return positive number if rate limited, otherwise return 0.
+     */
+    public function checkLoginRateLimit(string $username, string $ip = null): int
+    {
+        $ipKey = $this->getIpKey($ip);
+        $rateLimiter = $this->getRateLimiter('login_attempts');
+        $rateLimiter->registerRateLimitedAction($ipKey, 'ip')->registerRateLimitedAction($username);
+
+        // Check rate limit for both IP and user, but allow each IP a single try even if user is already rate limited.
+        $attempts = \count($rateLimiter->getAttempts($ipKey, 'ip'));
+        if ($rateLimiter->isRateLimited($ipKey, 'ip') || ($attempts && $rateLimiter->isRateLimited($username))) {
+            return $rateLimiter->getInterval();
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param string $username
+     * @param string|null $ip
+     */
+    public function resetLoginRateLimit(string $username, string $ip = null): void
+    {
+        $ipKey = $this->getIpKey($ip);
+        $rateLimiter = $this->getRateLimiter('login_attempts');
+        $rateLimiter->resetRateLimit($ipKey, 'ip')->resetRateLimit($username);
+    }
+
+    /**
+     * @param string|null $ip
+     * @return string
+     */
+    public function getIpKey(string $ip = null): string
+    {
+        if (null === $ip) {
+            $ip = Uri::ip();
+        }
+        $isIPv4 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
+        $ipKey = $isIPv4 ? $ip : Utils::getSubnet($ip, $this->grav['config']->get('plugins.login.ipv6_subnet_size'));
+
+        // Pseudonymization of the IP
+        return sha1($ipKey . $this->grav['config']->get('security.salt'));
+    }
+
+    /**
      * @param string $type
      * @param mixed  $value
      * @param string $extra
@@ -291,47 +348,45 @@ class Login
                 $config = Grav::instance()['config'];
                 $username_regex = '/' . $config->get('system.username_regex') . '/';
 
-                if (!\is_string($value) || !preg_match($username_regex, $value)) {
+                $value = \is_string($value) ? trim($value) : '';
+                if ($value === '' || !preg_match($username_regex, $value)) {
                     throw new \RuntimeException('Username does not pass the minimum requirements');
                 }
 
                 break;
 
+            case 'password':
             case 'password1':
                 /** @var Config $config */
                 $config = Grav::instance()['config'];
                 $pwd_regex = '/' . $config->get('system.pwd_regex') . '/';
 
-                if (!\is_string($value) || !preg_match($pwd_regex, $value)) {
+                $value = \is_string($value) ? $value : '';
+                if ($value === '' || !preg_match($pwd_regex, $value)) {
                     throw new \RuntimeException('Password does not pass the minimum requirements');
                 }
 
                 break;
 
             case 'password2':
-                if (!\is_string($value) || strcmp($value, $extra)) {
+                $value = \is_string($value) ? $value : '';
+                if ($value === '' || $value !== $extra) {
                     throw new \RuntimeException('Passwords did not match.');
                 }
 
                 break;
 
             case 'email':
-                if (!\is_string($value) || !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                $value = \is_string($value) ? trim($value) : '';
+                if ($value === '' || !filter_var($value, FILTER_VALIDATE_EMAIL)) {
                     throw new \RuntimeException('Not a valid email address');
                 }
 
                 break;
 
             case 'permissions':
-                if (!\is_string($value) || !\in_array($value, ['a', 's', 'b'], true)) {
+                if (!\in_array($value, ['a', 's', 'b'], true)) {
                     throw new \RuntimeException('Permissions ' . $value . ' are invalid.');
-                }
-
-                break;
-
-            case 'fullname':
-                if (!\is_string($value) || trim($value) === '') {
-                    throw new \RuntimeException('Fullname cannot be empty');
                 }
 
                 break;
@@ -561,14 +616,14 @@ class Login
     public function isUserAuthorizedForPage(UserInterface $user, PageInterface $page, $config = null)
     {
         $header = $page->header();
-        $rules = isset($header->access) ? (array)$header->access : [];
+        $rules = (array)($header->access ?? []);
 
         if (!$rules && $config !== null && $config->get('parent_acl')) {
             // If page has no ACL rules, use its parent's rules
             $parent = $page->parent();
             while (!$rules and $parent) {
                 $header = $parent->header();
-                $rules = isset($header->access) ? (array)$header->access : [];
+                $rules = (array)($header->access ?? []);
                 $parent = $parent->parent();
             }
         }
@@ -578,7 +633,29 @@ class Login
             return true;
         }
 
-        if (!$user->authorized) {
+        // All protected pages have a private cache-control. This includes pages which are for guests only.
+        $cacheControl = $page->cacheControl();
+        if (!$cacheControl) {
+            $cacheControl = 'private, no-cache, must-revalidate';
+        } else {
+            // The response is intended for a single user only and must not be stored by a shared cache.
+            $cacheControl = str_replace('public', 'private', $cacheControl);
+            if (strpos($cacheControl, 'private') === false) {
+                $cacheControl = 'private, ' . $cacheControl;
+            }
+            // The cache will send the request to the origin server for validation before releasing a cached copy.
+            if (strpos($cacheControl, 'no-cache') === false) {
+                $cacheControl .= ', no-cache';
+            }
+            // The cache must verify the status of the stale resources before using the copy and expired ones should not be used.
+            if (strpos($cacheControl, 'must-revalidate') === false) {
+                $cacheControl .= ', must-revalidate';
+            }
+        }
+        $page->cacheControl($cacheControl);
+
+        // Deny access if user has not completed 2FA challenge.
+        if ($user->authenticated && !$user->authorized) {
             return false;
         }
 

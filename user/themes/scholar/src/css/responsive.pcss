@@ -91,7 +91,8 @@
   }
   .page main,
   .page article,
-  .page.listing main {
+  .page.listing main,
+  .main {
     width: calc(100% - 0.25rem);
   }
   .cv {
@@ -133,6 +134,9 @@
   [data-drawer-open] {
     display: none;
   }
+  aside.next-previous {
+    display: grid;
+  }
 }
 
 @media (min-width: 576px) {
@@ -154,6 +158,12 @@
     }
   }
   .page {
+    &:not(.listing) {
+      main,
+      .main {
+        width: 90%;
+      }
+    }
     header[role="banner"] {
       flex-wrap: wrap;
       flex-direction: row;
@@ -243,6 +253,11 @@
     }
   }
   .page {
+    &:not(.listing) {
+      main {
+        width: 80%;
+      }
+    }
     header[role="banner"] {
       h1 {
         a {
@@ -260,8 +275,7 @@
     main,
     &.listing main {
       grid-gap: 0;
-      width: 100%;
-      margin-top: 2rem;
+      width: calc(100% - 5rem);
       article {
         width: 100%;
         margin: 0 0 1rem;
@@ -323,15 +337,27 @@
       }
     }
   }
-  .next-previous {
-    display: grid;
-    article svg {
-      width: calc(1.602rem * 1.25);
-      height: calc(1.602rem * 1.25);
+  aside.next-previous {
+    article {
+      grid-column-end: span 6;
+      border-top: 1px solid transparent;
+      &:first-of-type {
+        border-right: 1px solid transparent;
+      }
+      svg {
+        width: calc(1.602rem * 1.25);
+        height: calc(1.602rem * 1.25);
+      }
     }
   }
   [data-drawer-open] {
     display: block;
+  }
+  .marginnote,
+  .sidenote {
+    float: right;
+    clear: right;
+    width: 20% !important;
   }
 }
 
@@ -356,7 +382,7 @@
   .page {
     &:not(.listing) main article {
       margin-top: 2rem;
-      padding: 1rem 3rem;
+      padding: 1rem 3.5rem;
     }
     &.listing {
       main {
@@ -415,16 +441,18 @@
     .sidebar {
       display: flex;
       grid-column-end: span 3;
-      .menu {
-        ol {
-          li {
-            padding: 0.5rem 0.75rem 0.25rem 0.75rem;
-          }
-        }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .menu ol li {
+        padding: 0.5rem 0.75rem 0.25rem 0.75rem;
       }
     }
   }
-  .next-previous article svg {
+  aside.next-previous article svg {
     width: calc(1.602rem * 1.5);
     height: calc(1.602rem * 1.5);
   }
@@ -482,8 +510,10 @@
       grid-column-end: span 2;
     }
   }
-  .next-previous article svg {
-    width: calc(1.602rem * 1.65);
-    height: calc(1.602rem * 1.65);
+  aside.next-previous article {
+    svg {
+      width: calc(1.602rem * 1.65);
+      height: calc(1.602rem * 1.65);
+    }
   }
 }

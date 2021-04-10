@@ -4,7 +4,7 @@ theme:
   style: haleakala
 ---
 
-Named for the sunrises seen from [Mount Haleakala](hhttps://www.onlyinyourstate.com/hawaii/epic-sunrise-hi/), in Maui, Hawaii, the United States.
+Named for the sunrises seen from [Mount Haleakala](https://www.onlyinyourstate.com/hawaii/epic-sunrise-hi/), in Maui, Hawaii, the United States.
 
 ## The Haleakala Style
 

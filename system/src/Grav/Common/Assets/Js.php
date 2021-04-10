@@ -3,7 +3,7 @@
 /**
  * @package    Grav\Common\Assets
  *
- * @copyright  Copyright (C) 2015 - 2019 Trilby Media, LLC. All rights reserved.
+ * @copyright  Copyright (c) 2015 - 2021 Trilby Media, LLC. All rights reserved.
  * @license    MIT License; see LICENSE file for details.
  */
 
@@ -11,8 +11,17 @@ namespace Grav\Common\Assets;
 
 use Grav\Common\Utils;
 
+/**
+ * Class Js
+ * @package Grav\Common\Assets
+ */
 class Js extends BaseAsset
 {
+    /**
+     * Js constructor.
+     * @param array $elements
+     * @param string|null $key
+     */
     public function __construct(array $elements = [], $key = null)
     {
         $base_options = [
@@ -24,13 +33,16 @@ class Js extends BaseAsset
         parent::__construct($merged_attributes, $key);
     }
 
+    /**
+     * @return string
+     */
     public function render()
     {
         if (isset($this->attributes['loading']) && $this->attributes['loading'] === 'inline') {
-            $buffer = $this->gatherLinks( [$this], self::JS_ASSET);
+            $buffer = $this->gatherLinks([$this], self::JS_ASSET);
             return '<script' . $this->renderAttributes() . ">\n" . trim($buffer) . "\n</script>\n";
         }
 
-        return '<script src="' . trim($this->asset) . $this->renderQueryString() . '"' . $this->renderAttributes() . "></script>\n";
+        return '<script src="' . trim($this->asset) . $this->renderQueryString() . '"' . $this->renderAttributes() . $this->integrityHash($this->asset) . "></script>\n";
     }
 }

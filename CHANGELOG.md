@@ -1,3 +1,13 @@
+# v3.0.0
+## 25-06-2022
+
+1. [](#new)
+    * Rebuild with GitHub Action
+2. [](#improved)
+    * Align Theme
+3. [](#tested)
+    * Core v1.7.34 - Admin v1.10.34
+
 # v2.0.1
 ## 11-04-2021
 

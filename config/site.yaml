@@ -1,0 +1,9 @@
+title: Scholar
+author:
+  name: Joe Bloggs
+  email: "joe@test.com"
+blog:
+  route: ""
+metadata:
+  description: "Scholar is an academic-focused theme, for publishing papers, articles, books, documentation, your resumé or other content with Grav."
+taxonomies: [category, tag, month]

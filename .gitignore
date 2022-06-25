@@ -1,17 +1,9 @@
-backup/*
-!backup/.*
-cache/*
-!cache/.*
-assets/*
-!assets/.*
-logs/*
-!logs/.*
-images/*
-!images/.*
-user/accounts/*
-!user/accounts/.*
-user/data/feed*
-user/data/notifications*
-!user/data/.*
-user/localhost/config/security.yaml
-user/config/security.yaml
+# Grav Specific
+data/*
+!data/.*
+plugins/*
+!plugins/.*
+themes/*
+!themes/.*
+accounts/*
+!accounts/.*

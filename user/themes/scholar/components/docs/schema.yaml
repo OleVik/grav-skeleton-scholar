@@ -1,7 +1,0 @@
-docs:
-  name: docs
-  schema: CollectionPage
-  children:
-    page:
-      name: page
-      schema: TechArticle

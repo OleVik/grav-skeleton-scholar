@@ -1,11 +1,11 @@
 name: Scholar Skeleton
-version: 2.0.1
-description: A demonstration of the Scholar Theme.
+version: 3.0.0
 description: Scholar supports a Markdown-based publishing workflow for academic-focused content, such as papers, articles, books, and documentation. Features include high accessibility, fast performance, print-friendly styles and more.
 icon: arrows-alt
 author:
   name: Ole Vik
   email: git@olevik.net
+  url: https://olevik.me
 homepage: https://github.com/OleVik/grav-skeleton-scholar
 demo: https://olevik.me/staging/grav-skeleton-scholar
 keywords: grav, theme, academic, paper, papers, article, articles, book, books, docs, documentation, resume, cv

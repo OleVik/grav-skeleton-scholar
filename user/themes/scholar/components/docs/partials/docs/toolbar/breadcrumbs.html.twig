@@ -1,9 +1,0 @@
-<nav class="breadcrumbs links" aria-label="{{ "THEME_SCHOLAR.TOOLBAR.BREADCRUMBS"|t }}">
-    {% if config.theme.toolbar.breadcrumbs %}
-    <div>
-        {% for breadcrumb in breadcrumbs.get() %}
-            <a href="{{ breadcrumb.url }}">{{ breadcrumb.title }}</a>
-        {% endfor %}
-    </div>
-    {% endif %}
-</nav>

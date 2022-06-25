@@ -44,7 +44,7 @@ A demonstration is available at [OleVik.me/staging/grav-skeleton-scholar](https:
 
 ## Installation
 
-**NOTE:** Your installation of PHP must satisfy the version constraint `>=7.3.6`, as is required by Grav. Version 2.0.0 has been tested up to PHP 8.0.3.
+**NOTE:** Your installation of PHP must satisfy the version constraint `>=7.3.6`, as is required by Grav. Version 3.0.0 has been tested up to PHP 8.1.7.
 
 All releases follow SemVer.
 

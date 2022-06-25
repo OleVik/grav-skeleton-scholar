@@ -27,3 +27,32 @@ git:
         url: https://github.com/OleVik/grav-plugin-swiper
         path: user/plugins/swiper
         branch: master
+links:
+    error:
+        src: grav-plugin-error
+        path: user/plugins/error
+        scm: github
+    problems:
+        src: grav-plugin-problems
+        path: user/plugins/problems
+        scm: github
+    scholar:
+        src: grav-theme-scholar
+        path: user/themes/scholar
+        scm: github
+    breadcrumbs:
+        src: grav-plugin-breadcrumbs
+        path: user/plugins/breadcrumbs
+        scm: github
+    shortcode-core:
+        src: grav-plugin-shortcode-core
+        path: user/plugins/shortcode-core
+        scm: github
+    static-generator:
+        src: grav-plugin-static-generator
+        path: user/plugins/static-generator
+        scm: github
+    swiper:
+        src: grav-plugin-swiper
+        path: user/plugins/swiper
+        scm: github

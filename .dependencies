@@ -8,7 +8,7 @@ git:
         path: user/plugins/problems
         branch: master
     scholar:
-        url: https://github.com/getgrav/grav-theme-scholar
+        url: https://github.com/OleVik/grav-theme-scholar
         path: user/themes/scholar
         branch: master
     breadcrumbs:

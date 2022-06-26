@@ -3,6 +3,8 @@
 
 1. [](#new)
     * Add Documentation / Features / Styles / Metal
+2. [](#bugfix)
+    * Fix images
 
 # v3.0.1
 ## 25-06-2022

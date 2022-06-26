@@ -5,9 +5,8 @@ theme:
 ---
 
 Named for the dirt associated with [typically lustrous substances](https://www.merriam-webster.com/dictionary/metal), and [rust](https://www.merriam-webster.com/dictionary/rust) resulting from oxidization on iron.
-Named for the "Grey City" of [Berlin](https://www.study-in-germany.de/blog/thats-germany/a-trip-to-the-grey-city/), in Germany.
 
-## The Berlin Style
+## The Metal Style
 
 ### Index
 

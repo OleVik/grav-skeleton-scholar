@@ -1,3 +1,9 @@
+# v3.0.3
+## 26-06-2022
+
+1. [](#bugfix)
+    * Correct Documentation / Features / Styles / Metal
+
 # v3.0.2
 ## 26-06-2022
 

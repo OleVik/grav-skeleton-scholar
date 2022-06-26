@@ -15,26 +15,4 @@ theme:
 
 So if you wanted to use the Berlin Style for a Page, you would set `theme: style: berlin`. This option also cascades from top-level Pages to lower-level Pages. For example, if the Docs Page sets a specific Style in it's FrontMatter, all descendant Pages will use the same Style, unless any specific Page sets its own Style to use.
 
-The default theme is named _Metal_, and looks like this:
-
-## Metal
-
-### Index
-
-![Body](image://styles.spec.js/metal/index/body.png)
-
-### Article
-
-![Body](image://styles.spec.js/metal/article/body.png)
-
-### Blog
-
-![Body](image://styles.spec.js/metal/blog/body.png)
-
-### CV
-
-![Body](image://styles.spec.js/metal/cv/body.png)
-
-### Docs
-
-![Body](image://styles.spec.js/metal/docs/body.png)
+The default theme is named [_Metal_](/docs/features/styles/metal).

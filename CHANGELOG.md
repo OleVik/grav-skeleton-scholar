@@ -1,3 +1,9 @@
+# v3.0.4
+## 07-02-2023
+
+1. [](#bugfix)
+    * Include images from standardized stream
+
 # v3.0.3
 ## 26-06-2022
 

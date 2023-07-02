@@ -7,3 +7,4 @@ themes/*
 !themes/.*
 accounts/*
 !accounts/.*
+config/security.yaml

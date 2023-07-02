@@ -1,5 +1,7 @@
 ---
 title: Docs
+imgsrcset:
+  process: true
 ---
 
 The _Docs_ Component is made for creating a structured set of Pages for documentation. Like most other Components, you only use the Docs-template at the top of file-structure, as seen in the [sample Pages](https://github.com/OleVik/grav-skeleton-scholar/tree/master/user/pages/02.docs):
@@ -50,4 +52,4 @@ theme:
   itemize: false
 ```
 
-![Index](image://breakpoints.spec.js/992/docs.png)
+![Index](image://breakpoints.spec.js/docs.png)

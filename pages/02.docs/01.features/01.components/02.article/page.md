@@ -1,14 +1,16 @@
 ---
 title: Article
+imgsrcset:
+  process: true
 ---
 
 The _Article_ Component displays a standalone piece of writing, optimized for reading:
 
-![Article](image://breakpoints.spec.js/992/article.png)
+![Article](image://breakpoints.spec.js/article.png)
 
 If a Page has structured headings, which it should for accessibility, it will also include a menu-button in the top-right corner, which opens a menu for navigating the content. These links point to headings in the Page.
 
-![Content menu](content_menu.png)
+![Content menu](content_menu.png?attribute=data-srcset,false)
 
 For semantic accessibility, all heading-elements should be hierarchically structured properly, from level 1 to 6. In Markdown, this would look like:
 

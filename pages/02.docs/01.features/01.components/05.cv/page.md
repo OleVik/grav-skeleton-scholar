@@ -1,5 +1,7 @@
 ---
 title: Resumé
+imgsrcset:
+  process: true
 ---
 
 The _CV_ Component renders a personal resumé from metadata set in the Page's FrontMatter, for example:
@@ -77,4 +79,4 @@ languages:
 
 You can choose between writing the description or summary in the Page's Markdown or in the `description`-property, the former will take precedence ahead of the latter, and both support Markdown.
 
-![Index](image://breakpoints.spec.js/992/cv.png)
+![Index](image://breakpoints.spec.js/cv.png)

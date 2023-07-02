@@ -1,5 +1,7 @@
 ---
 title: Book
+imgsrcset:
+  process: true
 ---
 
 The _Book_ Component is a simple structure for rendering a book in its entirety. Like other components, the Book-template will be at the top of the hierarchy of Pages. Following that, you can group chapters in their own folders and use the Chapter-template, and below that each Page will have its own folder and use the Page-template.
@@ -75,9 +77,9 @@ taxonomy:
 print:
   items: "@self.descendants"
   order:
-    by: 'folder'
-    dir: 'asc'
+    by: "folder"
+    dir: "asc"
   process: true
 ```
 
-![Index](image://breakpoints.spec.js/992/book.png)
+![Index](image://breakpoints.spec.js/book.png)

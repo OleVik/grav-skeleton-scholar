@@ -19,15 +19,15 @@ The theme follows the "mobile first" methodology to scale the layouts up for hig
 
 [slider]
 
-![Index](image://breakpoints.spec.js/320/index.png)
+![Index](image://breakpoints.spec.js/index.png)
 
-![Article](image://breakpoints.spec.js/320/article.png)
+![Article](image://breakpoints.spec.js/article.png)
 
-![Blog](image://breakpoints.spec.js/320/blog.png)
+![Blog](image://breakpoints.spec.js/blog.png)
 
-![CV](image://breakpoints.spec.js/320/cv.png)
+![CV](image://breakpoints.spec.js/cv.png)
 
-![Docs](image://breakpoints.spec.js/320/docs.png)
+![Docs](image://breakpoints.spec.js/docs.png)
 
 [/slider]
 
@@ -35,15 +35,15 @@ The theme follows the "mobile first" methodology to scale the layouts up for hig
 
 [slider]
 
-![Index](image://breakpoints.spec.js/576/index.png)
+![Index](image://breakpoints.spec.js/index-576.png)
 
-![Article](image://breakpoints.spec.js/576/article.png)
+![Article](image://breakpoints.spec.js/article-576.png)
 
-![Blog](image://breakpoints.spec.js/576/blog.png)
+![Blog](image://breakpoints.spec.js/blog-576.png)
 
-![CV](image://breakpoints.spec.js/576/cv.png)
+![CV](image://breakpoints.spec.js/cv-576.png)
 
-![Docs](image://breakpoints.spec.js/576/docs.png)
+![Docs](image://breakpoints.spec.js/docs-576.png)
 
 [/slider]
 
@@ -51,15 +51,15 @@ The theme follows the "mobile first" methodology to scale the layouts up for hig
 
 [slider]
 
-![Index](image://breakpoints.spec.js/768/index.png)
+![Index](image://breakpoints.spec.js/index-768.png)
 
-![Article](image://breakpoints.spec.js/768/article.png)
+![Article](image://breakpoints.spec.js/article-768.png)
 
-![Blog](image://breakpoints.spec.js/768/blog.png)
+![Blog](image://breakpoints.spec.js/blog-768.png)
 
-![CV](image://breakpoints.spec.js/768/cv.png)
+![CV](image://breakpoints.spec.js/cv-768.png)
 
-![Docs](image://breakpoints.spec.js/768/docs.png)
+![Docs](image://breakpoints.spec.js/docs-768.png)
 
 [/slider]
 
@@ -67,15 +67,15 @@ The theme follows the "mobile first" methodology to scale the layouts up for hig
 
 [slider]
 
-![Index](image://breakpoints.spec.js/992/index.png)
+![Index](image://breakpoints.spec.js/index-992.png)
 
-![Article](image://breakpoints.spec.js/992/article.png)
+![Article](image://breakpoints.spec.js/article-992.png)
 
-![Blog](image://breakpoints.spec.js/992/blog.png)
+![Blog](image://breakpoints.spec.js/blog-992.png)
 
-![CV](image://breakpoints.spec.js/992/cv.png)
+![CV](image://breakpoints.spec.js/cv-992.png)
 
-![Docs](image://breakpoints.spec.js/992/docs.png)
+![Docs](image://breakpoints.spec.js/docs-992.png)
 
 [/slider]
 
@@ -83,15 +83,15 @@ The theme follows the "mobile first" methodology to scale the layouts up for hig
 
 [slider]
 
-![Index](image://breakpoints.spec.js/1200/index.png)
+![Index](image://breakpoints.spec.js/index-1200.png)
 
-![Article](image://breakpoints.spec.js/1200/article.png)
+![Article](image://breakpoints.spec.js/article-1200.png)
 
-![Blog](image://breakpoints.spec.js/1200/blog.png)
+![Blog](image://breakpoints.spec.js/blog-1200.png)
 
-![CV](image://breakpoints.spec.js/1200/cv.png)
+![CV](image://breakpoints.spec.js/cv-1200.png)
 
-![Docs](image://breakpoints.spec.js/1200/docs.png)
+![Docs](image://breakpoints.spec.js/docs-1200.png)
 
 [/slider]
 
@@ -99,14 +99,14 @@ The theme follows the "mobile first" methodology to scale the layouts up for hig
 
 [slider]
 
-![Index](image://breakpoints.spec.js/1600/index.png)
+![Index](image://breakpoints.spec.js/index-1600.png)
 
-![Article](image://breakpoints.spec.js/1600/article.png)
+![Article](image://breakpoints.spec.js/article-1600.png)
 
-![Blog](image://breakpoints.spec.js/1600/blog.png)
+![Blog](image://breakpoints.spec.js/blog-1600.png)
 
-![CV](image://breakpoints.spec.js/1600/cv.png)
+![CV](image://breakpoints.spec.js/cv-1600.png)
 
-![Docs](image://breakpoints.spec.js/1600/docs.png)
+![Docs](image://breakpoints.spec.js/docs-1600.png)
 
 [/slider]
